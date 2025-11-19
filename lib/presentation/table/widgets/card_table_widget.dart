@@ -38,9 +38,9 @@ class _CardTableWidgetState extends State<CardTableWidget> {
   }
 
   loadData() async {
-    if (widget.table.status != 'available') {
+    if (widget.table.status != 'available' && widget.table.orderId != null) {
       data = await ProductLocalDatasource.instance
-          .getDraftOrderById(widget.table.orderId);
+          .getDraftOrderById(widget.table.orderId!);
     }
   }
 
@@ -72,7 +72,9 @@ class _CardTableWidgetState extends State<CardTableWidget> {
           Text(
             widget.table.status == 'available'
                 ? widget.table.status
-                : "${widget.table.status} - ${DateTime.parse(widget.table.startTime).toFormattedTime()}",
+                : widget.table.occupiedAt != null
+                    ? "${widget.table.status} - ${DateTime.parse(widget.table.occupiedAt!.toIso8601String()).toFormattedTime()}"
+                    : widget.table.status,
             style: TextStyle(
               color: AppColors.black,
               fontSize: 24,

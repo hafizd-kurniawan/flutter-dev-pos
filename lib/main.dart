@@ -11,6 +11,7 @@ import 'package:flutter_posresto_app/data/datasources/pos_settings_remote_dataso
 import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/product_remote_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/order_item_remote_datasource.dart';
+import 'package:flutter_posresto_app/data/datasources/table_remote_datasource.dart';
 import 'package:flutter_posresto_app/presentation/auth/bloc/logout/logout_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/pos_settings/pos_settings_bloc.dart';
 import 'package:flutter_posresto_app/presentation/auth/login_page.dart';
@@ -136,7 +137,7 @@ class _MyAppState extends State<MyApp> {
           create: (context) => ChangePositionTableBloc(),
         ),
         BlocProvider(
-          create: (context) => GetTableBloc(),
+          create: (context) => GetTableBloc(TableRemoteDatasource()),
         ),
         BlocProvider(
           create: (context) => UpdateTableBloc(),

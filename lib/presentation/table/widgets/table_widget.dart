@@ -48,9 +48,9 @@ class _TableWidgetState extends State<TableWidget> {
   }
 
   loadData() async {
-    if (widget.table.status != 'available') {
+    if (widget.table.status != 'available' && widget.table.orderId != null) {
       data = await ProductLocalDatasource.instance
-          .getDraftOrderById(widget.table.orderId);
+          .getDraftOrderById(widget.table.orderId!);
     }
   }
 
@@ -127,20 +127,12 @@ class _TableWidgetState extends State<TableWidget> {
                                                       final newData =
                                                           TableModel(
                                                         id: widget.table.id,
-                                                        tableName:
+                                                        name:
                                                             tableNameController!
                                                                 .text,
                                                         status:
                                                             widget.table.status,
-                                                        startTime: widget
-                                                            .table.startTime,
-                                                        orderId: widget
-                                                            .table.orderId,
-                                                        paymentAmount: widget
-                                                            .table
-                                                            .paymentAmount,
-                                                        position: widget
-                                                            .table.position,
+                                                        capacity: widget.table.capacity,
                                                       );
                                                       context
                                                           .read<
@@ -184,10 +176,12 @@ class _TableWidgetState extends State<TableWidget> {
                           : Colors.red),
                   widget.table.status == 'available'
                       ? SizedBox.shrink()
-                      : _buildInfoRow(
-                          'Start Time:',
-                          DateFormatter.formatDateTime2(
-                              widget.table.startTime)),
+                      : widget.table.occupiedAt != null
+                          ? _buildInfoRow(
+                              'Start Time:',
+                              DateFormatter.formatDateTime2(
+                                  widget.table.occupiedAt!.toIso8601String()))
+                          : const SizedBox.shrink(),
                   widget.table.status == 'available'
                       ? SizedBox.shrink()
                       : _buildInfoRow(

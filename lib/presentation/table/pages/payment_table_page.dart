@@ -728,13 +728,9 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                   listener: (context, state) {
                                     final newTable = TableModel(
                                       id: widget.table!.id,
-                                      tableName: widget.table!.tableName,
+                                      name: widget.table!.tableName,
                                       status: 'available',
-                                      orderId: 0,
-                                      paymentAmount: 0,
-                                      startTime:
-                                          DateTime.now().toIso8601String(),
-                                      position: widget.table!.position,
+                                      capacity: widget.table!.capacity,
                                     );
                                     context.read<StatusTableBloc>().add(
                                           StatusTableEvent.statusTabel(

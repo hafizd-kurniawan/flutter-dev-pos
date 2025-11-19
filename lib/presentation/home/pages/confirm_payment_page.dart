@@ -901,18 +901,16 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                               id: widget.isTable
                                                   ? widget.table!.id
                                                   : selectTable?.id,
-                                              tableName: widget.isTable
+                                              name: widget.isTable
                                                   ? widget.table!.tableName
                                                   : selectTable?.tableName ??
                                                       '0',
                                               status: 'occupied',
-                                              paymentAmount: priceValue,
-                                              orderId: orderDraftId,
-                                              startTime: DateTime.now()
-                                                  .toIso8601String(),
-                                              position: widget.isTable
-                                                  ? widget.table!.position
-                                                  : selectTable!.position);
+                                              capacity: widget.isTable
+                                                  ? widget.table!.capacity
+                                                  : selectTable?.capacity ?? 4,
+                                              paymentAmount: priceValue.toDouble(),
+                                              orderId: orderDraftId);
                                           log('new tabel: ${newTabel.toMap()}');
                                           context
                                               .read<StatusTableBloc>()

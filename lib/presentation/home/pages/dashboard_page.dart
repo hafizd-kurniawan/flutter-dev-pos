@@ -20,6 +20,7 @@ import 'package:flutter_posresto_app/presentation/setting/pages/printer_configur
 import 'package:flutter_posresto_app/presentation/setting/pages/settings_page.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/new_table_management_page.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/table_page.dart';
+import 'package:flutter_posresto_app/presentation/table/pages/table_management_api_page.dart';
 import 'package:flutter_posresto_app/presentation/history/pages/history_page.dart';
 
 import '../../../core/assets/assets.gen.dart';
@@ -60,8 +61,7 @@ class _DashboardPageState extends State<DashboardPage> {
         isTable: false,
         table: widget.table,
       ),
-      // const TablePage(),
-      TableManagementScreen(),
+      const TableManagementApiPage(), // API-based table management with filters
       const HistoryPage(), // Added History page
       const ReportPage(),
       const PrinterConfigurationPage(),
