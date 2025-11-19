@@ -9,7 +9,12 @@ import 'package:flutter_posresto_app/presentation/table/widgets/change_table_sta
 import 'package:flutter_posresto_app/presentation/table/widgets/table_info_card.dart';
 
 class TableManagementApiPage extends StatefulWidget {
-  const TableManagementApiPage({Key? key}) : super(key: key);
+  final Function(TableModel)? onTableSelected;
+  
+  const TableManagementApiPage({
+    Key? key,
+    this.onTableSelected,
+  }) : super(key: key);
 
   @override
   State<TableManagementApiPage> createState() => _TableManagementApiPageState();
@@ -485,19 +490,63 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                 return TableInfoCard(
                   table: table,
                   onTap: () async {
-                    await showModalBottomSheet(
+                    // Show selection dialog
+                    final action = await showDialog<String>(
                       context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => Padding(
-                        padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom,
-                        ),
-                        child: ChangeTableStatusSheet(table: table),
+                      builder: (context) => AlertDialog(
+                        title: Text('Meja ${table.name}'),
+                        content: Text('Pilih aksi untuk meja ini:'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, 'select'),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.check_circle, color: Colors.green),
+                                SizedBox(width: 8),
+                                Text('Pilih Meja Ini'),
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, 'change_status'),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.edit, color: AppColors.primary),
+                                SizedBox(width: 8),
+                                Text('Ubah Status'),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     );
-                    // Reload data after modal closes
-                    _loadData();
+                    
+                    if (action == 'select') {
+                      // Use callback to update Dashboard and navigate back to home
+                      if (widget.onTableSelected != null) {
+                        widget.onTableSelected!(table);
+                        print('✅ Table selected via callback: ${table.name}');
+                      } else {
+                        // Fallback: return via Navigator for full-screen mode
+                        Navigator.pop(context, table);
+                      }
+                    } else if (action == 'change_status') {
+                      // Show status change bottom sheet
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: ChangeTableStatusSheet(table: table),
+                        ),
+                      );
+                      _loadData();
+                    }
                   },
                 );
               },

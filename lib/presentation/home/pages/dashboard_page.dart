@@ -44,30 +44,45 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
-
-  List<Widget> _pages = [];
+  TableModel? _selectedTable; // Shared table state
 
   void _onItemTapped(int index) {
     _selectedIndex = index;
     setState(() {});
+  }
+  
+  void _onTableSelected(TableModel table) {
+    // Update selected table and navigate back to home
+    setState(() {
+      _selectedTable = table;
+      _selectedIndex = 0; // Back to home
+    });
+    print('✅ Table selected in Dashboard: ${table.name}');
+  }
+  
+  List<Widget> _getPages() {
+    return [
+      HomePage(
+        isTable: false,
+        table: _selectedTable,
+        onNavigateToTables: () => _onItemTapped(1),
+      ),
+      TableManagementApiPage(
+        onTableSelected: _onTableSelected,
+      ),
+      const HistoryPage(),
+      const ReportPage(),
+      const PrinterConfigurationPage(),
+      const SettingsPage(),
+    ];
   }
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.index!;
-    _pages = [
-      HomePage(
-        isTable: false,
-        table: widget.table,
-      ),
-      const TableManagementApiPage(), // API-based table management with filters
-      const HistoryPage(), // Added History page
-      const ReportPage(),
-      const PrinterConfigurationPage(),
-      // SalesPage(),
-      const SettingsPage(),
-    ];
+    _selectedTable = widget.table;
+    
     StreamSubscription<List<ConnectivityResult>> subscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> connectivityResult) {
@@ -222,7 +237,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             Expanded(
               flex: 10,
-              child: _pages[_selectedIndex],
+              child: _getPages()[_selectedIndex],
             ),
           ],
         ),
