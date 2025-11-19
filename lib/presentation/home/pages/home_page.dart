@@ -21,6 +21,7 @@ import 'package:flutter_posresto_app/presentation/home/dialog/dynamic_service_di
 import 'package:flutter_posresto_app/presentation/home/dialog/tax_dialog.dart';
 import 'package:flutter_posresto_app/presentation/home/pages/confirm_payment_page.dart';
 import 'package:flutter_posresto_app/presentation/home/pages/dashboard_page.dart';
+import 'package:flutter_posresto_app/presentation/table/pages/table_management_api_page.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../../../core/assets/assets.gen.dart';
@@ -38,10 +39,13 @@ import '../widgets/product_card.dart';
 class HomePage extends StatefulWidget {
   final bool isTable;
   final TableModel? table;
+  final VoidCallback? onNavigateToTables;
+  
   const HomePage({
     Key? key,
     required this.isTable,
     this.table,
+    this.onNavigateToTables,
   }) : super(key: key);
 
   @override
@@ -53,10 +57,15 @@ class _HomePageState extends State<HomePage> {
   Timer? _debounce;
   String _searchQuery = '';
   bool _isRefreshing = false;
+  String _orderType = 'dine_in'; // dine_in or takeaway
+  TableModel? _selectedTable;
 
   @override
   void initState() {
     print('🏠 HomePage initState - Starting fetch...');
+    
+    // Initialize selected table from widget
+    _selectedTable = widget.table;
     
     // Fetch categories from API
     context.read<CategoryBloc>().add(const CategoryEvent.getCategories());
@@ -307,30 +316,24 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Table Selection
-                          GestureDetector(
-                            onTap: () {
-                              if (widget.table == null) {
-                                context.push(DashboardPage(index: 1));
-                              }
-                            },
-                            child: Text(
-                              'Meja: ${widget.table == null ? 'Belum Pilih Meja' : '${widget.table!.id}'}',
-                              style: const TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
+                          // Table Selection - Professional Design
+                          _buildTableSelector(),
                           const SpaceHeight(8.0),
                           
-                          // Order Number
-                          Button.filled(
-                            width: 180.0,
-                            height: 40,
-                            onPressed: () {},
-                            label: 'Pesanan#',
+                          // Order Number & Type Selector
+                          Row(
+                            children: [
+                              Button.filled(
+                                width: 120.0,
+                                height: 40,
+                                onPressed: () {},
+                                label: 'Pesanan#',
+                              ),
+                              const SpaceWidth(12),
+                              Expanded(
+                                child: _buildOrderTypeSelector(),
+                              ),
+                            ],
                           ),
                           const SpaceHeight(16.0),
                           
@@ -761,6 +764,206 @@ class _HomePageState extends State<HomePage> {
     );
   }
   
+  // Professional Table Selector
+  Widget _buildTableSelector() {
+    final hasTable = _selectedTable != null;
+    
+    return GestureDetector(
+      onTap: () {
+        // Use callback to navigate within Dashboard (keeps navbar visible)
+        if (widget.onNavigateToTables != null) {
+          widget.onNavigateToTables!();
+          print('📋 Navigated to Table Management - navbar visible!');
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          gradient: hasTable
+              ? LinearGradient(
+                  colors: [
+                    AppColors.primary.withOpacity(0.1),
+                    AppColors.primary.withOpacity(0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : LinearGradient(
+                  colors: [
+                    Colors.orange.withOpacity(0.1),
+                    Colors.orange.withOpacity(0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: hasTable
+                ? AppColors.primary.withOpacity(0.3)
+                : Colors.orange.withOpacity(0.4),
+            width: 2,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Icon
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: hasTable
+                    ? AppColors.primary.withOpacity(0.2)
+                    : Colors.orange.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                hasTable ? Icons.table_restaurant : Icons.add_circle_outline,
+                color: hasTable ? AppColors.primary : Colors.orange,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            
+            // Text
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hasTable ? 'Meja Dipilih' : 'Pilih Meja',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    hasTable ? _selectedTable!.name! : 'Tap untuk memilih meja',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: hasTable ? AppColors.primary : Colors.orange,
+                    ),
+                  ),
+                  if (hasTable && _selectedTable!.categoryName != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      '${_selectedTable!.categoryName} • ${_selectedTable!.capacity} pax',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            
+            // Action Icon
+            Icon(
+              hasTable ? Icons.check_circle : Icons.arrow_forward_ios,
+              color: hasTable ? Colors.green : Colors.grey[400],
+              size: hasTable ? 28 : 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildOrderTypeSelector() {
+    return Container(
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.all(3),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildTypeButton(
+              type: 'dine_in',
+              label: 'Dine In',
+              icon: Icons.restaurant_menu_rounded,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: _buildTypeButton(
+              type: 'takeaway',
+              label: 'Takeaway',
+              icon: Icons.shopping_bag_rounded,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTypeButton({
+    required String type,
+    required String label,
+    required IconData icon,
+  }) {
+    final isSelected = _orderType == type;
+    
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+      decoration: BoxDecoration(
+        color: isSelected ? AppColors.primary : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : [],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              _orderType = type;
+            });
+            print('📝 Order Type changed to: $type');
+          },
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 16,
+                  color: isSelected ? Colors.white : Colors.grey[700],
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.grey[700],
+                      fontSize: 12,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   /// Build product grid with optional category filter
   /// categoryId: null = show all, int = filter by category
   Widget _buildProductGrid(int? categoryId) {

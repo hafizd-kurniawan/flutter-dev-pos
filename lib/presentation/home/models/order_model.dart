@@ -35,6 +35,7 @@ class OrderModel {
   final int tableNumber;
   final String status;
   final String paymentStatus;
+  final String orderType; // 'dine_in' or 'takeaway'
   final int isSync;
   final List<ProductQuantity> orderItems;
   OrderModel({
@@ -55,6 +56,7 @@ class OrderModel {
     required this.tableNumber,
     required this.status,
     required this.paymentStatus,
+    this.orderType = 'dine_in', // Default to dine_in
     required this.isSync,
     required this.orderItems,
   });
@@ -89,6 +91,7 @@ class OrderModel {
       'table_number': tableNumber,
       'status': status,
       'payment_status': paymentStatus,
+      'order_type': orderType,
       'transaction_time': transactionTime,
       'order_items': orderItems.map((e) => e.toServerMap(id)).toList(),
     };
@@ -113,6 +116,7 @@ class OrderModel {
       'table_number': tableNumber,
       'status': status,
       'payment_status': paymentStatus,
+      'order_type': orderType,
       'is_sync': isSync,
     };
   }
@@ -138,6 +142,7 @@ class OrderModel {
       tableNumber: map['table_number']?.toInt() ?? 0,
       status: map['status'] ?? '',
       paymentStatus: map['payment_status'] ?? '',
+      orderType: map['order_type'] ?? 'dine_in',
       orderItems: [],
     );
   }
@@ -165,6 +170,7 @@ class OrderModel {
     int? tableNumber,
     String? status,
     String? paymentStatus,
+    String? orderType,
     int? isSync,
     List<ProductQuantity>? orderItems,
   }) {
@@ -186,6 +192,7 @@ class OrderModel {
       tableNumber: tableNumber ?? this.tableNumber,
       status: status ?? this.status,
       paymentStatus: paymentStatus ?? this.paymentStatus,
+      orderType: orderType ?? this.orderType,
       isSync: isSync ?? this.isSync,
       orderItems: orderItems ?? this.orderItems,
     );
@@ -193,6 +200,6 @@ class OrderModel {
 
   @override
   String toString() {
-    return 'OrderModel(id: $id, paymentAmount: $paymentAmount, subTotal: $subTotal, tax: $tax, discount: $discount, discountAmount: $discountAmount, serviceCharge: $serviceCharge, total: $total, paymentMethod: $paymentMethod, totalItem: $totalItem, idKasir: $idKasir, namaKasir: $namaKasir, transactionTime: $transactionTime, customerName: $customerName, tableNumber: $tableNumber, status: $status, paymentStatus: $paymentStatus, isSync: $isSync, orderItems: $orderItems)';
+    return 'OrderModel(id: $id, paymentAmount: $paymentAmount, subTotal: $subTotal, tax: $tax, discount: $discount, discountAmount: $discountAmount, serviceCharge: $serviceCharge, total: $total, paymentMethod: $paymentMethod, totalItem: $totalItem, idKasir: $idKasir, namaKasir: $namaKasir, transactionTime: $transactionTime, customerName: $customerName, tableNumber: $tableNumber, status: $status, paymentStatus: $paymentStatus, orderType: $orderType, isSync: $isSync, orderItems: $orderItems)';
   }
 }
