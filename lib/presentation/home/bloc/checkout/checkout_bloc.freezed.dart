@@ -19,6 +19,7 @@ mixin _$CheckoutEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -36,6 +37,7 @@ mixin _$CheckoutEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -52,6 +54,7 @@ mixin _$CheckoutEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -69,6 +72,7 @@ mixin _$CheckoutEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -84,6 +88,7 @@ mixin _$CheckoutEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -99,6 +104,7 @@ mixin _$CheckoutEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -177,6 +183,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -197,6 +204,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -216,6 +224,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -239,6 +248,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -257,6 +267,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -275,6 +286,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -296,6 +308,175 @@ class _$StartedImpl implements _Started {
 
 abstract class _Started implements CheckoutEvent {
   const factory _Started() = _$StartedImpl;
+}
+
+/// @nodoc
+abstract class _$$ClearItemsImplCopyWith<$Res> {
+  factory _$$ClearItemsImplCopyWith(
+          _$ClearItemsImpl value, $Res Function(_$ClearItemsImpl) then) =
+      __$$ClearItemsImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ClearItemsImplCopyWithImpl<$Res>
+    extends _$CheckoutEventCopyWithImpl<$Res, _$ClearItemsImpl>
+    implements _$$ClearItemsImplCopyWith<$Res> {
+  __$$ClearItemsImplCopyWithImpl(
+      _$ClearItemsImpl _value, $Res Function(_$ClearItemsImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of CheckoutEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ClearItemsImpl implements _ClearItems {
+  const _$ClearItemsImpl();
+
+  @override
+  String toString() {
+    return 'CheckoutEvent.clearItems()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$ClearItemsImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() started,
+    required TResult Function() clearItems,
+    required TResult Function(Product product) addItem,
+    required TResult Function(Product product) removeItem,
+    required TResult Function(Discount discount) addDiscount,
+    required TResult Function() removeDiscount,
+    required TResult Function(int tax) addTax,
+    required TResult Function(int serviceCharge) addServiceCharge,
+    required TResult Function() removeTax,
+    required TResult Function() removeServiceCharge,
+    required TResult Function(
+            int tableNumber, String draftName, int discountAmount)
+        saveDraftOrder,
+    required TResult Function(DraftOrderModel data) loadDraftOrder,
+  }) {
+    return clearItems();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? started,
+    TResult? Function()? clearItems,
+    TResult? Function(Product product)? addItem,
+    TResult? Function(Product product)? removeItem,
+    TResult? Function(Discount discount)? addDiscount,
+    TResult? Function()? removeDiscount,
+    TResult? Function(int tax)? addTax,
+    TResult? Function(int serviceCharge)? addServiceCharge,
+    TResult? Function()? removeTax,
+    TResult? Function()? removeServiceCharge,
+    TResult? Function(int tableNumber, String draftName, int discountAmount)?
+        saveDraftOrder,
+    TResult? Function(DraftOrderModel data)? loadDraftOrder,
+  }) {
+    return clearItems?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? started,
+    TResult Function()? clearItems,
+    TResult Function(Product product)? addItem,
+    TResult Function(Product product)? removeItem,
+    TResult Function(Discount discount)? addDiscount,
+    TResult Function()? removeDiscount,
+    TResult Function(int tax)? addTax,
+    TResult Function(int serviceCharge)? addServiceCharge,
+    TResult Function()? removeTax,
+    TResult Function()? removeServiceCharge,
+    TResult Function(int tableNumber, String draftName, int discountAmount)?
+        saveDraftOrder,
+    TResult Function(DraftOrderModel data)? loadDraftOrder,
+    required TResult orElse(),
+  }) {
+    if (clearItems != null) {
+      return clearItems();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
+    required TResult Function(_AddItem value) addItem,
+    required TResult Function(_RemoveItem value) removeItem,
+    required TResult Function(_AddDiscount value) addDiscount,
+    required TResult Function(_RemoveDiscount value) removeDiscount,
+    required TResult Function(_AddTax value) addTax,
+    required TResult Function(_AddServiceCharge value) addServiceCharge,
+    required TResult Function(_RemoveTax value) removeTax,
+    required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
+    required TResult Function(_SaveDraftOrder value) saveDraftOrder,
+    required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+  }) {
+    return clearItems(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
+    TResult? Function(_AddItem value)? addItem,
+    TResult? Function(_RemoveItem value)? removeItem,
+    TResult? Function(_AddDiscount value)? addDiscount,
+    TResult? Function(_RemoveDiscount value)? removeDiscount,
+    TResult? Function(_AddTax value)? addTax,
+    TResult? Function(_AddServiceCharge value)? addServiceCharge,
+    TResult? Function(_RemoveTax value)? removeTax,
+    TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
+    TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
+    TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+  }) {
+    return clearItems?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
+    TResult Function(_AddItem value)? addItem,
+    TResult Function(_RemoveItem value)? removeItem,
+    TResult Function(_AddDiscount value)? addDiscount,
+    TResult Function(_RemoveDiscount value)? removeDiscount,
+    TResult Function(_AddTax value)? addTax,
+    TResult Function(_AddServiceCharge value)? addServiceCharge,
+    TResult Function(_RemoveTax value)? removeTax,
+    TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
+    TResult Function(_SaveDraftOrder value)? saveDraftOrder,
+    TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    required TResult orElse(),
+  }) {
+    if (clearItems != null) {
+      return clearItems(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _ClearItems implements CheckoutEvent {
+  const factory _ClearItems() = _$ClearItemsImpl;
 }
 
 /// @nodoc
@@ -367,6 +548,7 @@ class _$AddItemImpl implements _AddItem {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -387,6 +569,7 @@ class _$AddItemImpl implements _AddItem {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -406,6 +589,7 @@ class _$AddItemImpl implements _AddItem {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -429,6 +613,7 @@ class _$AddItemImpl implements _AddItem {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -447,6 +632,7 @@ class _$AddItemImpl implements _AddItem {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -465,6 +651,7 @@ class _$AddItemImpl implements _AddItem {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -565,6 +752,7 @@ class _$RemoveItemImpl implements _RemoveItem {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -585,6 +773,7 @@ class _$RemoveItemImpl implements _RemoveItem {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -604,6 +793,7 @@ class _$RemoveItemImpl implements _RemoveItem {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -627,6 +817,7 @@ class _$RemoveItemImpl implements _RemoveItem {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -645,6 +836,7 @@ class _$RemoveItemImpl implements _RemoveItem {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -663,6 +855,7 @@ class _$RemoveItemImpl implements _RemoveItem {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -764,6 +957,7 @@ class _$AddDiscountImpl implements _AddDiscount {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -784,6 +978,7 @@ class _$AddDiscountImpl implements _AddDiscount {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -803,6 +998,7 @@ class _$AddDiscountImpl implements _AddDiscount {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -826,6 +1022,7 @@ class _$AddDiscountImpl implements _AddDiscount {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -844,6 +1041,7 @@ class _$AddDiscountImpl implements _AddDiscount {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -862,6 +1060,7 @@ class _$AddDiscountImpl implements _AddDiscount {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -935,6 +1134,7 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -955,6 +1155,7 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -974,6 +1175,7 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -997,6 +1199,7 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -1015,6 +1218,7 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -1033,6 +1237,7 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -1125,6 +1330,7 @@ class _$AddTaxImpl implements _AddTax {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -1145,6 +1351,7 @@ class _$AddTaxImpl implements _AddTax {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -1164,6 +1371,7 @@ class _$AddTaxImpl implements _AddTax {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -1187,6 +1395,7 @@ class _$AddTaxImpl implements _AddTax {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -1205,6 +1414,7 @@ class _$AddTaxImpl implements _AddTax {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -1223,6 +1433,7 @@ class _$AddTaxImpl implements _AddTax {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -1325,6 +1536,7 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -1345,6 +1557,7 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -1364,6 +1577,7 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -1387,6 +1601,7 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -1405,6 +1620,7 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -1423,6 +1639,7 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -1497,6 +1714,7 @@ class _$RemoveTaxImpl implements _RemoveTax {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -1517,6 +1735,7 @@ class _$RemoveTaxImpl implements _RemoveTax {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -1536,6 +1755,7 @@ class _$RemoveTaxImpl implements _RemoveTax {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -1559,6 +1779,7 @@ class _$RemoveTaxImpl implements _RemoveTax {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -1577,6 +1798,7 @@ class _$RemoveTaxImpl implements _RemoveTax {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -1595,6 +1817,7 @@ class _$RemoveTaxImpl implements _RemoveTax {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -1661,6 +1884,7 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -1681,6 +1905,7 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -1700,6 +1925,7 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -1723,6 +1949,7 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -1741,6 +1968,7 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -1759,6 +1987,7 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -1873,6 +2102,7 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -1893,6 +2123,7 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -1912,6 +2143,7 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -1935,6 +2167,7 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -1953,6 +2186,7 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -1971,6 +2205,7 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,
@@ -2075,6 +2310,7 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
+    required TResult Function() clearItems,
     required TResult Function(Product product) addItem,
     required TResult Function(Product product) removeItem,
     required TResult Function(Discount discount) addDiscount,
@@ -2095,6 +2331,7 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
+    TResult? Function()? clearItems,
     TResult? Function(Product product)? addItem,
     TResult? Function(Product product)? removeItem,
     TResult? Function(Discount discount)? addDiscount,
@@ -2114,6 +2351,7 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
+    TResult Function()? clearItems,
     TResult Function(Product product)? addItem,
     TResult Function(Product product)? removeItem,
     TResult Function(Discount discount)? addDiscount,
@@ -2137,6 +2375,7 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
     required TResult Function(_AddItem value) addItem,
     required TResult Function(_RemoveItem value) removeItem,
     required TResult Function(_AddDiscount value) addDiscount,
@@ -2155,6 +2394,7 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
     TResult? Function(_AddItem value)? addItem,
     TResult? Function(_RemoveItem value)? removeItem,
     TResult? Function(_AddDiscount value)? addDiscount,
@@ -2173,6 +2413,7 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
     TResult Function(_AddItem value)? addItem,
     TResult Function(_RemoveItem value)? removeItem,
     TResult Function(_AddDiscount value)? addDiscount,

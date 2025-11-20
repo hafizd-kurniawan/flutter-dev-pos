@@ -69,7 +69,28 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     });
 
     on<_Started>((event, emit) {
-      emit(const _Loaded([], null, 11, 0, 0, 0, 0, 0, ''));
+      // Reset cart completely (all items and settings to 0)
+      log('🔄 [CheckoutBloc] Reset all (started event)');
+      emit(const _Loaded([], null, 0, 0, 0, 0, 0, 0, ''));
+    });
+    
+    on<_ClearItems>((event, emit) {
+      // Clear ONLY cart items, KEEP all settings (tax, service, discount)
+      var currentState = state as _Loaded;
+      log('🧹 [CheckoutBloc] Clear items only, keeping settings:');
+      log('   Tax: ${currentState.tax}%, Service: ${currentState.serviceCharge}%, Discount: ${currentState.discount}');
+      emit(_Loaded(
+        [], // Clear items
+        currentState.discountModel, // Keep discount
+        currentState.discount,
+        currentState.discountAmount,
+        currentState.tax, // Keep tax
+        currentState.serviceCharge, // Keep service
+        0, // Reset quantity
+        0, // Reset price
+        '', // Clear draft name
+      ));
+      log('✅ [CheckoutBloc] Items cleared, settings preserved');
     });
 
     on<_AddDiscount>((event, emit) {
@@ -103,6 +124,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
 
     on<_AddTax>((event, emit) {
       var currentState = state as _Loaded;
+      log('📊 [CheckoutBloc] AddTax event received: ${event.tax}%');
+      log('   Current state - Items: ${currentState.items.length}, Tax: ${currentState.tax}%');
       emit(_Loaded(
           currentState.items,
           currentState.discountModel,
@@ -113,10 +136,13 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           currentState.totalQuantity,
           currentState.totalPrice,
           currentState.draftName));
+      log('✅ [CheckoutBloc] New state emitted with Tax: ${event.tax}%');
     });
 
     on<_AddServiceCharge>((event, emit) {
       var currentState = state as _Loaded;
+      log('📊 [CheckoutBloc] AddServiceCharge event received: ${event.serviceCharge}%');
+      log('   Current state - Items: ${currentState.items.length}, Service: ${currentState.serviceCharge}%');
       emit(_Loaded(
         currentState.items,
         currentState.discountModel,
@@ -128,6 +154,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
         currentState.totalPrice,
         currentState.draftName,
       ));
+      log('✅ [CheckoutBloc] New state emitted with Service: ${event.serviceCharge}%');
     });
 
     on<_RemoveTax>((event, emit) {

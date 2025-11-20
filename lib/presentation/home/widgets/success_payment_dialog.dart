@@ -14,6 +14,7 @@ import 'package:flutter_posresto_app/data/dataoutputs/laman_print.dart';
 import 'package:flutter_posresto_app/data/dataoutputs/print_dataoutputs.dart';
 import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
+import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 
 import '../../../core/assets/assets.gen.dart';
@@ -21,7 +22,9 @@ import '../../../core/components/buttons.dart';
 import '../../../core/components/spaces.dart';
 import '../../table/blocs/get_table/get_table_bloc.dart';
 import '../bloc/checkout/checkout_bloc.dart';
+import '../bloc/local_product/local_product_bloc.dart';
 import '../bloc/order/order_bloc.dart';
+import '../bloc/pos_settings/pos_settings_bloc.dart';
 
 class SuccessPaymentDialog extends StatefulWidget {
   const SuccessPaymentDialog({
@@ -55,6 +58,44 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
   // List<ProductQuantity> data = [];
   // int totalQty = 0;
   // int totalPrice = 0;
+  
+  /// Reload saved tax & service settings from local storage and apply to CheckoutBloc
+  Future<void> _reloadSavedSettings(BuildContext context) async {
+    try {
+      final localDatasource = PosSettingsLocalDatasource();
+      
+      // Get saved tax ID
+      final taxId = await localDatasource.getSelectedTaxId();
+      
+      // Get saved service ID
+      final serviceId = await localDatasource.getSelectedServiceId();
+      
+      // Get PosSettings to find tax & service values
+      final posSettingsState = context.read<PosSettingsBloc>().state;
+      
+      posSettingsState.maybeWhen(
+        orElse: () {},
+        loaded: (settings) {
+          // Apply saved tax if exists
+          if (taxId != null) {
+            final tax = settings.taxes.firstWhere((t) => t.id == taxId, orElse: () => settings.taxes.first);
+            context.read<CheckoutBloc>().add(CheckoutEvent.addTax(tax.value.toInt()));
+            log('✅ Restored tax: ${tax.name} = ${tax.value}%');
+          }
+          
+          // Apply saved service if exists
+          if (serviceId != null) {
+            final service = settings.services.firstWhere((s) => s.id == serviceId, orElse: () => settings.services.first);
+            context.read<CheckoutBloc>().add(CheckoutEvent.addServiceCharge(service.value.toInt()));
+            log('✅ Restored service: ${service.name} = ${service.value}%');
+          }
+        },
+      );
+    } catch (e) {
+      log('❌ Error reloading saved settings: $e');
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -117,38 +158,74 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             const SpaceHeight(5.0),
             BlocBuilder<OrderBloc, OrderState>(
               builder: (context, state) {
+                log("🔍 OrderBloc State Type: ${state.runtimeType}");
+                
                 final paymentAmount = state.maybeWhen(
-                  orElse: () => 0,
-                  loaded: (model, orderId) => model.paymentAmount,
+                  orElse: () {
+                    log("⚠️ OrderBloc state is NOT loaded, using 0");
+                    return 0;
+                  },
+                  loaded: (model, orderId) {
+                    log("✅ OrderBloc LOADED - paymentAmount: ${model.paymentAmount}");
+                    return model.paymentAmount;
+                  },
                 );
+                
+                log("💰 Final Payment Amount to display: $paymentAmount");
+                
                 return Text(
-                  paymentAmount.ceil().currencyFormatRp,
+                  paymentAmount.currencyFormatRp,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
+                    fontSize: 16,
                   ),
                 );
               },
             ),
+            const SpaceHeight(10.0),
             const Divider(),
             const SpaceHeight(8.0),
             const Text('KEMBALIAN'),
             const SpaceHeight(5.0),
             BlocBuilder<OrderBloc, OrderState>(
               builder: (context, state) {
+                log("🔍 KEMBALIAN - OrderBloc State Type: ${state.runtimeType}");
+                
                 final paymentAmount = state.maybeWhen(
-                  orElse: () => 0,
-                  loaded: (model, orderId) => model.paymentAmount,
+                  orElse: () {
+                    log("⚠️ KEMBALIAN - State NOT loaded, paymentAmount = 0");
+                    return 0;
+                  },
+                  loaded: (model, orderId) {
+                    log("✅ KEMBALIAN - Got paymentAmount: ${model.paymentAmount}");
+                    return model.paymentAmount;
+                  },
                 );
+                
                 final total = state.maybeWhen(
-                  orElse: () => 0,
-                  loaded: (model, orderId) => model.total,
+                  orElse: () {
+                    log("⚠️ KEMBALIAN - State NOT loaded, total = 0");
+                    return 0;
+                  },
+                  loaded: (model, orderId) {
+                    log("✅ KEMBALIAN - Got total: ${model.total}");
+                    return model.total;
+                  },
                 );
-                final diff = paymentAmount - total;
-                log("DIFF: $diff  paymentAmount: $paymentAmount  total: $total");
+                
+                final kembalian = paymentAmount - total;
+                
+                log("💵 KEMBALIAN FINAL Calculation:");
+                log("   Payment Amount: $paymentAmount");
+                log("   Total: $total");
+                log("   Kembalian: $kembalian");
+                
                 return Text(
-                  diff.ceil().currencyFormatRp,
-                  style: const TextStyle(
+                  kembalian.currencyFormatRp,
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    color: kembalian < 0 ? Colors.red : Colors.green,
                   ),
                 );
               },
@@ -169,14 +246,30 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
               children: [
                 Flexible(
                   child: Button.outlined(
-                    onPressed: () {
+                    onPressed: () async {
+                      log('🔙 Kembali button pressed - Clearing items, keeping settings, refreshing products...');
+                      
+                      // 1. Clear ONLY cart items, KEEP tax/service/discount settings
                       context
                           .read<CheckoutBloc>()
-                          .add(const CheckoutEvent.started());
+                          .add(const CheckoutEvent.clearItems());
+                      
+                      // 2. Refresh table list
                       context
                           .read<GetTableBloc>()
                           .add(const GetTableEvent.getTables());
-                      context.popToRoot();
+                      
+                      // 3. Refresh products to update stock
+                      context
+                          .read<LocalProductBloc>()
+                          .add(const LocalProductEvent.getLocalProduct());
+                      log('🔄 Refreshing products to update stock...');
+                      
+                      // 4. Navigate back to home
+                      if (context.mounted) {
+                        log('✅ Navigating to home with settings preserved and products refreshed...');
+                        context.popToRoot();
+                      }
                     },
                     label: 'Kembali',
                   ),

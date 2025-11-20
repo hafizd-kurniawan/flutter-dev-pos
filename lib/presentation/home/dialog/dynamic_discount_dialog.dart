@@ -116,24 +116,17 @@ class _DynamicDiscountDialogState extends State<DynamicDiscountDialog> {
 
                     // Available discounts
                     ...discounts.map((discount) {
-                      return RadioListTile<int>(
-                        title: Text(discount.name),
-                        subtitle: Text(
-                          discount.displayText,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                        value: discount.id,
-                        groupValue: _selectedDiscountId,
-                        activeColor: AppColors.primary,
-                        contentPadding: EdgeInsets.zero,
-                        onChanged: (value) async {
+                      final isSelected = _selectedDiscountId == discount.id;
+                      return InkWell(
+                        onTap: () async {
+                          print('🔵 Discount tapped: ${discount.name}, ID: ${discount.id}');
+                          print('   Current selected: $_selectedDiscountId');
+                          
                           // Save selection
-                          await _localDatasource.saveSelectedDiscount(value);
+                          await _localDatasource.saveSelectedDiscount(discount.id);
+                          print('✅ Saved to local storage');
 
-                          // Apply discount to checkout
+                          // Apply discount to checkout (ALWAYS apply, even if already selected)
                           context.read<CheckoutBloc>().add(
                                 CheckoutEvent.addDiscount(
                                   Discount(
@@ -144,10 +137,11 @@ class _DynamicDiscountDialogState extends State<DynamicDiscountDialog> {
                                   ),
                                 ),
                               );
+                          print('✅ Applied to CheckoutBloc');
 
                           // Update UI
                           setState(() {
-                            _selectedDiscountId = value;
+                            _selectedDiscountId = discount.id;
                           });
 
                           // Show success message
@@ -164,6 +158,70 @@ class _DynamicDiscountDialogState extends State<DynamicDiscountDialog> {
                             context.pop();
                           }
                         },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Colors.grey.shade200,
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              // Radio indicator
+                              Container(
+                                width: 20,
+                                height: 20,
+                                margin: const EdgeInsets.only(right: 12),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isSelected ? AppColors.primary : Colors.grey,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: isSelected
+                                    ? Center(
+                                        child: Container(
+                                          width: 10,
+                                          height: 10,
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: AppColors.primary,
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              // Text
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      discount.name,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      discount.displayText,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        color: isSelected ? AppColors.primary : Colors.grey.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       );
                     }).toList(),
                   ],

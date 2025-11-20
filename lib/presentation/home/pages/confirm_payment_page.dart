@@ -83,6 +83,98 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
     super.dispose();
   }
 
+  // ===== HELPER METHODS FOR CONSISTENT CALCULATION =====
+  
+  /// Calculate discount amount based on type (percentage or fixed)
+  int _calculateDiscountAmount(dynamic discountModel, int subtotal) {
+    if (discountModel == null) return 0;
+    if (discountModel.value == null) return 0;
+    
+    // Handle both String and int types
+    int discountValue;
+    final value = discountModel.value;
+    
+    if (value is String) {
+      // String type: use extension method
+      final cleanedValue = value.replaceAll('.00', '').trim();
+      if (cleanedValue.isEmpty) return 0;
+      discountValue = cleanedValue.toIntegerFromText;
+    } else if (value is int) {
+      // Direct int
+      discountValue = value;
+    } else if (value is double) {
+      // Double to int
+      discountValue = value.toInt();
+    } else {
+      // Fallback: try to parse as string
+      try {
+        final strValue = value.toString().replaceAll('.00', '').trim();
+        if (strValue.isEmpty || strValue == 'null') return 0;
+        discountValue = strValue.toIntegerFromText;
+      } catch (e) {
+        print('⚠️ Error parsing discount value: $e');
+        return 0;
+      }
+    }
+    
+    // Validate discountValue
+    if (discountValue < 0) return 0;
+    
+    if (discountModel.type == 'percentage') {
+      // Percentage: calculate from subtotal
+      if (discountValue > 100) discountValue = 100; // Max 100%
+      return (discountValue / 100 * subtotal).toInt();
+    } else {
+      // Fixed discount: return as-is
+      // But don't exceed subtotal
+      return discountValue > subtotal ? subtotal : discountValue;
+    }
+  }
+  
+  /// Calculate tax amount on after-discount subtotal
+  int _calculateTaxAmount(int afterDiscount, int taxPercentage) {
+    if (taxPercentage == 0) return 0;
+    return (afterDiscount * taxPercentage / 100).toInt();
+  }
+  
+  /// Calculate service charge on after-discount subtotal
+  int _calculateServiceCharge(int afterDiscount, int servicePercentage) {
+    if (servicePercentage == 0) return 0;
+    return (afterDiscount * servicePercentage / 100).toInt();
+  }
+  
+  /// Calculate final total with all charges
+  Map<String, int> _calculateFinalTotal({
+    required int subtotal,
+    required dynamic discountModel,
+    required int taxPercentage,
+    required int servicePercentage,
+  }) {
+    // Step 1: Calculate discount
+    final discountAmount = _calculateDiscountAmount(discountModel, subtotal);
+    
+    // Step 2: After discount
+    final afterDiscount = subtotal - discountAmount;
+    
+    // Step 3: Calculate tax (on after discount)
+    final taxAmount = _calculateTaxAmount(afterDiscount, taxPercentage);
+    
+    // Step 4: Calculate service (on after discount)
+    final serviceAmount = _calculateServiceCharge(afterDiscount, servicePercentage);
+    
+    // Step 5: Final total
+    final total = afterDiscount + taxAmount + serviceAmount;
+    
+    return {
+      'subtotal': subtotal,
+      'discountAmount': discountAmount,
+      'afterDiscount': afterDiscount,
+      'taxAmount': taxAmount,
+      'serviceAmount': serviceAmount,
+      'total': total,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -922,26 +1014,22 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                   child:
                                       BlocBuilder<CheckoutBloc, CheckoutState>(
                                     builder: (context, state) {
-                                      final discount = state.maybeWhen(
-                                          orElse: () => 0,
-                                          loaded: (products,
-                                              discountModel,
-                                              discount,
-                                              discountAmount,
-                                              tax,
-                                              serviceCharge,
-                                              totalQuantity,
-                                              totalPrice,
-                                              draftName) {
-                                            if (discountModel == null) {
-                                              return 0;
-                                            }
-                                            return discountModel.value!
-                                                .replaceAll('.00', '')
-                                                .toIntegerFromText;
-                                          });
+                                      // Extract state data
+                                      final discountModel = state.maybeWhen(
+                                        orElse: () => null,
+                                        loaded: (products,
+                                                discountModel,
+                                                discount,
+                                                discountAmount,
+                                                tax,
+                                                serviceCharge,
+                                                totalQuantity,
+                                                totalPrice,
+                                                draftName) =>
+                                            discountModel,
+                                      );
 
-                                      final price = state.maybeWhen(
+                                      final subtotal = state.maybeWhen(
                                         orElse: () => 0,
                                         loaded: (products,
                                                 discountModel,
@@ -962,7 +1050,21 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                         ),
                                       );
 
-                                      final serviceCharge = state.maybeWhen(
+                                      final taxPercentage = state.maybeWhen(
+                                        orElse: () => 0,
+                                        loaded: (products,
+                                                discountModel,
+                                                discount,
+                                                discountAmount,
+                                                tax,
+                                                serviceCharge,
+                                                totalQuantity,
+                                                totalPrice,
+                                                draftName) =>
+                                            tax,
+                                      );
+
+                                      final servicePercentage = state.maybeWhen(
                                         orElse: () => 0,
                                         loaded: (products,
                                                 discountModel,
@@ -976,13 +1078,19 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                             serviceCharge,
                                       );
 
-                                      final subTotal =
-                                          price - (discount / 100 * price);
-                                      final totalDiscount =
-                                          discount / 100 * price;
-                                      final finalTax = subTotal * 0.11;
-                                      final totalServiceCharge =
-                                          (serviceCharge / 100) * price;
+                                      // Use helper method for consistent calculation
+                                      final calculated = _calculateFinalTotal(
+                                        subtotal: subtotal,
+                                        discountModel: discountModel,
+                                        taxPercentage: taxPercentage,
+                                        servicePercentage: servicePercentage,
+                                      );
+                                      
+                                      final totalDiscount = calculated['discountAmount']!;
+                                      final afterDiscount = calculated['afterDiscount']!;
+                                      final finalTax = calculated['taxAmount']!;
+                                      final totalServiceCharge = calculated['serviceAmount']!;
+                                      final finalTotal = calculated['total']!;
 
                                       List<ProductQuantity> items =
                                           state.maybeWhen(
@@ -1027,11 +1135,10 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                   data: items,
                                                   totalQty: totalQty,
                                                   totalPrice: totalPriceFinal,
-                                                  totalTax: finalTax.toInt(),
-                                                  totalDiscount:
-                                                      totalDiscount.toInt(),
-                                                  subTotal: subTotal.toInt(),
-                                                  normalPrice: price,
+                                                  totalTax: finalTax,
+                                                  totalDiscount: totalDiscount,
+                                                  subTotal: afterDiscount,
+                                                  normalPrice: subtotal,
                                                   table: widget.table!,
                                                   draftName:
                                                       customerController.text,
@@ -1061,43 +1168,68 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                               //             ? 'Cash'
                                               //             : 'QR Pay'));
                                               if (isCash) {
-                                                log("discountAmountValue: $totalDiscount");
+                                                final paymentAmountValue = totalPriceController
+                                                    .text
+                                                    .toIntegerFromText;
+                                                
+                                                log("💰 PAYMENT DETAILS:");
+                                                log("   Subtotal: $subtotal");
+                                                log("   Discount: $totalDiscount");
+                                                log("   After Discount: $afterDiscount");
+                                                log("   Tax: $finalTax");
+                                                log("   Service: $totalServiceCharge");
+                                                log("   TOTAL: $finalTotal");
+                                                log("   Payment Amount: $paymentAmountValue");
+                                                log("   Kembalian: ${paymentAmountValue - finalTotal}");
+                                                
+                                                // Trigger order save
                                                 context.read<OrderBloc>().add(
                                                     OrderEvent.order(
                                                         items,
-                                                        discount,
-                                                        totalDiscount.toInt(),
-                                                        finalTax.toInt(),
-                                                        0,
-                                                        totalPriceController
-                                                            .text
-                                                            .toIntegerFromText,
+                                                        totalDiscount, // Use calculated discount
+                                                        totalDiscount,
+                                                        finalTax,
+                                                        totalServiceCharge, // FIX: Use calculated service charge
+                                                        paymentAmountValue,
                                                         customerController.text,
                                                         0,
                                                         'paid', // Changed: was 'completed', now 'paid' for order tracking
                                                         'paid',
                                                         'Cash',
-                                                        totalPriceFinal));
-                                                await showDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (context) =>
-                                                      SuccessPaymentDialog(
-                                                    data: items,
-                                                    totalQty: totalQty,
-                                                    totalPrice: totalPriceFinal,
-                                                    totalTax: finalTax.toInt(),
-                                                    totalDiscount:
-                                                        totalDiscount.toInt(),
-                                                    subTotal: subTotal.toInt(),
-                                                    normalPrice: price,
-                                                    totalService:
-                                                        totalServiceCharge
-                                                            .toInt(),
-                                                    draftName:
-                                                        customerController.text,
+                                                        finalTotal));
+                                                
+                                                log("⏳ Waiting for OrderBloc to emit loaded state...");
+                                                
+                                                // Wait for OrderBloc to complete and emit _Loaded state
+                                                await context.read<OrderBloc>().stream.firstWhere(
+                                                  (state) => state.maybeWhen(
+                                                    orElse: () => false,
+                                                    loaded: (model, orderId) => true,
                                                   ),
                                                 );
+                                                
+                                                log("✅ OrderBloc loaded! Opening success dialog...");
+                                                
+                                                // Now show dialog with loaded state
+                                                if (context.mounted) {
+                                                  await showDialog(
+                                                    context: context,
+                                                    barrierDismissible: false,
+                                                    builder: (context) =>
+                                                        SuccessPaymentDialog(
+                                                      data: items,
+                                                      totalQty: totalQty,
+                                                      totalPrice: totalPriceFinal,
+                                                      totalTax: finalTax,
+                                                      totalDiscount: totalDiscount,
+                                                      subTotal: afterDiscount,
+                                                      normalPrice: subtotal,
+                                                      totalService: totalServiceCharge,
+                                                      draftName:
+                                                          customerController.text,
+                                                    ),
+                                                  );
+                                                }
                                               } else {
                                                 showDialog(
                                                   context: context,
@@ -1106,13 +1238,12 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                     price: totalPriceFinal,
                                                     items: items,
                                                     totalQty: totalQty,
-                                                    tax: finalTax.toInt(),
-                                                    discountAmount:
-                                                        totalDiscount.toInt(),
-                                                    subTotal: subTotal.toInt(),
+                                                    tax: finalTax,
+                                                    discountAmount: totalDiscount,
+                                                    subTotal: afterDiscount,
                                                     customerName:
                                                         customerController.text,
-                                                    discount: discount,
+                                                    discount: totalDiscount,
                                                     paymentAmount:
                                                         totalPriceController
                                                             .text
@@ -1126,6 +1257,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                 );
                                               }
                                             } else {
+                                              // Bayar Nanti (Save Draft)
                                               context.read<CheckoutBloc>().add(
                                                     CheckoutEvent
                                                         .saveDraftOrder(
@@ -1133,7 +1265,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                           ? widget.table!.id!
                                                           : selectTable!.id!,
                                                       customerController.text,
-                                                      totalDiscount.toInt(),
+                                                      totalDiscount,
                                                     ),
                                                   );
                                               await showDialog(
@@ -1144,11 +1276,10 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                   data: items,
                                                   totalQty: totalQty,
                                                   totalPrice: totalPriceFinal,
-                                                  totalTax: finalTax.toInt(),
-                                                  totalDiscount:
-                                                      totalDiscount.toInt(),
-                                                  subTotal: subTotal.toInt(),
-                                                  normalPrice: price,
+                                                  totalTax: finalTax,
+                                                  totalDiscount: totalDiscount,
+                                                  subTotal: afterDiscount,
+                                                  normalPrice: subtotal,
                                                   table: selectTable!,
                                                   draftName:
                                                       customerController.text,
