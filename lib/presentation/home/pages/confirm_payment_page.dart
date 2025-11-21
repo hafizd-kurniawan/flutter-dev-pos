@@ -26,10 +26,12 @@ import '../widgets/success_payment_dialog.dart';
 class ConfirmPaymentPage extends StatefulWidget {
   final bool isTable;
   final TableModel? table;
+  final String orderType; // 'dine_in' or 'takeaway'
   const ConfirmPaymentPage({
     Key? key,
     required this.isTable,
     this.table,
+    this.orderType = 'dine_in', // Default to dine_in
   }) : super(key: key);
 
   @override
@@ -57,22 +59,17 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
     context
         .read<GetTableStatusBloc>()
         .add(GetTableStatusEvent.getTablesStatus('available'));
-    // if (selectTable == null && widget.table != null) {
-    //   selectTable = tables.firstWhere(
-    //     (t) => t.id == widget.table!.id,
-    //     orElse: () => null,
-    //   );
-    // }
-    if (widget.table != null) {
-      // selectTable = TableModel(
-      //   tableNumber: widget.table!.tableNumber,
-      //   startTime: widget.table!.startTime,
-      //   status: widget.table!.status,
-      //   orderId: widget.table!.orderId,
-      //   paymentAmount: widget.table!.paymentAmount,
-      //   position: widget.table!.position,
-      // );
+    
+    // AUTO-FILL customer name if DINE-IN (from selected table)
+    if (widget.orderType == 'dine_in' && widget.table != null) {
+      // Get customer name from table
+      final customerName = widget.table!.customerName ?? '';
+      if (customerName.isNotEmpty) {
+        customerController.text = customerName;
+        print('✅ Auto-filled customer name from table: $customerName');
+      }
     }
+    
     super.initState();
   }
 
@@ -814,11 +811,23 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                             const SpaceHeight(12.0),
                             TextFormField(
                               controller: customerController,
+                              enabled: widget.orderType == 'takeaway', // DISABLE for dine-in
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                hintText: 'Nama Customer',
+                                hintText: widget.orderType == 'dine_in' 
+                                    ? 'Nama Customer (dari meja)' 
+                                    : 'Nama Customer',
+                                filled: widget.orderType == 'dine_in',
+                                fillColor: widget.orderType == 'dine_in' 
+                                    ? Colors.grey[200] 
+                                    : null,
+                              ),
+                              style: TextStyle(
+                                color: widget.orderType == 'dine_in' 
+                                    ? Colors.grey[600] 
+                                    : Colors.black,
                               ),
                               textCapitalization: TextCapitalization.words,
                             ),
@@ -1115,8 +1124,22 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                       return Flexible(
                                         child: Button.filled(
                                           onPressed: () async {
-                                            if (widget.isTable) {
-                                              log("discountAmountValue: $totalDiscount");
+                                            // VALIDATION: Customer name wajib diisi!
+                                            if (customerController.text.trim().isEmpty) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text('⚠️ Nama customer wajib diisi!'),
+                                                  backgroundColor: Colors.orange,
+                                                  duration: Duration(seconds: 2),
+                                                ),
+                                              );
+                                              return;
+                                            }
+                                            
+                                            // FIX: Check isPayNow FIRST, then check table
+                                            if (!isPayNow && widget.isTable) {
+                                              // BAYAR NANTI (Save Draft) for dine-in
+                                              log("💾 Save Draft: discountAmountValue: $totalDiscount");
                                               context.read<CheckoutBloc>().add(
                                                     CheckoutEvent
                                                         .saveDraftOrder(
@@ -1145,6 +1168,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                 ),
                                               );
                                             } else if (isPayNow) {
+                                              // BAYAR SEKARANG (Cash/QRIS)
                                               // context.read<CheckO>().add(
                                               //     OrderEvent.addPaymentMethod(
                                               //         items,
@@ -1183,6 +1207,10 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                 log("   Kembalian: ${paymentAmountValue - finalTotal}");
                                                 
                                                 // Trigger order save
+                                                final tableNumber = (widget.orderType == 'dine_in' && widget.table != null) 
+                                                    ? widget.table!.id! 
+                                                    : 0;
+                                                
                                                 context.read<OrderBloc>().add(
                                                     OrderEvent.order(
                                                         items,
@@ -1192,11 +1220,12 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                         totalServiceCharge, // FIX: Use calculated service charge
                                                         paymentAmountValue,
                                                         customerController.text,
-                                                        0,
+                                                        tableNumber, // Use actual table ID for dine_in, 0 for takeaway
                                                         'paid', // Changed: was 'completed', now 'paid' for order tracking
                                                         'paid',
                                                         'Cash',
-                                                        finalTotal));
+                                                        finalTotal,
+                                                        widget.orderType)); // Pass order type
                                                 
                                                 log("⏳ Waiting for OrderBloc to emit loaded state...");
                                                 
@@ -1227,10 +1256,17 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                       totalService: totalServiceCharge,
                                                       draftName:
                                                           customerController.text,
+                                                      paymentAmount: paymentAmountValue, // Pass actual payment
+                                                      tableName: widget.table?.name, // NEW: Pass table name
+                                                      orderType: widget.orderType, // NEW: Pass order type
                                                     ),
                                                   );
                                                 }
                                               } else {
+                                                final tableNumber = (widget.orderType == 'dine_in' && widget.table != null) 
+                                                    ? widget.table!.id! 
+                                                    : 0;
+                                                    
                                                 showDialog(
                                                   context: context,
                                                   builder: (context) =>
@@ -1249,10 +1285,12 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                             .text
                                                             .toIntegerFromText,
                                                     paymentMethod: 'Qris',
-                                                    tableNumber: 0,
+                                                    tableNumber: tableNumber,
                                                     paymentStatus: 'paid',
-                                                    serviceCharge: 0,
+                                                    serviceCharge: totalServiceCharge,
                                                     status: 'paid', // Changed: was 'completed', now 'paid' for order tracking
+                                                    orderType: widget.orderType,
+                                                    tableName: widget.table?.name, // NEW: Pass table name
                                                   ),
                                                 );
                                               }

@@ -811,15 +811,40 @@ class _HomePageState extends State<HomePage> {
                                                   ),
                                                 );
                                               },
-                                              (validation) {
+                                              (validation) async { // ADDED: async for await
                                                 final isValid = validation['is_valid'] ?? false;
                                                 
                                                 if (isValid) {
+                                                  // Validate: Dine-in must have table selected
+                                                  if (_orderType == 'dine_in' && _selectedTable == null && widget.table == null) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text('⚠️ Pilih meja terlebih dahulu untuk Dine In'),
+                                                        backgroundColor: Colors.orange,
+                                                      ),
+                                                    );
+                                                    return;
+                                                  }
+                                                  
                                                   // Stock validated, proceed to payment
-                                                  context.push(ConfirmPaymentPage(
-                                                    isTable: widget.isTable,
-                                                    table: widget.table,
+                                                  final shouldReset = await context.push(ConfirmPaymentPage(
+                                                    isTable: _orderType == 'dine_in',
+                                                    table: _selectedTable ?? widget.table,
+                                                    orderType: _orderType,
                                                   ));
+                                                  
+                                                  // Reset state after successful payment (both dine-in & takeaway)
+                                                  if (shouldReset == true) {
+                                                    setState(() {
+                                                      if (_orderType == 'dine_in') {
+                                                        _selectedTable = null;
+                                                        print('✅ Table selection reset after dine-in payment');
+                                                      } else {
+                                                        print('✅ Takeaway order completed successfully');
+                                                      }
+                                                      // Refresh UI for both types
+                                                    });
+                                                  }
                                                 } else {
                                                   // Stock insufficient
                                                   final errors = validation['errors'] as Map<String, dynamic>?;
@@ -864,43 +889,53 @@ class _HomePageState extends State<HomePage> {
   // Professional Table Selector
   Widget _buildTableSelector() {
     final hasTable = _selectedTable != null;
+    final isTakeaway = _orderType == 'takeaway';
     
     return GestureDetector(
-      onTap: () {
-        // Use callback to navigate within Dashboard (keeps navbar visible)
+      onTap: isTakeaway ? null : () async {
+        // Disabled for takeaway - only enabled for dine_in
+        // Navigate to Table Management and WAIT for table selection
         if (widget.onNavigateToTables != null) {
           widget.onNavigateToTables!();
           print('📋 Navigated to Table Management - navbar visible!');
+          
+          // Wait for result (selected table)
+          // Note: DashboardPage needs to pass selected table to HomePage
+          // For now, we'll trigger a rebuild after return
+          await Future.delayed(const Duration(milliseconds: 500));
+          if (mounted) setState(() {});
         }
       },
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          gradient: hasTable
-              ? LinearGradient(
-                  colors: [
-                    AppColors.primary.withOpacity(0.1),
-                    AppColors.primary.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : LinearGradient(
-                  colors: [
-                    Colors.orange.withOpacity(0.1),
-                    Colors.orange.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: hasTable
-                ? AppColors.primary.withOpacity(0.3)
-                : Colors.orange.withOpacity(0.4),
-            width: 2,
+      child: Opacity(
+        opacity: isTakeaway ? 0.4 : 1.0, // Dim if takeaway
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            gradient: hasTable
+                ? LinearGradient(
+                    colors: [
+                      AppColors.primary.withOpacity(0.1),
+                      AppColors.primary.withOpacity(0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : LinearGradient(
+                    colors: [
+                      (isTakeaway ? Colors.grey : Colors.orange).withOpacity(0.1),
+                      (isTakeaway ? Colors.grey : Colors.orange).withOpacity(0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasTable
+                  ? AppColors.primary.withOpacity(0.3)
+                  : (isTakeaway ? Colors.grey : Colors.orange).withOpacity(0.4),
+              width: 2,
+            ),
           ),
-        ),
         child: Row(
           children: [
             // Icon
@@ -935,14 +970,28 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    hasTable ? _selectedTable!.name! : 'Tap untuk memilih meja',
+                    isTakeaway 
+                        ? 'Takeaway (No Table)'
+                        : (hasTable ? _selectedTable!.name! : 'Tap untuk memilih meja'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: hasTable ? AppColors.primary : Colors.orange,
+                      color: isTakeaway 
+                          ? Colors.grey 
+                          : (hasTable ? AppColors.primary : Colors.orange),
                     ),
                   ),
-                  if (hasTable && _selectedTable!.categoryName != null) ...[
+                  if (isTakeaway) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      'Tidak perlu pilih meja',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ] else if (hasTable && _selectedTable!.categoryName != null) ...[
                     const SizedBox(height: 2),
                     Text(
                       '${_selectedTable!.categoryName} • ${_selectedTable!.capacity} pax',
@@ -963,6 +1012,7 @@ class _HomePageState extends State<HomePage> {
               size: hasTable ? 28 : 20,
             ),
           ],
+        ),
         ),
       ),
     );
@@ -1027,6 +1077,11 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             setState(() {
               _orderType = type;
+              // Clear table selection when switching to takeaway
+              if (type == 'takeaway') {
+                _selectedTable = null;
+                print('🚫 Table selection cleared (Takeaway mode)');
+              }
             });
             print('📝 Order Type changed to: $type');
           },

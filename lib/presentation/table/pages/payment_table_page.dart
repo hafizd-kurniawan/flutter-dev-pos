@@ -830,7 +830,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                       'completed',
                                                       'paid',
                                                       isCash ? 'Cash' : 'Qris',
-                                                      totalPriceFinal));
+                                                      totalPriceFinal,
+                                                      'dine_in')); // Table payment is always dine_in
 
                                               await showDialog(
                                                 context: context,
@@ -850,6 +851,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                   totalService: 0,
                                                   draftName:
                                                       customerController.text,
+                                                  paymentAmount: totalPriceController.text.toIntegerFromText, // ADDED
                                                 ),
                                               );
                                             } else {
@@ -876,7 +878,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                       widget.table?.id ?? 0,
                                                   paymentStatus: 'paid',
                                                   serviceCharge: 0,
-                                                  status: 'completed',
+                                                  status: 'paid', // Changed: was 'completed', now 'paid' for order tracking
+                                                  orderType: 'dine_in', // Table payment is always dine_in
                                                 ),
                                               );
                                             }

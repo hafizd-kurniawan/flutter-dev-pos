@@ -237,7 +237,10 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             Expanded(
               flex: 10,
-              child: _getPages()[_selectedIndex],
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: _getPages(),
+              ),
             ),
           ],
         ),

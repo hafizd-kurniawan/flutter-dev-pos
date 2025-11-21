@@ -54,6 +54,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         tableNumber: event.tableNumber,
         status: event.status,
         paymentStatus: event.paymentStatus,
+        orderType: event.orderType, // Added: dine_in or takeaway
         isSync: 0,
         orderItems: event.items,
       );

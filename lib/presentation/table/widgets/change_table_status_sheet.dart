@@ -147,7 +147,7 @@ class _ChangeTableStatusSheetState extends State<ChangeTableStatusSheet> {
           ),
         ),
         IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, widget.table.id), // Return table ID
           icon: const Icon(Icons.close),
         ),
       ],
@@ -359,7 +359,7 @@ class _ChangeTableStatusSheetState extends State<ChangeTableStatusSheet> {
       children: [
         Expanded(
           child: OutlinedButton(
-            onPressed: _isLoading ? null : () => Navigator.pop(context),
+            onPressed: _isLoading ? null : () => Navigator.pop(context, widget.table.id), // Return table ID
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -434,16 +434,20 @@ class _ChangeTableStatusSheetState extends State<ChangeTableStatusSheet> {
       ),
     );
 
-    // Close sheet after a short delay
+    // DON'T auto-close! Let user close manually
+    // Show success feedback
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {
-        Navigator.pop(context);
+        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Table ${widget.table.name} status updated successfully'),
+            content: Text('✅ Table ${widget.table.name} status updated successfully'),
             backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
           ),
         );
+        // Refresh table list
+        context.read<GetTableBloc>().add(const GetTableEvent.getTables());
       }
     });
   }

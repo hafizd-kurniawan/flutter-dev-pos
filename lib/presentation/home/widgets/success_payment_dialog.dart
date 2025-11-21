@@ -12,8 +12,11 @@ import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/string_ext.dart';
 import 'package:flutter_posresto_app/data/dataoutputs/laman_print.dart';
 import 'package:flutter_posresto_app/data/dataoutputs/print_dataoutputs.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
+import 'package:flutter_posresto_app/data/datasources/product_remote_datasource.dart';
+import 'package:flutter_posresto_app/data/datasources/product_storage_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 
@@ -38,7 +41,10 @@ class SuccessPaymentDialog extends StatefulWidget {
     required this.normalPrice,
     required this.totalService,
     required this.draftName,
+    this.paymentAmount, // OPTIONAL with default
     this.isTablePaymentPage = false,
+    this.tableName, // NEW: Table name for dine-in
+    this.orderType, // NEW: 'dine_in' or 'takeaway'
   }) : super(key: key);
   final List<ProductQuantity> data;
   final int totalQty;
@@ -49,7 +55,10 @@ class SuccessPaymentDialog extends StatefulWidget {
   final int normalPrice;
   final int totalService;
   final String draftName;
+  final int? paymentAmount; // OPTIONAL - use totalPrice as fallback
   final bool? isTablePaymentPage;
+  final String? tableName; // NEW: Table name (e.g., "Meja 5")
+  final String? orderType; // NEW: Order type (dine_in/takeaway)
   @override
   State<SuccessPaymentDialog> createState() => _SuccessPaymentDialogState();
 }
@@ -118,115 +127,87 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             const SpaceHeight(20.0),
             const Text('METODE BAYAR'),
             const SpaceHeight(5.0),
-            BlocBuilder<OrderBloc, OrderState>(
-              builder: (context, state) {
-                final paymentMethod = state.maybeWhen(
-                  orElse: () => 'Cash',
-                  loaded: (model, orderId) => model.paymentMethod,
-                );
-                return Text(
-                  paymentMethod,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                  ),
-                );
-              },
+            Text(
+              'Cash', // Fixed: Cash payment for success dialog
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SpaceHeight(10.0),
+            const Divider(),
+            const SpaceHeight(8.0),
+            // NEW: Show table/order type information
+            const Text('TIPE ORDER'),
+            const SpaceHeight(5.0),
+            Text(
+              widget.orderType == 'dine_in' 
+                  ? 'Dine In${widget.tableName != null ? " - ${widget.tableName}" : ""}' 
+                  : 'Takeaway',
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: Colors.black87,
+              ),
             ),
             const SpaceHeight(10.0),
             const Divider(),
             const SpaceHeight(8.0),
             const Text('TOTAL TAGIHAN'),
             const SpaceHeight(5.0),
-            BlocBuilder<OrderBloc, OrderState>(
-              builder: (context, state) {
-                final total = state.maybeWhen(
-                  orElse: () => 0,
-                  loaded: (model, orderId) => model.total,
-                );
-                return Text(
-                  widget.totalPrice.currencyFormatRp,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                  ),
-                );
-              },
+            Text(
+              widget.totalPrice.currencyFormatRp,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: Colors.black87,
+              ),
             ),
             const SpaceHeight(10.0),
             const Divider(),
             const SpaceHeight(8.0),
             const Text('NOMINAL BAYAR'),
             const SpaceHeight(5.0),
-            BlocBuilder<OrderBloc, OrderState>(
-              builder: (context, state) {
-                log("🔍 OrderBloc State Type: ${state.runtimeType}");
-                
-                final paymentAmount = state.maybeWhen(
-                  orElse: () {
-                    log("⚠️ OrderBloc state is NOT loaded, using 0");
-                    return 0;
-                  },
-                  loaded: (model, orderId) {
-                    log("✅ OrderBloc LOADED - paymentAmount: ${model.paymentAmount}");
-                    return model.paymentAmount;
-                  },
-                );
-                
-                log("💰 Final Payment Amount to display: $paymentAmount");
-                
-                return Text(
-                  paymentAmount.currencyFormatRp,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
-                );
-              },
+            Text(
+              (widget.paymentAmount ?? widget.totalPrice).currencyFormatRp,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: Colors.blue,
+              ),
             ),
             const SpaceHeight(10.0),
             const Divider(),
             const SpaceHeight(8.0),
             const Text('KEMBALIAN'),
             const SpaceHeight(5.0),
-            BlocBuilder<OrderBloc, OrderState>(
-              builder: (context, state) {
-                log("🔍 KEMBALIAN - OrderBloc State Type: ${state.runtimeType}");
+            Builder(
+              builder: (context) {
+                final paymentAmt = widget.paymentAmount ?? widget.totalPrice;
+                final kembalian = paymentAmt - widget.totalPrice;
                 
-                final paymentAmount = state.maybeWhen(
-                  orElse: () {
-                    log("⚠️ KEMBALIAN - State NOT loaded, paymentAmount = 0");
-                    return 0;
-                  },
-                  loaded: (model, orderId) {
-                    log("✅ KEMBALIAN - Got paymentAmount: ${model.paymentAmount}");
-                    return model.paymentAmount;
-                  },
-                );
-                
-                final total = state.maybeWhen(
-                  orElse: () {
-                    log("⚠️ KEMBALIAN - State NOT loaded, total = 0");
-                    return 0;
-                  },
-                  loaded: (model, orderId) {
-                    log("✅ KEMBALIAN - Got total: ${model.total}");
-                    return model.total;
-                  },
-                );
-                
-                final kembalian = paymentAmount - total;
-                
-                log("💵 KEMBALIAN FINAL Calculation:");
-                log("   Payment Amount: $paymentAmount");
-                log("   Total: $total");
-                log("   Kembalian: $kembalian");
-                
-                return Text(
-                  kembalian.currencyFormatRp,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                    color: kembalian < 0 ? Colors.red : Colors.green,
-                  ),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      kembalian.currencyFormatRp,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        color: kembalian < 0 ? Colors.red : Colors.green,
+                      ),
+                    ),
+                    if (kembalian < 0) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '⚠️ Uang kurang!',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.red.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ],
                 );
               },
             ),
@@ -245,33 +226,64 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             Row(
               children: [
                 Flexible(
-                  child: Button.outlined(
+                  child: Button.filled(
                     onPressed: () async {
-                      log('🔙 Kembali button pressed - Clearing items, keeping settings, refreshing products...');
+                      log('✅ Selesai button pressed - Closing dialog and returning to home...');
                       
                       // 1. Clear ONLY cart items, KEEP tax/service/discount settings
                       context
                           .read<CheckoutBloc>()
                           .add(const CheckoutEvent.clearItems());
                       
-                      // 2. Refresh table list
+                      // 2. ✅ CRITICAL FIX: Reload saved tax & service settings
+                      await _reloadSavedSettings(context);
+                      log('✅ Tax & Service settings restored from saved preferences');
+                      
+                      // 3. Refresh table list
                       context
                           .read<GetTableBloc>()
                           .add(const GetTableEvent.getTables());
                       
-                      // 3. Refresh products to update stock
-                      context
-                          .read<LocalProductBloc>()
-                          .add(const LocalProductEvent.getLocalProduct());
-                      log('🔄 Refreshing products to update stock...');
+                      // 4. ✅ CRITICAL FIX: Refresh products from SERVER (not local storage)
+                      // This ensures stock is updated after order
+                      log('🔄 Fetching fresh products from server...');
+                      final productRemote = ProductRemoteDatasource();
+                      final productResult = await productRemote.getProducts();
                       
-                      // 4. Navigate back to home
+                      await productResult.fold(
+                        (error) {
+                          log('⚠️ Error refreshing products: $error');
+                        },
+                        (productResponse) async {
+                          // Save to storage
+                          if (kIsWeb) {
+                            await ProductStorageHelper.saveProducts(productResponse.data ?? []);
+                          } else {
+                            // Mobile: SQLite
+                            await context.read<LocalProductBloc>().productLocalDatasource.deleteAllProducts();
+                            await context.read<LocalProductBloc>().productLocalDatasource.insertProducts(productResponse.data ?? []);
+                          }
+                          
+                          // Reload products in UI
+                          context.read<LocalProductBloc>().add(const LocalProductEvent.getLocalProduct());
+                          log('✅ Products refreshed from server: ${productResponse.data?.length ?? 0} items');
+                        },
+                      );
+                      
+                      // 5. Close dialog and navigate back to home with reset signal
                       if (context.mounted) {
                         log('✅ Navigating to home with settings preserved and products refreshed...');
-                        context.popToRoot();
+                        Navigator.of(context).pop(); // Close dialog first
+                        
+                        // Wait a bit then pop confirm_payment_page
+                        await Future.delayed(const Duration(milliseconds: 100));
+                        
+                        if (context.mounted && Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop(true); // Pop confirm_payment_page with reset signal
+                        }
                       }
                     },
-                    label: 'Kembali',
+                    label: 'Selesai',
                   ),
                 ),
                 const SpaceWidth(8.0),

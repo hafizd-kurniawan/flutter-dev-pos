@@ -129,7 +129,7 @@ class ProductCard extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                    child: data.image != null && data.image!.isNotEmpty
+                    child: (data.image != null && data.image!.isNotEmpty && data.image != 'null')
                         ? CachedNetworkImage(
                             imageUrl: data.image!.contains('http')
                                 ? data.image!
@@ -137,6 +137,12 @@ class ProductCard extends StatelessWidget {
                             width: 60,
                             height: 60,
                             fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              width: 60,
+                              height: 60,
+                              color: Colors.grey[200],
+                              child: Icon(Icons.fastfood, size: 30, color: Colors.grey[400]),
+                            ),
                             errorWidget: (context, url, error) => Icon(
                               Icons.fastfood,
                               size: 40,
