@@ -272,14 +272,15 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                       
                       // 5. Close dialog and navigate back to home with reset signal
                       if (context.mounted) {
-                        log('✅ Navigating to home with settings preserved and products refreshed...');
+                        log('✅ AUTO-REDIRECT: Navigating to home with settings preserved and products refreshed...');
                         Navigator.of(context).pop(); // Close dialog first
                         
                         // Wait a bit then pop confirm_payment_page
-                        await Future.delayed(const Duration(milliseconds: 100));
+                        await Future.delayed(const Duration(milliseconds: 150));
                         
                         if (context.mounted && Navigator.of(context).canPop()) {
                           Navigator.of(context).pop(true); // Pop confirm_payment_page with reset signal
+                          log('✅ Successfully returned to HomePage');
                         }
                       }
                     },

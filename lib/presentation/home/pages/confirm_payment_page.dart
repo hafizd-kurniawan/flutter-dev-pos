@@ -175,9 +175,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Hero(
-        tag: 'confirmation_screen',
-        child: Scaffold(
+      // REMOVED Hero widget to prevent validation conflicts
+      child: Scaffold(
           body: Row(
             children: [
               Expanded(
@@ -1125,15 +1124,53 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                         child: Button.filled(
                                           onPressed: () async {
                                             // VALIDATION: Customer name wajib diisi!
-                                            if (customerController.text.trim().isEmpty) {
+                                            final customerName = customerController.text.trim();
+                                            if (customerName.isEmpty) {
+                                              // Use mounted check to prevent Hero widget conflict
+                                              if (!context.mounted) return;
+                                              
+                                              ScaffoldMessenger.of(context).clearSnackBars();
                                               ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text('⚠️ Nama customer wajib diisi!'),
-                                                  backgroundColor: Colors.orange,
-                                                  duration: Duration(seconds: 2),
+                                                SnackBar(
+                                                  content: Text(
+                                                    widget.orderType == 'takeaway'
+                                                        ? '⚠️ Nama customer wajib diisi untuk Takeaway!'
+                                                        : '⚠️ Nama customer wajib diisi!'
+                                                  ),
+                                                  backgroundColor: Colors.red,
+                                                  duration: const Duration(seconds: 3),
+                                                  action: SnackBarAction(
+                                                    label: 'OK',
+                                                    textColor: Colors.white,
+                                                    onPressed: () {
+                                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                                    },
+                                                  ),
                                                 ),
                                               );
-                                              return;
+                                              return; // STOP execution
+                                            }
+                                            
+                                            // EXTRA VALIDATION for Takeaway: Name must be at least 3 characters
+                                            if (widget.orderType == 'takeaway' && customerName.length < 3) {
+                                              if (!context.mounted) return;
+                                              
+                                              ScaffoldMessenger.of(context).clearSnackBars();
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  content: const Text('⚠️ Nama customer minimal 3 karakter!'),
+                                                  backgroundColor: Colors.red,
+                                                  duration: const Duration(seconds: 3),
+                                                  action: SnackBarAction(
+                                                    label: 'OK',
+                                                    textColor: Colors.white,
+                                                    onPressed: () {
+                                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                                    },
+                                                  ),
+                                                ),
+                                              );
+                                              return; // STOP execution
                                             }
                                             
                                             // FIX: Check isPayNow FIRST, then check table
@@ -1344,7 +1381,6 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
               ),
             ],
           ),
-        ),
       ),
     );
   }
