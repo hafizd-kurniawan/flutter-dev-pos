@@ -29,6 +29,8 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   List<TableModel> _cachedTables = []; // Cache to prevent rebuild
+  int? _recentlyUpdatedTableId; // Track recently updated table for highlight
+  Timer? _highlightTimer; // Timer to remove highlight after few seconds
 
   @override
   void initState() {
@@ -41,6 +43,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
   @override
   void dispose() {
     _autoRefreshTimer?.cancel();
+    _highlightTimer?.cancel(); // Cancel highlight timer
     _searchController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -487,8 +490,10 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                 itemCount: filteredTables.length,
                 itemBuilder: (context, index) {
                 final table = filteredTables[index];
+                final isHighlighted = table.id == _recentlyUpdatedTableId; // Check if this table was recently updated
                 return TableInfoCard(
                   table: table,
+                  isHighlighted: isHighlighted, // Pass highlight flag
                   onTap: () async {
                     // Show selection dialog
                     final action = await showDialog<String>(
@@ -534,7 +539,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                       }
                     } else if (action == 'change_status') {
                       // Show status change bottom sheet
-                      await showModalBottomSheet(
+                      final updatedTableId = await showModalBottomSheet<int>(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
@@ -545,6 +550,24 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                           child: ChangeTableStatusSheet(table: table),
                         ),
                       );
+                      
+                      // Highlight the updated table
+                      if (updatedTableId != null) {
+                        setState(() {
+                          _recentlyUpdatedTableId = updatedTableId;
+                        });
+                        
+                        // Remove highlight after 5 seconds
+                        _highlightTimer?.cancel();
+                        _highlightTimer = Timer(const Duration(seconds: 5), () {
+                          if (mounted) {
+                            setState(() {
+                              _recentlyUpdatedTableId = null;
+                            });
+                          }
+                        });
+                      }
+                      
                       _loadData();
                     }
                   },

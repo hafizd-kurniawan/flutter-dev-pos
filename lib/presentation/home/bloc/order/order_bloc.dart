@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:flutter_posresto_app/core/extensions/string_ext.dart';
@@ -53,6 +54,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         tableNumber: event.tableNumber,
         status: event.status,
         paymentStatus: event.paymentStatus,
+        orderType: event.orderType, // Added: dine_in or takeaway
         isSync: 0,
         orderItems: event.items,
       );
@@ -60,16 +62,25 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
       //check state online or offline
       
-
-
+      // Save to remote datasource (backend API)
       final value = await orderRemoteDatasource.saveOrder(dataInput);
+      
       int id = 0;
-      if (value) {
-        id = await ProductLocalDatasource.instance
-            .saveOrder(dataInput.copyWith(isSync: 1));
+      
+      // Only save to local database if NOT web (SQLite not supported in web)
+      if (!kIsWeb) {
+        log("📱 Mobile: Saving to local SQLite database...");
+        if (value) {
+          id = await ProductLocalDatasource.instance
+              .saveOrder(dataInput.copyWith(isSync: 1));
+        } else {
+          id = await ProductLocalDatasource.instance
+              .saveOrder(dataInput.copyWith(isSync: 1));
+        }
+        log("✅ Saved to local database with ID: $id");
       } else {
-        id = await ProductLocalDatasource.instance
-            .saveOrder(dataInput.copyWith(isSync: 1));
+        log("🌐 Web: Skipping local database save (SQLite not supported)");
+        id = 0; // Use 0 for web since we don't have local ID
       }
 
       emit(_Loaded(

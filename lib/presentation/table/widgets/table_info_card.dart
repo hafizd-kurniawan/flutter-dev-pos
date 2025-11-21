@@ -5,11 +5,13 @@ import 'package:flutter_posresto_app/data/models/response/table_model.dart';
 class TableInfoCard extends StatelessWidget {
   final TableModel table;
   final VoidCallback onTap;
+  final bool isHighlighted; // NEW: Highlight recently updated table
 
   const TableInfoCard({
     Key? key,
     required this.table,
     required this.onTap,
+    this.isHighlighted = false,
   }) : super(key: key);
 
   @override
@@ -17,20 +19,23 @@ class TableInfoCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isHighlighted ? Colors.green.shade50 : Colors.white, // Highlight background
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: _getStatusColor(table.status),
-            width: 2,
+            color: isHighlighted ? Colors.green : _getStatusColor(table.status), // Green border when highlighted
+            width: isHighlighted ? 3 : 2, // Thicker border when highlighted
           ),
           boxShadow: [
             BoxShadow(
-              color: _getStatusColor(table.status).withOpacity(0.1),
-              blurRadius: 4,
-              offset: const Offset(0, 1),
+              color: isHighlighted 
+                  ? Colors.green.withOpacity(0.3) 
+                  : _getStatusColor(table.status).withOpacity(0.1),
+              blurRadius: isHighlighted ? 8 : 4,
+              offset: Offset(0, isHighlighted ? 2 : 1), // Remove const
             ),
           ],
         ),

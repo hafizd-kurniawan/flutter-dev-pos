@@ -9,12 +9,15 @@ class OrderResponseModel {
   final int subtotal;
   final int? discountAmount;
   final int? taxAmount;
+  final int? taxPercentage;
   final int? serviceChargeAmount;
+  final int? serviceChargePercentage;
   final int totalAmount;
   final String status;
   final String paymentMethod;
   final String? placedAt;
   final String? completedAt;
+  final String? orderType; // NEW: 'dine_in', 'takeaway', or 'self_order'
   final List<OrderItemResponseModel> orderItems;
 
   OrderResponseModel({
@@ -26,31 +29,45 @@ class OrderResponseModel {
     required this.subtotal,
     this.discountAmount,
     this.taxAmount,
+    this.taxPercentage,
     this.serviceChargeAmount,
+    this.serviceChargePercentage,
     required this.totalAmount,
     required this.status,
     required this.paymentMethod,
     this.placedAt,
     this.completedAt,
+    this.orderType, // NEW
     required this.orderItems,
   });
 
   factory OrderResponseModel.fromJson(Map<String, dynamic> json) {
+    // Parse table name from table relation or table_number field
+    String? tableName;
+    if (json['table'] != null && json['table'] is Map) {
+      tableName = json['table']['name']?.toString();
+    } else if (json['table_number'] != null) {
+      tableName = json['table_number'].toString();
+    }
+    
     return OrderResponseModel(
       id: json['id'] ?? 0,
       code: json['code'] ?? '',
       customerName: json['customer_name'],
       customerPhone: json['customer_phone'],
-      tableNumber: json['table_number']?.toString(),
+      tableNumber: tableName,
       subtotal: _parseToInt(json['subtotal']),
       discountAmount: _parseToInt(json['discount_amount']),
       taxAmount: _parseToInt(json['tax_amount']),
+      taxPercentage: _parseToInt(json['tax_percentage']),
       serviceChargeAmount: _parseToInt(json['service_charge_amount']),
+      serviceChargePercentage: _parseToInt(json['service_charge_percentage']),
       totalAmount: _parseToInt(json['total_amount']),
       status: json['status'] ?? 'paid',
       paymentMethod: json['payment_method'] ?? 'cash',
       placedAt: json['placed_at'],
       completedAt: json['completed_at'],
+      orderType: json['order_type'], // NEW: Parse from backend
       orderItems: json['order_items'] != null
           ? (json['order_items'] as List)
               .map((item) => OrderItemResponseModel.fromJson(item))
@@ -80,12 +97,15 @@ class OrderResponseModel {
       'subtotal': subtotal,
       'discount_amount': discountAmount,
       'tax_amount': taxAmount,
+      'tax_percentage': taxPercentage,
       'service_charge_amount': serviceChargeAmount,
+      'service_charge_percentage': serviceChargePercentage,
       'total_amount': totalAmount,
       'status': status,
       'payment_method': paymentMethod,
       'placed_at': placedAt,
       'completed_at': completedAt,
+      'order_type': orderType, // NEW
       'order_items': orderItems.map((item) => item.toJson()).toList(),
     };
   }

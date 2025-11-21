@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/string_ext.dart';
+import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/product_remote_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/product_storage_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/stock_remote_datasource.dart';
@@ -62,6 +63,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    super.initState();
+    
     print('🏠 HomePage initState - Starting fetch...');
     
     // Initialize selected table from widget
@@ -82,7 +85,101 @@ class _HomePageState extends State<HomePage> {
     // Setup search listener with debounce
     searchController.addListener(_onSearchChanged);
     
-    super.initState();
+    // Load saved settings AFTER build completes (avoid setState during build)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('📌 PostFrameCallback: Loading saved settings...');
+      _loadSavedSettings();
+    });
+  }
+  
+  /// Load saved tax & service from local storage and apply to CheckoutBloc
+  Future<void> _loadSavedSettings() async {
+    try {
+      print('🔄 [HomePage] _loadSavedSettings() called');
+      
+      final localDatasource = PosSettingsLocalDatasource();
+      
+      // Get saved tax ID
+      final taxId = await localDatasource.getSelectedTaxId();
+      print('📌 Saved Tax ID from storage: $taxId');
+      
+      // Get saved service ID
+      final serviceId = await localDatasource.getSelectedServiceId();
+      print('📌 Saved Service ID from storage: $serviceId');
+      
+      // Wait longer for PosSettingsBloc to load (increased from 500ms to 1000ms)
+      print('⏳ Waiting for PosSettingsBloc to load...');
+      await Future.delayed(const Duration(milliseconds: 1000));
+      
+      if (!mounted) {
+        print('⚠️ Widget not mounted, aborting');
+        return;
+      }
+      
+      // Get PosSettings to find tax & service values
+      final posSettingsState = context.read<PosSettingsBloc>().state;
+      print('🔍 PosSettingsBloc state type: ${posSettingsState.runtimeType}');
+      
+      posSettingsState.maybeWhen(
+        orElse: () {
+          print('⚠️ PosSettings NOT loaded yet (state: ${posSettingsState.runtimeType})');
+          print('⚠️ Will try to reload after 2 seconds...');
+          // Retry after delay
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              print('🔄 Retrying _loadSavedSettings...');
+              _loadSavedSettings();
+            }
+          });
+        },
+        loaded: (settings) {
+          print('✅ PosSettings LOADED successfully!');
+          print('   Available taxes: ${settings.taxes.length}');
+          print('   Available services: ${settings.services.length}');
+          
+          // Apply saved tax if exists
+          if (taxId != null && settings.taxes.isNotEmpty) {
+            try {
+              final tax = settings.taxes.firstWhere(
+                (t) => t.id == taxId,
+                orElse: () => settings.taxes.first,
+              );
+              print('🔧 Applying tax: ID=$taxId, Name=${tax.name}, Value=${tax.value}%');
+              context.read<CheckoutBloc>().add(CheckoutEvent.addTax(tax.value.toInt()));
+              print('✅ Tax applied successfully to CheckoutBloc');
+            } catch (e) {
+              print('❌ Error applying tax: $e');
+            }
+          } else {
+            print('ℹ️ No tax to apply (taxId=$taxId, taxes available=${settings.taxes.length})');
+          }
+          
+          // Apply saved service if exists
+          if (serviceId != null && settings.services.isNotEmpty) {
+            try {
+              final service = settings.services.firstWhere(
+                (s) => s.id == serviceId,
+                orElse: () => settings.services.first,
+              );
+              print('🔧 Applying service: ID=$serviceId, Name=${service.name}, Value=${service.value}%');
+              context.read<CheckoutBloc>().add(CheckoutEvent.addServiceCharge(service.value.toInt()));
+              print('✅ Service applied successfully to CheckoutBloc');
+            } catch (e) {
+              print('❌ Error applying service: $e');
+            }
+          } else {
+            print('ℹ️ No service to apply (serviceId=$serviceId, services available=${settings.services.length})');
+          }
+          
+          if (taxId == null && serviceId == null) {
+            print('ℹ️ No saved tax/service found in storage');
+          }
+        },
+      );
+    } catch (e) {
+      print('❌ Error in _loadSavedSettings: $e');
+      print('❌ Stack trace: ${StackTrace.current}');
+    }
   }
   
   @override
@@ -714,15 +811,40 @@ class _HomePageState extends State<HomePage> {
                                                   ),
                                                 );
                                               },
-                                              (validation) {
+                                              (validation) async { // ADDED: async for await
                                                 final isValid = validation['is_valid'] ?? false;
                                                 
                                                 if (isValid) {
+                                                  // Validate: Dine-in must have table selected
+                                                  if (_orderType == 'dine_in' && _selectedTable == null && widget.table == null) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text('⚠️ Pilih meja terlebih dahulu untuk Dine In'),
+                                                        backgroundColor: Colors.orange,
+                                                      ),
+                                                    );
+                                                    return;
+                                                  }
+                                                  
                                                   // Stock validated, proceed to payment
-                                                  context.push(ConfirmPaymentPage(
-                                                    isTable: widget.isTable,
-                                                    table: widget.table,
+                                                  final shouldReset = await context.push(ConfirmPaymentPage(
+                                                    isTable: _orderType == 'dine_in',
+                                                    table: _selectedTable ?? widget.table,
+                                                    orderType: _orderType,
                                                   ));
+                                                  
+                                                  // Reset state after successful payment (both dine-in & takeaway)
+                                                  if (shouldReset == true) {
+                                                    setState(() {
+                                                      if (_orderType == 'dine_in') {
+                                                        _selectedTable = null;
+                                                        print('✅ Table selection reset after dine-in payment');
+                                                      } else {
+                                                        print('✅ Takeaway order completed successfully');
+                                                      }
+                                                      // Refresh UI for both types
+                                                    });
+                                                  }
                                                 } else {
                                                   // Stock insufficient
                                                   final errors = validation['errors'] as Map<String, dynamic>?;
@@ -767,43 +889,53 @@ class _HomePageState extends State<HomePage> {
   // Professional Table Selector
   Widget _buildTableSelector() {
     final hasTable = _selectedTable != null;
+    final isTakeaway = _orderType == 'takeaway';
     
     return GestureDetector(
-      onTap: () {
-        // Use callback to navigate within Dashboard (keeps navbar visible)
+      onTap: isTakeaway ? null : () async {
+        // Disabled for takeaway - only enabled for dine_in
+        // Navigate to Table Management and WAIT for table selection
         if (widget.onNavigateToTables != null) {
           widget.onNavigateToTables!();
           print('📋 Navigated to Table Management - navbar visible!');
+          
+          // Wait for result (selected table)
+          // Note: DashboardPage needs to pass selected table to HomePage
+          // For now, we'll trigger a rebuild after return
+          await Future.delayed(const Duration(milliseconds: 500));
+          if (mounted) setState(() {});
         }
       },
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          gradient: hasTable
-              ? LinearGradient(
-                  colors: [
-                    AppColors.primary.withOpacity(0.1),
-                    AppColors.primary.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : LinearGradient(
-                  colors: [
-                    Colors.orange.withOpacity(0.1),
-                    Colors.orange.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: hasTable
-                ? AppColors.primary.withOpacity(0.3)
-                : Colors.orange.withOpacity(0.4),
-            width: 2,
+      child: Opacity(
+        opacity: isTakeaway ? 0.4 : 1.0, // Dim if takeaway
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            gradient: hasTable
+                ? LinearGradient(
+                    colors: [
+                      AppColors.primary.withOpacity(0.1),
+                      AppColors.primary.withOpacity(0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : LinearGradient(
+                    colors: [
+                      (isTakeaway ? Colors.grey : Colors.orange).withOpacity(0.1),
+                      (isTakeaway ? Colors.grey : Colors.orange).withOpacity(0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasTable
+                  ? AppColors.primary.withOpacity(0.3)
+                  : (isTakeaway ? Colors.grey : Colors.orange).withOpacity(0.4),
+              width: 2,
+            ),
           ),
-        ),
         child: Row(
           children: [
             // Icon
@@ -838,14 +970,28 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    hasTable ? _selectedTable!.name! : 'Tap untuk memilih meja',
+                    isTakeaway 
+                        ? 'Takeaway (No Table)'
+                        : (hasTable ? _selectedTable!.name! : 'Tap untuk memilih meja'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: hasTable ? AppColors.primary : Colors.orange,
+                      color: isTakeaway 
+                          ? Colors.grey 
+                          : (hasTable ? AppColors.primary : Colors.orange),
                     ),
                   ),
-                  if (hasTable && _selectedTable!.categoryName != null) ...[
+                  if (isTakeaway) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      'Tidak perlu pilih meja',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ] else if (hasTable && _selectedTable!.categoryName != null) ...[
                     const SizedBox(height: 2),
                     Text(
                       '${_selectedTable!.categoryName} • ${_selectedTable!.capacity} pax',
@@ -866,6 +1012,7 @@ class _HomePageState extends State<HomePage> {
               size: hasTable ? 28 : 20,
             ),
           ],
+        ),
         ),
       ),
     );
@@ -930,6 +1077,11 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             setState(() {
               _orderType = type;
+              // Clear table selection when switching to takeaway
+              if (type == 'takeaway') {
+                _selectedTable = null;
+                print('🚫 Table selection cleared (Takeaway mode)');
+              }
             });
             print('📝 Order Type changed to: $type');
           },

@@ -16,19 +16,23 @@ class OrderRemoteDatasource {
   //save order to remote server
   Future<bool> saveOrder(OrderModel orderModel) async {
     final headers = await ApiHelper.getHeaders();
-    log("OrderModelSingle: $orderModel");
-    log("OrderModel: ${orderModel.toJson()}");
+    log("📤 Sending Order to API...");
+    log("Order Data: ${orderModel.toJson()}");
+    
     final response = await http.post(
       Uri.parse('${Variables.baseUrl}/api/save-order'),
-      body: orderModel.toJson(),
+      body: orderModel.toJson(), // Already JSON encoded string
       headers: headers,
     );
-    log("Response: ${response.statusCode}");
-    log("Response: ${response.body}");
-    if (response.statusCode == 200) {
-      // ProductLocalDatasource.instance.updateOrderIsSync(orderModel.id!);
+    
+    log("📥 Response Status: ${response.statusCode}");
+    log("📥 Response Body: ${response.body}");
+    
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      log("✅ Order saved successfully!");
       return true;
     } else {
+      log("❌ Failed to save order: ${response.statusCode} - ${response.body}");
       return false;
     }
   }
