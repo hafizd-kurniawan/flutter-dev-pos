@@ -13,7 +13,7 @@ import 'package:flutter_posresto_app/core/constants/colors.dart';
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
 import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/auth/login_page.dart';
-import 'package:flutter_posresto_app/presentation/report/pages/report_page.dart';
+import 'package:flutter_posresto_app/presentation/dashboard/pages/simple_dashboard_page.dart';
 import 'package:flutter_posresto_app/presentation/sales/pages/sales_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_order/sync_order_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/printer_configuration_page.dart';
@@ -71,7 +71,7 @@ class _DashboardPageState extends State<DashboardPage> {
         onTableSelected: _onTableSelected,
       ),
       const HistoryPage(),
-      const ReportPage(),
+      const SimpleDashboardPage(), // ← CHANGED from ReportPage!
       const PrinterConfigurationPage(),
       const SettingsPage(),
     ];
