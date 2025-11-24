@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
-import 'package:flutter_posresto_app/presentation/sales/pages/sales_page.dart';
-import 'package:flutter_posresto_app/presentation/setting/pages/discount_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/manage_printer_page.dart';
-import 'package:flutter_posresto_app/presentation/setting/pages/product_page.dart';
-import 'package:flutter_posresto_app/presentation/setting/pages/server_key_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/sync_data_page.dart';
-import 'package:flutter_posresto_app/presentation/setting/pages/tax_page.dart';
+import 'package:flutter_posresto_app/presentation/setting/pages/notifications_settings_page.dart';
+import 'package:flutter_posresto_app/presentation/setting/pages/about_page.dart';
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/components/spaces.dart';
@@ -21,25 +17,10 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   int currentIndex = 0;
-  String? role;
 
   void indexValue(int index) {
     currentIndex = index;
     setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    setRole();
-  }
-
-  void setRole() {
-    AuthLocalDataSource().getAuthData().then((value) {
-      setState(() {
-        role = value.user!.role;
-      });
-    });
   }
 
   @override
@@ -64,24 +45,24 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                   const SpaceHeight(16.0),
-                  role != null && role! != 'admin'
-                      ? const SizedBox()
-                      : ListTile(
-                          contentPadding: const EdgeInsets.all(12.0),
-                          leading: Assets.icons.kelolaProduk.svg(),
-                          title: const Text('Manage Products'),
-                          subtitle: const Text('Manage products in your store'),
-                          textColor: AppColors.primary,
-                          tileColor: currentIndex == 0
-                              ? AppColors.blueLight
-                              : Colors.transparent,
-                          onTap: () => indexValue(0),
-                        ),
                   ListTile(
                     contentPadding: const EdgeInsets.all(12.0),
-                    leading: Assets.icons.kelolaDiskon.svg(),
-                    title: const Text('Kelola Diskon'),
-                    subtitle: const Text('Kelola Diskon Pelanggan'),
+                    leading: Assets.icons.kelolaPajak.svg(),
+                    title: const Text('Sync Data'),
+                    subtitle:
+                        const Text('Sinkronisasi data dari dan ke server'),
+                    textColor: AppColors.primary,
+                    tileColor: currentIndex == 0
+                        ? AppColors.blueLight
+                        : Colors.transparent,
+                    onTap: () => indexValue(0),
+                  ),
+                  ListTile(
+                    contentPadding: const EdgeInsets.all(12.0),
+                    leading: const Icon(Icons.notifications),
+                    title: const Text('Notifications'),
+                    subtitle:
+                        const Text('Manage notification preferences'),
                     textColor: AppColors.primary,
                     tileColor: currentIndex == 1
                         ? AppColors.blueLight
@@ -90,49 +71,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   ListTile(
                     contentPadding: const EdgeInsets.all(12.0),
-                    leading: Assets.icons.dashboard.svg(),
-                    title: const Text('History Transaksi'),
-                    subtitle: const Text('Lihat history transaksi'),
+                    leading: const Icon(Icons.info),
+                    title: const Text('About & Help'),
+                    subtitle:
+                        const Text('App info and support'),
                     textColor: AppColors.primary,
                     tileColor: currentIndex == 2
                         ? AppColors.blueLight
                         : Colors.transparent,
                     onTap: () => indexValue(2),
-                  ),
-                  ListTile(
-                    contentPadding: const EdgeInsets.all(12.0),
-                    leading: Assets.icons.kelolaPajak.svg(),
-                    title: const Text('Perhitungan Biaya'),
-                    subtitle: const Text('Kelola biaya diluar biaya modal'),
-                    textColor: AppColors.primary,
-                    tileColor: currentIndex == 3
-                        ? AppColors.blueLight
-                        : Colors.transparent,
-                    onTap: () => indexValue(3),
-                  ),
-                  ListTile(
-                    contentPadding: const EdgeInsets.all(12.0),
-                    leading: Assets.icons.kelolaPajak.svg(),
-                    title: const Text('Sync Data'),
-                    subtitle:
-                        const Text('Sinkronisasi data dari dan ke server'),
-                    textColor: AppColors.primary,
-                    tileColor: currentIndex == 4
-                        ? AppColors.blueLight
-                        : Colors.transparent,
-                    onTap: () => indexValue(4),
-                  ),
-                  ListTile(
-                    contentPadding: const EdgeInsets.all(12.0),
-                    leading: Image.asset(Assets.images.manageQr.path,
-                        fit: BoxFit.contain),
-                    title: const Text('QR Key Setting'),
-                    subtitle: const Text('QR Key Configuration'),
-                    textColor: AppColors.primary,
-                    tileColor: currentIndex == 6
-                        ? AppColors.blueLight
-                        : Colors.transparent,
-                    onTap: () => indexValue(6),
                   ),
                 ],
               ),
@@ -149,19 +96,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: IndexedStack(
                   index: currentIndex,
                   children: [
-                    role != null && role! != 'admin'
-                        ? SizedBox()
-                        : ProductPage(),
-                    DiscountPage(),
-                    SalesPage(),
-                    TaxPage(),
                     SyncDataPage(),
-                    ProductPage(),
-                    ServerKeyPage()
-                    // Text('tax'),
-                    // ManageDiscount(),
-                    // ManagePrinterPage(),
-                    // ManageTax(),
+                    NotificationsSettingsPage(),
+                    AboutPage(),
                   ],
                 ),
               ),

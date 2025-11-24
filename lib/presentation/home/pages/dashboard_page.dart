@@ -27,6 +27,9 @@ import '../../../core/assets/assets.gen.dart';
 import '../../auth/bloc/logout/logout_bloc.dart';
 import '../bloc/online_checker/online_checker_bloc.dart';
 import '../widgets/nav_item.dart';
+import '../widgets/enhanced_nav_item.dart';
+import '../widgets/collapsed_nav_item.dart';
+import '../widgets/nav_user_info_card.dart';
 import 'home_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -45,10 +48,17 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
   TableModel? _selectedTable; // Shared table state
+  bool _isSidebarExpanded = false; // Sidebar collapse/expand state
 
   void _onItemTapped(int index) {
     _selectedIndex = index;
     setState(() {});
+  }
+  
+  void _toggleSidebar() {
+    setState(() {
+      _isSidebarExpanded = !_isSidebarExpanded;
+    });
   }
   
   void _onTableSelected(TableModel table) {
@@ -114,79 +124,293 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Scaffold(
         body: Row(
           children: [
-            Expanded(
-              flex: 1,
-              child: SizedBox(
-                height: context.deviceHeight - 20.0,
-                child: ColoredBox(
-                  color: AppColors.primary,
-                  child: ListView(
-                    children: [
-                      NavItem(
-                        iconPath: Assets.icons.homeResto.path,
-                        isActive: _selectedIndex == 0,
-                        onTap: () => _onItemTapped(0),
+            // Animated Sidebar
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              width: _isSidebarExpanded ? 250 : 80,
+              height: context.deviceHeight - 20.0,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withOpacity(0.85),
+                  ],
+                ),
+              ),
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                children: [
+                  // Hamburger Button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                    child: InkWell(
+                      onTap: _toggleSidebar,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AnimatedRotation(
+                              turns: _isSidebarExpanded ? 0.5 : 0,
+                              duration: const Duration(milliseconds: 300),
+                              child: const Icon(
+                                Icons.menu,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                            if (_isSidebarExpanded) ...[
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text(
+                                  'Menu',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
-                      NavItem(
-                        iconPath: Assets.icons.kelolaProduk.path,
-                        isActive: _selectedIndex == 1,
-                        onTap: () => _onItemTapped(1),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 8),
+                  
+                  // User Info Card (only when expanded)
+                  if (_isSidebarExpanded) ...[
+                    const NavUserInfoCard(),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      child: Divider(
+                        color: Colors.white.withOpacity(0.2),
+                        thickness: 1,
                       ),
-                      NavItem(
-                        iconPath: Assets.icons.dashboard.path, // History icon
-                        isActive: _selectedIndex == 2,
-                        onTap: () => _onItemTapped(2),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  
+                  // Navigation Items (conditional rendering)
+                  if (_isSidebarExpanded) ...[
+                    EnhancedNavItem(
+                      iconPath: Assets.icons.homeResto.path,
+                      label: 'POS',
+                      isActive: _selectedIndex == 0,
+                      onTap: () => _onItemTapped(0),
+                    ),
+                    EnhancedNavItem(
+                      iconPath: Assets.icons.kelolaProduk.path,
+                      label: 'Tables',
+                      isActive: _selectedIndex == 1,
+                      onTap: () => _onItemTapped(1),
+                    ),
+                    EnhancedNavItem(
+                      iconPath: Assets.icons.dashboard.path,
+                      label: 'History',
+                      isActive: _selectedIndex == 2,
+                      onTap: () => _onItemTapped(2),
+                      badgeCount: 0,
+                    ),
+                    EnhancedNavItem(
+                      iconPath: Assets.icons.report.path,
+                      label: 'Dashboard',
+                      isActive: _selectedIndex == 3,
+                      onTap: () => _onItemTapped(3),
+                    ),
+                    EnhancedNavItem(
+                      iconPath: Assets.icons.print.path,
+                      label: 'Printer',
+                      isActive: _selectedIndex == 4,
+                      onTap: () => _onItemTapped(4),
+                    ),
+                    EnhancedNavItem(
+                      iconPath: Assets.icons.setting.path,
+                      label: 'Settings',
+                      isActive: _selectedIndex == 5,
+                      onTap: () => _onItemTapped(5),
+                    ),
+                  ] else ...[
+                    CollapsedNavItem(
+                      iconPath: Assets.icons.homeResto.path,
+                      isActive: _selectedIndex == 0,
+                      onTap: () => _onItemTapped(0),
+                    ),
+                    CollapsedNavItem(
+                      iconPath: Assets.icons.kelolaProduk.path,
+                      isActive: _selectedIndex == 1,
+                      onTap: () => _onItemTapped(1),
+                    ),
+                    CollapsedNavItem(
+                      iconPath: Assets.icons.dashboard.path,
+                      isActive: _selectedIndex == 2,
+                      onTap: () => _onItemTapped(2),
+                      badgeCount: 0,
+                    ),
+                    CollapsedNavItem(
+                      iconPath: Assets.icons.report.path,
+                      isActive: _selectedIndex == 3,
+                      onTap: () => _onItemTapped(3),
+                    ),
+                    CollapsedNavItem(
+                      iconPath: Assets.icons.print.path,
+                      isActive: _selectedIndex == 4,
+                      onTap: () => _onItemTapped(4),
+                    ),
+                    CollapsedNavItem(
+                      iconPath: Assets.icons.setting.path,
+                      isActive: _selectedIndex == 5,
+                      onTap: () => _onItemTapped(5),
+                    ),
+                  ],
+                  
+                  const SizedBox(height: 16),
+                      
+                      // Divider
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        child: Divider(
+                          color: Colors.white.withOpacity(0.2),
+                          thickness: 1,
+                        ),
                       ),
-                      NavItem(
-                        iconPath: Assets.icons.report.path, // Report moved to 3
-                        isActive: _selectedIndex == 3,
-                        onTap: () => _onItemTapped(3),
-                      ),
-                      NavItem(
-                        iconPath: Assets.icons.print.path,
-                        isActive: _selectedIndex == 4,
-                        onTap: () => _onItemTapped(4),
-                      ),
-                      NavItem(
-                        iconPath: Assets.icons.setting.path,
-                        isActive: _selectedIndex == 5,
-                        onTap: () => _onItemTapped(5),
-                      ),
+                      
                       //container flag online/offline
                       BlocBuilder<OnlineCheckerBloc, OnlineCheckerState>(
                         builder: (context, state) {
                           return state.maybeWhen(
                             orElse: () => Container(
-                              width: 40,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              padding: const EdgeInsets.all(8.0),
+                              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: _isSidebarExpanded
+                                  ? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)
+                                  : const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: AppColors.red,
-                                borderRadius: BorderRadius.circular(8.0),
+                                color: Colors.white.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12.0),
+                                border: Border.all(
+                                  color: Colors.red.withOpacity(0.5),
+                                  width: 1,
+                                ),
                               ),
-                              child: const Icon(
-                                Icons.signal_wifi_off,
-                                color: AppColors.white,
-                              ),
+                              child: _isSidebarExpanded
+                                  ? Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.red.withOpacity(0.2),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: const Icon(
+                                            Icons.signal_wifi_off,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        const Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Offline',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              Text(
+                                                'No connection',
+                                                style: TextStyle(
+                                                  color: Colors.white70,
+                                                  fontSize: 11,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : const Icon(
+                                      Icons.signal_wifi_off,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
                             ),
                             online: () {
                               context.read<SyncOrderBloc>().add(
                                     const SyncOrderEvent.syncOrder(),
                                   );
                               return Container(
-                                width: 40,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                padding: const EdgeInsets.all(8.0),
+                                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                padding: _isSidebarExpanded
+                                    ? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)
+                                    : const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: AppColors.green,
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  border: Border.all(
+                                    color: Colors.green.withOpacity(0.5),
+                                    width: 1,
+                                  ),
                                 ),
-                                child: const Icon(
-                                  Icons.wifi,
-                                  color: AppColors.white,
-                                ),
+                                child: _isSidebarExpanded
+                                    ? Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.green.withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: const Icon(
+                                              Icons.wifi,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          const Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Online',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  'Connected',
+                                                  style: TextStyle(
+                                                    color: Colors.white70,
+                                                    fontSize: 11,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : const Icon(
+                                        Icons.wifi,
+                                        color: Colors.white,
+                                        size: 24,
+                                      ),
                               );
                             },
                           );
@@ -232,8 +456,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ],
                   ),
-                ),
-              ),
             ),
             Expanded(
               flex: 10,
