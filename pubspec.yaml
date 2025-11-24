@@ -57,6 +57,14 @@ dependencies:
   sqflite: ^2.3.2
   widgets_to_image: ^1.0.0
   flutter_esc_pos_network: ^1.0.3
+<<<<<<< Updated upstream
+=======
+  url_launcher: ^6.3.2
+  package_info_plus: ^9.0.0
+  firebase_core: ^4.2.1
+  firebase_messaging: ^16.0.4
+  flutter_local_notifications: ^19.5.0
+>>>>>>> Stashed changes
   # imin_printer: ^0.6.10
 
 dev_dependencies:
