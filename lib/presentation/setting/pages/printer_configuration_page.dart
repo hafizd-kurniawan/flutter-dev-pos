@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
-import 'package:flutter_posresto_app/presentation/setting/pages/discount_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/manage_printer_page.dart';
-import 'package:flutter_posresto_app/presentation/setting/pages/product_page.dart';
-import 'package:flutter_posresto_app/presentation/setting/pages/server_key_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/sync_data_page.dart';
-import 'package:flutter_posresto_app/presentation/setting/pages/tax_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/widgets/bar_printer_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/widgets/checker_printer_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/widgets/kitchen_printer_page.dart';
@@ -166,19 +162,6 @@ class _SettingsPageState extends State<PrinterConfigurationPage> {
                     CheckerPrinterPage(),
                     KitchenPrinterPage(),
                     BarPrinterPage(),
-                    // role != null && role! != 'admin'
-                    //     ? SizedBox()
-                    //     : ProductPage(),
-                    // DiscountPage(),
-                    // ManagePrinterPage(),
-                    // TaxPage(),
-                    // SyncDataPage(),
-                    // ProductPage(),
-                    // ServerKeyPage()
-                    // Text('tax'),
-                    // ManageDiscount(),
-                    // ManagePrinterPage(),
-                    // ManageTax(),
                   ],
                 ),
               ),

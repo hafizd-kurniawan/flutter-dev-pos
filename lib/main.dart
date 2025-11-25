@@ -26,14 +26,12 @@ import 'package:flutter_posresto_app/presentation/report/blocs/product_sales/pro
 import 'package:flutter_posresto_app/presentation/report/blocs/summary/summary_bloc.dart';
 import 'package:flutter_posresto_app/presentation/sales/blocs/bloc/last_order_table_bloc.dart';
 import 'package:flutter_posresto_app/presentation/sales/blocs/day_sales/day_sales_bloc.dart';
-import 'package:flutter_posresto_app/presentation/setting/bloc/add_product/add_product_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/create_printer/create_printer_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/get_categories/get_categories_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/get_printer_bar/get_printer_bar_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/get_printer_checker/get_printer_checker_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/get_printer_kitchen/get_printer_kitchen_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/get_printer_receipt/get_printer_receipt_bloc.dart';
-import 'package:flutter_posresto_app/presentation/setting/bloc/get_products/get_products_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/update_printer/update_printer_bloc.dart';
 import 'package:flutter_posresto_app/presentation/table/blocs/change_position_table/change_position_table_bloc.dart';
 import 'package:flutter_posresto_app/presentation/table/blocs/create_table/create_table_bloc.dart';
@@ -42,8 +40,6 @@ import 'package:flutter_posresto_app/presentation/table/blocs/get_table/get_tabl
 import 'package:flutter_posresto_app/presentation/home/bloc/local_product/local_product_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/order/order_bloc.dart';
 import 'package:flutter_posresto_app/presentation/report/blocs/transaction_report/transaction_report_bloc.dart';
-import 'package:flutter_posresto_app/presentation/setting/bloc/add_discount/add_discount_bloc.dart';
-import 'package:flutter_posresto_app/presentation/setting/bloc/discount/discount_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_order/sync_order_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_product/sync_product_bloc.dart';
 import 'package:flutter_posresto_app/presentation/table/blocs/update_table/update_table_bloc.dart';
@@ -122,12 +118,6 @@ class _MyAppState extends State<MyApp> {
           create: (context) => SyncOrderBloc(OrderRemoteDatasource()),
         ),
         BlocProvider(
-          create: (context) => DiscountBloc(DiscountRemoteDatasource()),
-        ),
-        BlocProvider(
-          create: (context) => AddDiscountBloc(DiscountRemoteDatasource()),
-        ),
-        BlocProvider(
           create: (context) => TransactionReportBloc(OrderRemoteDatasource()),
         ),
         BlocProvider(
@@ -151,12 +141,6 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (context) => GetTableStatusBloc(),
-        ),
-        BlocProvider(
-          create: (context) => AddProductBloc(ProductRemoteDatasource()),
-        ),
-        BlocProvider(
-          create: (context) => GetProductsBloc(ProductRemoteDatasource()),
         ),
         BlocProvider(
           create: (context) => GetCategoriesBloc(CategoryRemoteDatasource()),
