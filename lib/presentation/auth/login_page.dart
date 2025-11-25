@@ -5,6 +5,7 @@ import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart
 import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/product_remote_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/product_storage_helper.dart';
+import 'package:flutter_posresto_app/services/notification_service.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -110,7 +111,17 @@ class _LoginPageState extends State<LoginPage> {
                   await AuthLocalDataSource().saveAuthData(authResponseModel);
                   print('✅ Auth data saved');
                   
-                  // 2. Show loading dialog for product sync
+                  // 2. Initialize notification service (FCM)
+                  try {
+                    print('🔔 [LOGIN] Initializing NotificationService...');
+                    await NotificationService.init();
+                    print('✅ [LOGIN] NotificationService initialized successfully');
+                  } catch (e) {
+                    print('❌ [LOGIN] NotificationService init failed: $e');
+                    // Continue even if notification init fails
+                  }
+                  
+                  // 3. Show loading dialog for product sync
                   if (context.mounted) {
                     showDialog(
                       context: context,
@@ -135,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                   }
                   
                   try {
-                    // 3. Sync products from server
+                    // 4. Sync products from server
                     print('🌐 Fetching products from API...');
                     final productResult = await ProductRemoteDatasource().getProducts();
                     print('📦 Product result received');

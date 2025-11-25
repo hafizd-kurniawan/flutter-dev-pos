@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "928459636135",
+    "project_id": "self-order-7f581",
+    "storage_bucket": "self-order-7f581.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928459636135:android:9f87b467448da6558e4a82",
+        "android_client_info": {
+          "package_name": "com.example.flutter_posresto_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyZTSoSC4cVcK-LvEyP37bfYVK9o65Pnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928459636135:android:0a713a6c8838edec8e4a82",
+        "android_client_info": {
+          "package_name": "com.jagoflutter.qrorder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyZTSoSC4cVcK-LvEyP37bfYVK9o65Pnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
