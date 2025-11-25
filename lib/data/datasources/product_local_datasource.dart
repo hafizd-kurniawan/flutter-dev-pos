@@ -289,12 +289,11 @@ class ProductLocalDatasource {
   Future<void> createTableManagement(String tableName, Offset position) async {
     final db = await instance.database;
     TableModel newTable = TableModel(
-      tableName: tableName,
+      name: tableName,
       status: 'available',
-      orderId: 0,
-      paymentAmount: 0,
-      startTime: DateTime.now().toIso8601String(),
-      position: position,
+      capacity: 4,
+      xPosition: position.dx,
+      yPosition: position.dy,
     );
     await db.insert(
       tableManagement,

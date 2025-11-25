@@ -34,37 +34,50 @@ class _CustomTabBarState extends State<CustomTabBar> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: List.generate(
-            widget.tabTitles.length,
-            (index) => GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                margin: const EdgeInsets.only(right: 32),
-                decoration: BoxDecoration(
-                  border: _selectedIndex == index
-                      ? const Border(
-                          bottom: BorderSide(
-                            width: 3.0,
-                            color: AppColors.primary,
-                          ),
-                        )
-                      : null,
-                ),
-                child: Text(
-                  widget.tabTitles[index],
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
+        // IMPROVED: Scrollable horizontal category tabs
+        SizedBox(
+          height: 50,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: widget.tabTitles.length,
+            itemBuilder: (context, index) {
+              final isSelected = _selectedIndex == index;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected 
+                        ? AppColors.primary 
+                        : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(
+                      color: isSelected 
+                          ? AppColors.primary 
+                          : Colors.grey[300]!,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      widget.tabTitles[index],
+                      style: TextStyle(
+                        color: isSelected 
+                            ? Colors.white 
+                            : AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
         Padding(

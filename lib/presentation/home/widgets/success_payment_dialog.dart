@@ -12,8 +12,12 @@ import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/string_ext.dart';
 import 'package:flutter_posresto_app/data/dataoutputs/laman_print.dart';
 import 'package:flutter_posresto_app/data/dataoutputs/print_dataoutputs.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
+import 'package:flutter_posresto_app/data/datasources/product_remote_datasource.dart';
+import 'package:flutter_posresto_app/data/datasources/product_storage_helper.dart';
+import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 
 import '../../../core/assets/assets.gen.dart';
@@ -21,7 +25,9 @@ import '../../../core/components/buttons.dart';
 import '../../../core/components/spaces.dart';
 import '../../table/blocs/get_table/get_table_bloc.dart';
 import '../bloc/checkout/checkout_bloc.dart';
+import '../bloc/local_product/local_product_bloc.dart';
 import '../bloc/order/order_bloc.dart';
+import '../bloc/pos_settings/pos_settings_bloc.dart';
 
 class SuccessPaymentDialog extends StatefulWidget {
   const SuccessPaymentDialog({
@@ -35,7 +41,10 @@ class SuccessPaymentDialog extends StatefulWidget {
     required this.normalPrice,
     required this.totalService,
     required this.draftName,
+    this.paymentAmount, // OPTIONAL with default
     this.isTablePaymentPage = false,
+    this.tableName, // NEW: Table name for dine-in
+    this.orderType, // NEW: 'dine_in' or 'takeaway'
   }) : super(key: key);
   final List<ProductQuantity> data;
   final int totalQty;
@@ -46,7 +55,10 @@ class SuccessPaymentDialog extends StatefulWidget {
   final int normalPrice;
   final int totalService;
   final String draftName;
+  final int? paymentAmount; // OPTIONAL - use totalPrice as fallback
   final bool? isTablePaymentPage;
+  final String? tableName; // NEW: Table name (e.g., "Meja 5")
+  final String? orderType; // NEW: Order type (dine_in/takeaway)
   @override
   State<SuccessPaymentDialog> createState() => _SuccessPaymentDialogState();
 }
@@ -55,6 +67,44 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
   // List<ProductQuantity> data = [];
   // int totalQty = 0;
   // int totalPrice = 0;
+  
+  /// Reload saved tax & service settings from local storage and apply to CheckoutBloc
+  Future<void> _reloadSavedSettings(BuildContext context) async {
+    try {
+      final localDatasource = PosSettingsLocalDatasource();
+      
+      // Get saved tax ID
+      final taxId = await localDatasource.getSelectedTaxId();
+      
+      // Get saved service ID
+      final serviceId = await localDatasource.getSelectedServiceId();
+      
+      // Get PosSettings to find tax & service values
+      final posSettingsState = context.read<PosSettingsBloc>().state;
+      
+      posSettingsState.maybeWhen(
+        orElse: () {},
+        loaded: (settings) {
+          // Apply saved tax if exists
+          if (taxId != null) {
+            final tax = settings.taxes.firstWhere((t) => t.id == taxId, orElse: () => settings.taxes.first);
+            context.read<CheckoutBloc>().add(CheckoutEvent.addTax(tax.value.toInt()));
+            log('✅ Restored tax: ${tax.name} = ${tax.value}%');
+          }
+          
+          // Apply saved service if exists
+          if (serviceId != null) {
+            final service = settings.services.firstWhere((s) => s.id == serviceId, orElse: () => settings.services.first);
+            context.read<CheckoutBloc>().add(CheckoutEvent.addServiceCharge(service.value.toInt()));
+            log('✅ Restored service: ${service.name} = ${service.value}%');
+          }
+        },
+      );
+    } catch (e) {
+      log('❌ Error reloading saved settings: $e');
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -77,79 +127,87 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             const SpaceHeight(20.0),
             const Text('METODE BAYAR'),
             const SpaceHeight(5.0),
-            BlocBuilder<OrderBloc, OrderState>(
-              builder: (context, state) {
-                final paymentMethod = state.maybeWhen(
-                  orElse: () => 'Cash',
-                  loaded: (model, orderId) => model.paymentMethod,
-                );
-                return Text(
-                  paymentMethod,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                  ),
-                );
-              },
+            Text(
+              'Cash', // Fixed: Cash payment for success dialog
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SpaceHeight(10.0),
+            const Divider(),
+            const SpaceHeight(8.0),
+            // NEW: Show table/order type information
+            const Text('TIPE ORDER'),
+            const SpaceHeight(5.0),
+            Text(
+              widget.orderType == 'dine_in' 
+                  ? 'Dine In${widget.tableName != null ? " - ${widget.tableName}" : ""}' 
+                  : 'Takeaway',
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: Colors.black87,
+              ),
             ),
             const SpaceHeight(10.0),
             const Divider(),
             const SpaceHeight(8.0),
             const Text('TOTAL TAGIHAN'),
             const SpaceHeight(5.0),
-            BlocBuilder<OrderBloc, OrderState>(
-              builder: (context, state) {
-                final total = state.maybeWhen(
-                  orElse: () => 0,
-                  loaded: (model, orderId) => model.total,
-                );
-                return Text(
-                  widget.totalPrice.currencyFormatRp,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                  ),
-                );
-              },
+            Text(
+              widget.totalPrice.currencyFormatRp,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: Colors.black87,
+              ),
             ),
             const SpaceHeight(10.0),
             const Divider(),
             const SpaceHeight(8.0),
             const Text('NOMINAL BAYAR'),
             const SpaceHeight(5.0),
-            BlocBuilder<OrderBloc, OrderState>(
-              builder: (context, state) {
-                final paymentAmount = state.maybeWhen(
-                  orElse: () => 0,
-                  loaded: (model, orderId) => model.paymentAmount,
-                );
-                return Text(
-                  paymentAmount.ceil().currencyFormatRp,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                  ),
-                );
-              },
+            Text(
+              (widget.paymentAmount ?? widget.totalPrice).currencyFormatRp,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: Colors.blue,
+              ),
             ),
+            const SpaceHeight(10.0),
             const Divider(),
             const SpaceHeight(8.0),
             const Text('KEMBALIAN'),
             const SpaceHeight(5.0),
-            BlocBuilder<OrderBloc, OrderState>(
-              builder: (context, state) {
-                final paymentAmount = state.maybeWhen(
-                  orElse: () => 0,
-                  loaded: (model, orderId) => model.paymentAmount,
-                );
-                final total = state.maybeWhen(
-                  orElse: () => 0,
-                  loaded: (model, orderId) => model.total,
-                );
-                final diff = paymentAmount - total;
-                log("DIFF: $diff  paymentAmount: $paymentAmount  total: $total");
-                return Text(
-                  diff.ceil().currencyFormatRp,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                  ),
+            Builder(
+              builder: (context) {
+                final paymentAmt = widget.paymentAmount ?? widget.totalPrice;
+                final kembalian = paymentAmt - widget.totalPrice;
+                
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      kembalian.currencyFormatRp,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        color: kembalian < 0 ? Colors.red : Colors.green,
+                      ),
+                    ),
+                    if (kembalian < 0) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '⚠️ Uang kurang!',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.red.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ],
                 );
               },
             ),
@@ -168,17 +226,65 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             Row(
               children: [
                 Flexible(
-                  child: Button.outlined(
-                    onPressed: () {
+                  child: Button.filled(
+                    onPressed: () async {
+                      log('✅ Selesai button pressed - Closing dialog and returning to home...');
+                      
+                      // 1. Clear ONLY cart items, KEEP tax/service/discount settings
                       context
                           .read<CheckoutBloc>()
-                          .add(const CheckoutEvent.started());
+                          .add(const CheckoutEvent.clearItems());
+                      
+                      // 2. ✅ CRITICAL FIX: Reload saved tax & service settings
+                      await _reloadSavedSettings(context);
+                      log('✅ Tax & Service settings restored from saved preferences');
+                      
+                      // 3. Refresh table list
                       context
                           .read<GetTableBloc>()
                           .add(const GetTableEvent.getTables());
-                      context.popToRoot();
+                      
+                      // 4. ✅ CRITICAL FIX: Refresh products from SERVER (not local storage)
+                      // This ensures stock is updated after order
+                      log('🔄 Fetching fresh products from server...');
+                      final productRemote = ProductRemoteDatasource();
+                      final productResult = await productRemote.getProducts();
+                      
+                      await productResult.fold(
+                        (error) {
+                          log('⚠️ Error refreshing products: $error');
+                        },
+                        (productResponse) async {
+                          // Save to storage
+                          if (kIsWeb) {
+                            await ProductStorageHelper.saveProducts(productResponse.data ?? []);
+                          } else {
+                            // Mobile: SQLite
+                            await context.read<LocalProductBloc>().productLocalDatasource.deleteAllProducts();
+                            await context.read<LocalProductBloc>().productLocalDatasource.insertProducts(productResponse.data ?? []);
+                          }
+                          
+                          // Reload products in UI
+                          context.read<LocalProductBloc>().add(const LocalProductEvent.getLocalProduct());
+                          log('✅ Products refreshed from server: ${productResponse.data?.length ?? 0} items');
+                        },
+                      );
+                      
+                      // 5. Close dialog and navigate back to home with reset signal
+                      if (context.mounted) {
+                        log('✅ AUTO-REDIRECT: Navigating to home with settings preserved and products refreshed...');
+                        Navigator.of(context).pop(); // Close dialog first
+                        
+                        // Wait a bit then pop confirm_payment_page
+                        await Future.delayed(const Duration(milliseconds: 150));
+                        
+                        if (context.mounted && Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop(true); // Pop confirm_payment_page with reset signal
+                          log('✅ Successfully returned to HomePage');
+                        }
+                      }
                     },
-                    label: 'Kembali',
+                    label: 'Selesai',
                   ),
                 ),
                 const SpaceWidth(8.0),

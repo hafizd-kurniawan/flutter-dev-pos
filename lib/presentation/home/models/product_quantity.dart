@@ -46,7 +46,7 @@ class ProductQuantity {
 
     return {
       'id_order': orderId ?? 0,
-      'id_product': product.id,
+      'product_id': product.id,  // FIXED: Changed from id_product to product_id for backend compatibility
       'quantity': quantity,
       'price': product.price,
     };

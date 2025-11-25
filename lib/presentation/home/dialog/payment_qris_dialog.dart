@@ -36,6 +36,8 @@ class PaymentQrisDialog extends StatefulWidget {
   final int totalQty;
   final int subTotal;
   final bool? isTablePaymentPage;
+  final String orderType; // 'dine_in' or 'takeaway'
+  final String? tableName; // NEW: Table name for display
   const PaymentQrisDialog({
     super.key,
     required this.items,
@@ -53,6 +55,8 @@ class PaymentQrisDialog extends StatefulWidget {
     required this.totalQty,
     required this.subTotal,
     this.isTablePaymentPage = false,
+    this.orderType = 'dine_in', // Default to dine_in
+    this.tableName, // NEW: Optional table name
   });
 
   @override
@@ -132,10 +136,11 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                             widget.paymentAmount,
                             widget.customerName,
                             widget.tableNumber,
-                            'completed',
+                            'paid', // Changed: was 'completed', now 'paid' for order tracking
                             'paid',
                             'Qris',
-                            widget.price));
+                            widget.price,
+                            widget.orderType)); // Pass order type
                         await showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -150,6 +155,9 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                             normalPrice: widget.price,
                             totalService: widget.serviceCharge,
                             draftName: widget.customerName,
+                            paymentAmount: widget.paymentAmount, // Pass payment amount
+                            tableName: widget.tableName, // NEW: Pass table name
+                            orderType: widget.orderType, // NEW: Pass order type
                           ),
                         );
                       });

@@ -26,10 +26,12 @@ import '../widgets/success_payment_dialog.dart';
 class ConfirmPaymentPage extends StatefulWidget {
   final bool isTable;
   final TableModel? table;
+  final String orderType; // 'dine_in' or 'takeaway'
   const ConfirmPaymentPage({
     Key? key,
     required this.isTable,
     this.table,
+    this.orderType = 'dine_in', // Default to dine_in
   }) : super(key: key);
 
   @override
@@ -57,22 +59,17 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
     context
         .read<GetTableStatusBloc>()
         .add(GetTableStatusEvent.getTablesStatus('available'));
-    // if (selectTable == null && widget.table != null) {
-    //   selectTable = tables.firstWhere(
-    //     (t) => t.id == widget.table!.id,
-    //     orElse: () => null,
-    //   );
-    // }
-    if (widget.table != null) {
-      // selectTable = TableModel(
-      //   tableNumber: widget.table!.tableNumber,
-      //   startTime: widget.table!.startTime,
-      //   status: widget.table!.status,
-      //   orderId: widget.table!.orderId,
-      //   paymentAmount: widget.table!.paymentAmount,
-      //   position: widget.table!.position,
-      // );
+    
+    // AUTO-FILL customer name if DINE-IN (from selected table)
+    if (widget.orderType == 'dine_in' && widget.table != null) {
+      // Get customer name from table
+      final customerName = widget.table!.customerName ?? '';
+      if (customerName.isNotEmpty) {
+        customerController.text = customerName;
+        print('✅ Auto-filled customer name from table: $customerName');
+      }
     }
+    
     super.initState();
   }
 
@@ -83,12 +80,103 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
     super.dispose();
   }
 
+  // ===== HELPER METHODS FOR CONSISTENT CALCULATION =====
+  
+  /// Calculate discount amount based on type (percentage or fixed)
+  int _calculateDiscountAmount(dynamic discountModel, int subtotal) {
+    if (discountModel == null) return 0;
+    if (discountModel.value == null) return 0;
+    
+    // Handle both String and int types
+    int discountValue;
+    final value = discountModel.value;
+    
+    if (value is String) {
+      // String type: use extension method
+      final cleanedValue = value.replaceAll('.00', '').trim();
+      if (cleanedValue.isEmpty) return 0;
+      discountValue = cleanedValue.toIntegerFromText;
+    } else if (value is int) {
+      // Direct int
+      discountValue = value;
+    } else if (value is double) {
+      // Double to int
+      discountValue = value.toInt();
+    } else {
+      // Fallback: try to parse as string
+      try {
+        final strValue = value.toString().replaceAll('.00', '').trim();
+        if (strValue.isEmpty || strValue == 'null') return 0;
+        discountValue = strValue.toIntegerFromText;
+      } catch (e) {
+        print('⚠️ Error parsing discount value: $e');
+        return 0;
+      }
+    }
+    
+    // Validate discountValue
+    if (discountValue < 0) return 0;
+    
+    if (discountModel.type == 'percentage') {
+      // Percentage: calculate from subtotal
+      if (discountValue > 100) discountValue = 100; // Max 100%
+      return (discountValue / 100 * subtotal).toInt();
+    } else {
+      // Fixed discount: return as-is
+      // But don't exceed subtotal
+      return discountValue > subtotal ? subtotal : discountValue;
+    }
+  }
+  
+  /// Calculate tax amount on after-discount subtotal
+  int _calculateTaxAmount(int afterDiscount, int taxPercentage) {
+    if (taxPercentage == 0) return 0;
+    return (afterDiscount * taxPercentage / 100).toInt();
+  }
+  
+  /// Calculate service charge on after-discount subtotal
+  int _calculateServiceCharge(int afterDiscount, int servicePercentage) {
+    if (servicePercentage == 0) return 0;
+    return (afterDiscount * servicePercentage / 100).toInt();
+  }
+  
+  /// Calculate final total with all charges
+  Map<String, int> _calculateFinalTotal({
+    required int subtotal,
+    required dynamic discountModel,
+    required int taxPercentage,
+    required int servicePercentage,
+  }) {
+    // Step 1: Calculate discount
+    final discountAmount = _calculateDiscountAmount(discountModel, subtotal);
+    
+    // Step 2: After discount
+    final afterDiscount = subtotal - discountAmount;
+    
+    // Step 3: Calculate tax (on after discount)
+    final taxAmount = _calculateTaxAmount(afterDiscount, taxPercentage);
+    
+    // Step 4: Calculate service (on after discount)
+    final serviceAmount = _calculateServiceCharge(afterDiscount, servicePercentage);
+    
+    // Step 5: Final total
+    final total = afterDiscount + taxAmount + serviceAmount;
+    
+    return {
+      'subtotal': subtotal,
+      'discountAmount': discountAmount,
+      'afterDiscount': afterDiscount,
+      'taxAmount': taxAmount,
+      'serviceAmount': serviceAmount,
+      'total': total,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Hero(
-        tag: 'confirmation_screen',
-        child: Scaffold(
+      // REMOVED Hero widget to prevent validation conflicts
+      child: Scaffold(
           body: Row(
             children: [
               Expanded(
@@ -722,11 +810,23 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                             const SpaceHeight(12.0),
                             TextFormField(
                               controller: customerController,
+                              enabled: widget.orderType == 'takeaway', // DISABLE for dine-in
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                hintText: 'Nama Customer',
+                                hintText: widget.orderType == 'dine_in' 
+                                    ? 'Nama Customer (dari meja)' 
+                                    : 'Nama Customer',
+                                filled: widget.orderType == 'dine_in',
+                                fillColor: widget.orderType == 'dine_in' 
+                                    ? Colors.grey[200] 
+                                    : null,
+                              ),
+                              style: TextStyle(
+                                color: widget.orderType == 'dine_in' 
+                                    ? Colors.grey[600] 
+                                    : Colors.black,
                               ),
                               textCapitalization: TextCapitalization.words,
                             ),
@@ -901,18 +1001,16 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                               id: widget.isTable
                                                   ? widget.table!.id
                                                   : selectTable?.id,
-                                              tableName: widget.isTable
+                                              name: widget.isTable
                                                   ? widget.table!.tableName
                                                   : selectTable?.tableName ??
                                                       '0',
                                               status: 'occupied',
-                                              paymentAmount: priceValue,
-                                              orderId: orderDraftId,
-                                              startTime: DateTime.now()
-                                                  .toIso8601String(),
-                                              position: widget.isTable
-                                                  ? widget.table!.position
-                                                  : selectTable!.position);
+                                              capacity: widget.isTable
+                                                  ? widget.table!.capacity
+                                                  : selectTable?.capacity ?? 4,
+                                              paymentAmount: priceValue.toDouble(),
+                                              orderId: orderDraftId);
                                           log('new tabel: ${newTabel.toMap()}');
                                           context
                                               .read<StatusTableBloc>()
@@ -924,26 +1022,22 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                   child:
                                       BlocBuilder<CheckoutBloc, CheckoutState>(
                                     builder: (context, state) {
-                                      final discount = state.maybeWhen(
-                                          orElse: () => 0,
-                                          loaded: (products,
-                                              discountModel,
-                                              discount,
-                                              discountAmount,
-                                              tax,
-                                              serviceCharge,
-                                              totalQuantity,
-                                              totalPrice,
-                                              draftName) {
-                                            if (discountModel == null) {
-                                              return 0;
-                                            }
-                                            return discountModel.value!
-                                                .replaceAll('.00', '')
-                                                .toIntegerFromText;
-                                          });
+                                      // Extract state data
+                                      final discountModel = state.maybeWhen(
+                                        orElse: () => null,
+                                        loaded: (products,
+                                                discountModel,
+                                                discount,
+                                                discountAmount,
+                                                tax,
+                                                serviceCharge,
+                                                totalQuantity,
+                                                totalPrice,
+                                                draftName) =>
+                                            discountModel,
+                                      );
 
-                                      final price = state.maybeWhen(
+                                      final subtotal = state.maybeWhen(
                                         orElse: () => 0,
                                         loaded: (products,
                                                 discountModel,
@@ -964,7 +1058,21 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                         ),
                                       );
 
-                                      final serviceCharge = state.maybeWhen(
+                                      final taxPercentage = state.maybeWhen(
+                                        orElse: () => 0,
+                                        loaded: (products,
+                                                discountModel,
+                                                discount,
+                                                discountAmount,
+                                                tax,
+                                                serviceCharge,
+                                                totalQuantity,
+                                                totalPrice,
+                                                draftName) =>
+                                            tax,
+                                      );
+
+                                      final servicePercentage = state.maybeWhen(
                                         orElse: () => 0,
                                         loaded: (products,
                                                 discountModel,
@@ -978,13 +1086,19 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                             serviceCharge,
                                       );
 
-                                      final subTotal =
-                                          price - (discount / 100 * price);
-                                      final totalDiscount =
-                                          discount / 100 * price;
-                                      final finalTax = subTotal * 0.11;
-                                      final totalServiceCharge =
-                                          (serviceCharge / 100) * price;
+                                      // Use helper method for consistent calculation
+                                      final calculated = _calculateFinalTotal(
+                                        subtotal: subtotal,
+                                        discountModel: discountModel,
+                                        taxPercentage: taxPercentage,
+                                        servicePercentage: servicePercentage,
+                                      );
+                                      
+                                      final totalDiscount = calculated['discountAmount']!;
+                                      final afterDiscount = calculated['afterDiscount']!;
+                                      final finalTax = calculated['taxAmount']!;
+                                      final totalServiceCharge = calculated['serviceAmount']!;
+                                      final finalTotal = calculated['total']!;
 
                                       List<ProductQuantity> items =
                                           state.maybeWhen(
@@ -1009,8 +1123,60 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                       return Flexible(
                                         child: Button.filled(
                                           onPressed: () async {
-                                            if (widget.isTable) {
-                                              log("discountAmountValue: $totalDiscount");
+                                            // VALIDATION: Customer name wajib diisi!
+                                            final customerName = customerController.text.trim();
+                                            if (customerName.isEmpty) {
+                                              // Use mounted check to prevent Hero widget conflict
+                                              if (!context.mounted) return;
+                                              
+                                              ScaffoldMessenger.of(context).clearSnackBars();
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    widget.orderType == 'takeaway'
+                                                        ? '⚠️ Nama customer wajib diisi untuk Takeaway!'
+                                                        : '⚠️ Nama customer wajib diisi!'
+                                                  ),
+                                                  backgroundColor: Colors.red,
+                                                  duration: const Duration(seconds: 3),
+                                                  action: SnackBarAction(
+                                                    label: 'OK',
+                                                    textColor: Colors.white,
+                                                    onPressed: () {
+                                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                                    },
+                                                  ),
+                                                ),
+                                              );
+                                              return; // STOP execution
+                                            }
+                                            
+                                            // EXTRA VALIDATION for Takeaway: Name must be at least 3 characters
+                                            if (widget.orderType == 'takeaway' && customerName.length < 3) {
+                                              if (!context.mounted) return;
+                                              
+                                              ScaffoldMessenger.of(context).clearSnackBars();
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  content: const Text('⚠️ Nama customer minimal 3 karakter!'),
+                                                  backgroundColor: Colors.red,
+                                                  duration: const Duration(seconds: 3),
+                                                  action: SnackBarAction(
+                                                    label: 'OK',
+                                                    textColor: Colors.white,
+                                                    onPressed: () {
+                                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                                    },
+                                                  ),
+                                                ),
+                                              );
+                                              return; // STOP execution
+                                            }
+                                            
+                                            // FIX: Check isPayNow FIRST, then check table
+                                            if (!isPayNow && widget.isTable) {
+                                              // BAYAR NANTI (Save Draft) for dine-in
+                                              log("💾 Save Draft: discountAmountValue: $totalDiscount");
                                               context.read<CheckoutBloc>().add(
                                                     CheckoutEvent
                                                         .saveDraftOrder(
@@ -1029,17 +1195,17 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                   data: items,
                                                   totalQty: totalQty,
                                                   totalPrice: totalPriceFinal,
-                                                  totalTax: finalTax.toInt(),
-                                                  totalDiscount:
-                                                      totalDiscount.toInt(),
-                                                  subTotal: subTotal.toInt(),
-                                                  normalPrice: price,
+                                                  totalTax: finalTax,
+                                                  totalDiscount: totalDiscount,
+                                                  subTotal: afterDiscount,
+                                                  normalPrice: subtotal,
                                                   table: widget.table!,
                                                   draftName:
                                                       customerController.text,
                                                 ),
                                               );
                                             } else if (isPayNow) {
+                                              // BAYAR SEKARANG (Cash/QRIS)
                                               // context.read<CheckO>().add(
                                               //     OrderEvent.addPaymentMethod(
                                               //         items,
@@ -1063,44 +1229,81 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                               //             ? 'Cash'
                                               //             : 'QR Pay'));
                                               if (isCash) {
-                                                log("discountAmountValue: $totalDiscount");
+                                                final paymentAmountValue = totalPriceController
+                                                    .text
+                                                    .toIntegerFromText;
+                                                
+                                                log("💰 PAYMENT DETAILS:");
+                                                log("   Subtotal: $subtotal");
+                                                log("   Discount: $totalDiscount");
+                                                log("   After Discount: $afterDiscount");
+                                                log("   Tax: $finalTax");
+                                                log("   Service: $totalServiceCharge");
+                                                log("   TOTAL: $finalTotal");
+                                                log("   Payment Amount: $paymentAmountValue");
+                                                log("   Kembalian: ${paymentAmountValue - finalTotal}");
+                                                
+                                                // Trigger order save
+                                                final tableNumber = (widget.orderType == 'dine_in' && widget.table != null) 
+                                                    ? widget.table!.id! 
+                                                    : 0;
+                                                
                                                 context.read<OrderBloc>().add(
                                                     OrderEvent.order(
                                                         items,
-                                                        discount,
-                                                        totalDiscount.toInt(),
-                                                        finalTax.toInt(),
-                                                        0,
-                                                        totalPriceController
-                                                            .text
-                                                            .toIntegerFromText,
+                                                        totalDiscount, // Use calculated discount
+                                                        totalDiscount,
+                                                        finalTax,
+                                                        totalServiceCharge, // FIX: Use calculated service charge
+                                                        paymentAmountValue,
                                                         customerController.text,
-                                                        0,
+                                                        tableNumber, // Use actual table ID for dine_in, 0 for takeaway
                                                         'paid', // Changed: was 'completed', now 'paid' for order tracking
                                                         'paid',
                                                         'Cash',
-                                                        totalPriceFinal));
-                                                await showDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (context) =>
-                                                      SuccessPaymentDialog(
-                                                    data: items,
-                                                    totalQty: totalQty,
-                                                    totalPrice: totalPriceFinal,
-                                                    totalTax: finalTax.toInt(),
-                                                    totalDiscount:
-                                                        totalDiscount.toInt(),
-                                                    subTotal: subTotal.toInt(),
-                                                    normalPrice: price,
-                                                    totalService:
-                                                        totalServiceCharge
-                                                            .toInt(),
-                                                    draftName:
-                                                        customerController.text,
+                                                        finalTotal,
+                                                        widget.orderType)); // Pass order type
+                                                
+                                                log("⏳ Waiting for OrderBloc to emit loaded state...");
+                                                
+                                                // Wait for OrderBloc to complete and emit _Loaded state
+                                                await context.read<OrderBloc>().stream.firstWhere(
+                                                  (state) => state.maybeWhen(
+                                                    orElse: () => false,
+                                                    loaded: (model, orderId) => true,
                                                   ),
                                                 );
+                                                
+                                                log("✅ OrderBloc loaded! Opening success dialog...");
+                                                
+                                                // Now show dialog with loaded state
+                                                if (context.mounted) {
+                                                  await showDialog(
+                                                    context: context,
+                                                    barrierDismissible: false,
+                                                    builder: (context) =>
+                                                        SuccessPaymentDialog(
+                                                      data: items,
+                                                      totalQty: totalQty,
+                                                      totalPrice: totalPriceFinal,
+                                                      totalTax: finalTax,
+                                                      totalDiscount: totalDiscount,
+                                                      subTotal: afterDiscount,
+                                                      normalPrice: subtotal,
+                                                      totalService: totalServiceCharge,
+                                                      draftName:
+                                                          customerController.text,
+                                                      paymentAmount: paymentAmountValue, // Pass actual payment
+                                                      tableName: widget.table?.name, // NEW: Pass table name
+                                                      orderType: widget.orderType, // NEW: Pass order type
+                                                    ),
+                                                  );
+                                                }
                                               } else {
+                                                final tableNumber = (widget.orderType == 'dine_in' && widget.table != null) 
+                                                    ? widget.table!.id! 
+                                                    : 0;
+                                                    
                                                 showDialog(
                                                   context: context,
                                                   builder: (context) =>
@@ -1108,26 +1311,28 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                     price: totalPriceFinal,
                                                     items: items,
                                                     totalQty: totalQty,
-                                                    tax: finalTax.toInt(),
-                                                    discountAmount:
-                                                        totalDiscount.toInt(),
-                                                    subTotal: subTotal.toInt(),
+                                                    tax: finalTax,
+                                                    discountAmount: totalDiscount,
+                                                    subTotal: afterDiscount,
                                                     customerName:
                                                         customerController.text,
-                                                    discount: discount,
+                                                    discount: totalDiscount,
                                                     paymentAmount:
                                                         totalPriceController
                                                             .text
                                                             .toIntegerFromText,
                                                     paymentMethod: 'Qris',
-                                                    tableNumber: 0,
+                                                    tableNumber: tableNumber,
                                                     paymentStatus: 'paid',
-                                                    serviceCharge: 0,
+                                                    serviceCharge: totalServiceCharge,
                                                     status: 'paid', // Changed: was 'completed', now 'paid' for order tracking
+                                                    orderType: widget.orderType,
+                                                    tableName: widget.table?.name, // NEW: Pass table name
                                                   ),
                                                 );
                                               }
                                             } else {
+                                              // Bayar Nanti (Save Draft)
                                               context.read<CheckoutBloc>().add(
                                                     CheckoutEvent
                                                         .saveDraftOrder(
@@ -1135,7 +1340,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                           ? widget.table!.id!
                                                           : selectTable!.id!,
                                                       customerController.text,
-                                                      totalDiscount.toInt(),
+                                                      totalDiscount,
                                                     ),
                                                   );
                                               await showDialog(
@@ -1146,11 +1351,10 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                   data: items,
                                                   totalQty: totalQty,
                                                   totalPrice: totalPriceFinal,
-                                                  totalTax: finalTax.toInt(),
-                                                  totalDiscount:
-                                                      totalDiscount.toInt(),
-                                                  subTotal: subTotal.toInt(),
-                                                  normalPrice: price,
+                                                  totalTax: finalTax,
+                                                  totalDiscount: totalDiscount,
+                                                  subTotal: afterDiscount,
+                                                  normalPrice: subtotal,
                                                   table: selectTable!,
                                                   draftName:
                                                       customerController.text,
@@ -1177,7 +1381,6 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
               ),
             ],
           ),
-        ),
       ),
     );
   }

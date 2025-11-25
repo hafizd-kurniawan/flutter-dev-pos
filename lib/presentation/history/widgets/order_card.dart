@@ -60,6 +60,33 @@ class OrderCard extends StatelessWidget {
     }
   }
 
+  // NEW: Get order source color
+  Color _getOrderSourceColor() {
+    final type = order.orderType?.toLowerCase() ?? '';
+    if (type.contains('self')) return Colors.purple;
+    if (type == 'takeaway') return Colors.orange;
+    if (type == 'dine_in') return Colors.blue;
+    return Colors.grey;
+  }
+
+  // NEW: Get order source icon
+  IconData _getOrderSourceIcon() {
+    final type = order.orderType?.toLowerCase() ?? '';
+    if (type.contains('self')) return Icons.phone_android;
+    if (type == 'takeaway') return Icons.shopping_bag;
+    if (type == 'dine_in') return Icons.restaurant_menu;
+    return Icons.receipt;
+  }
+
+  // NEW: Get order source text
+  String _getOrderSourceText() {
+    final type = order.orderType?.toLowerCase() ?? '';
+    if (type.contains('self')) return 'Self-Order';
+    if (type == 'takeaway') return 'Takeaway';
+    if (type == 'dine_in') return 'Dine In';
+    return 'Walk-in';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -121,9 +148,37 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const Divider(height: 24),
-            
+
+            // Order Source Info - NEW
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: _getOrderSourceColor().withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
+                border:
+                    Border.all(color: _getOrderSourceColor().withOpacity(0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(_getOrderSourceIcon(),
+                      size: 14, color: _getOrderSourceColor()),
+                  const SizedBox(width: 4),
+                  Text(
+                    _getOrderSourceText(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: _getOrderSourceColor(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+
             // Customer Info
             if (order.customerName != null) ...[
               Row(
@@ -138,12 +193,13 @@ class OrderCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
             ],
-            
+
             // Table Number
             if (order.tableNumber != null) ...[
               Row(
                 children: [
-                  const Icon(Icons.table_restaurant, size: 18, color: Colors.grey),
+                  const Icon(Icons.table_restaurant,
+                      size: 18, color: Colors.grey),
                   const SizedBox(width: 8),
                   Text(
                     'Table: ${order.tableNumber}',
@@ -153,7 +209,7 @@ class OrderCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
             ],
-            
+
             // Time
             Row(
               children: [
@@ -165,9 +221,9 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Order Items
             Container(
               padding: const EdgeInsets.all(12),
@@ -211,65 +267,114 @@ class OrderCard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 12),
-            
-            // Pricing Details
-            if (order.discountAmount != null && order.discountAmount! > 0) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+            // Pricing Breakdown - ALWAYS SHOW for full transparency
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Subtotal:', style: TextStyle(fontSize: 13)),
-                  Text(
-                    order.subtotal.currencyFormatRp,
-                    style: const TextStyle(fontSize: 13),
+                  const Text(
+                    '💰 Rincian Pembayaran',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Subtotal - ALWAYS
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Subtotal:', style: TextStyle(fontSize: 13)),
+                      Text(
+                        order.subtotal.currencyFormatRp,
+                        style: const TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+
+                  // Discount - ALWAYS (show even if 0)
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Diskon:',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: (order.discountAmount != null &&
+                                  order.discountAmount! > 0)
+                              ? Colors.green
+                              : Colors.grey[600],
+                        ),
+                      ),
+                      Text(
+                        (order.discountAmount != null &&
+                                order.discountAmount! > 0)
+                            ? '- ${order.discountAmount!.currencyFormatRp}'
+                            : 'Rp 0',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: (order.discountAmount != null &&
+                                  order.discountAmount! > 0)
+                              ? Colors.green
+                              : Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Tax - ALWAYS (show even if 0)
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Pajak${(order.taxPercentage != null && order.taxPercentage! > 0) ? " (${order.taxPercentage}%)" : ""}:',
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                      Text(
+                        (order.taxAmount ?? 0).currencyFormatRp,
+                        style: const TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+
+                  // Service - ALWAYS (show even if 0)
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Layanan${(order.serviceChargePercentage != null && order.serviceChargePercentage! > 0) ? " (${order.serviceChargePercentage}%)" : ""}:',
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                      Text(
+                        (order.serviceChargeAmount ?? 0).currencyFormatRp,
+                        style: const TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w500),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Discount:', style: TextStyle(fontSize: 13, color: Colors.green)),
-                  Text(
-                    '- ${order.discountAmount!.currencyFormatRp}',
-                    style: const TextStyle(fontSize: 13, color: Colors.green),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-            ],
-            
-            if (order.taxAmount != null && order.taxAmount! > 0) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Tax:', style: TextStyle(fontSize: 13)),
-                  Text(
-                    order.taxAmount!.currencyFormatRp,
-                    style: const TextStyle(fontSize: 13),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-            ],
-            
-            if (order.serviceChargeAmount != null && order.serviceChargeAmount! > 0) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Service:', style: TextStyle(fontSize: 13)),
-                  Text(
-                    order.serviceChargeAmount!.currencyFormatRp,
-                    style: const TextStyle(fontSize: 13),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-            ],
-            
+            ),
+
             const Divider(height: 16),
-            
+
             // Total
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -291,7 +396,7 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             // Payment Method
             const SizedBox(height: 8),
             Row(
@@ -313,7 +418,7 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             // Action Button
             if (order.status != 'complete') ...[
               const SizedBox(height: 16),

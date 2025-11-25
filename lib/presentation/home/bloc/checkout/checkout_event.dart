@@ -3,6 +3,7 @@ part of 'checkout_bloc.dart';
 @freezed
 class CheckoutEvent with _$CheckoutEvent {
   const factory CheckoutEvent.started() = _Started;
+  const factory CheckoutEvent.clearItems() = _ClearItems;
   //add item
   const factory CheckoutEvent.addItem(Product product) = _AddItem;
   //remove item

@@ -62,7 +62,7 @@ class Discount {
         name: json["name"],
         description: json["description"],
         type: json["type"],
-        value: json["value"],
+        value: json["value"]?.toString(), // FIX: Handle both int and String
         status: json["status"],
         expiredDate: json["expired_date"] == null
             ? null
