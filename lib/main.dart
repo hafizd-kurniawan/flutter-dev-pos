@@ -45,6 +45,9 @@ import 'package:flutter_posresto_app/presentation/setting/bloc/sync_product/sync
 import 'package:flutter_posresto_app/presentation/table/blocs/update_table/update_table_bloc.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/new_table_management_page.dart';
 import 'package:flutter_posresto_app/presentation/history/bloc/history/history_bloc.dart';
+import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW
+import 'package:flutter_posresto_app/data/datasources/settings_remote_datasource.dart'; // NEW
+import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:imin_printer/imin_printer.dart';
 
@@ -189,6 +192,12 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (context) => HistoryBloc(OrderRemoteDatasource()),
+        ),
+        BlocProvider(
+          create: (context) => SettingsBloc(
+            SettingsRemoteDatasource(),
+            SettingsLocalDatasource(),
+          )..add(const SettingsEvent.fetchSettings()), // Fetch on startup
         ),
       ],
       child: MaterialApp(

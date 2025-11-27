@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart'; // NEW
 import 'dart:io'; // NEW
 import 'package:share_plus/share_plus.dart'; // NEW
 import 'package:flutter/foundation.dart' show kIsWeb; // NEW: Check for Web
+import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
 import 'package:image/image.dart' as img;
 
 class PrintDataoutputs {
@@ -30,7 +31,9 @@ class PrintDataoutputs {
       int tax,
       int subTotal,
       int normalPrice,
-      int sizeReceipt) async {
+      int sizeReceipt,
+      int taxPercentage,
+      int servicePercentage) async {
     List<int> bytes = [];
 
     final profile = await CapabilityProfile.load();
@@ -40,8 +43,14 @@ class PrintDataoutputs {
     final pajak = totalPrice * 0.11;
     final total = totalPrice + pajak;
 
+    // Fetch Settings
+    final settings = await SettingsLocalDatasource().getSettings();
+    final appName = settings['app_name'] ?? 'Self Order POS';
+    final address = settings['restaurant_address'] ?? 'Jl. Raya No. 123, Jakarta';
+    final phone = settings['restaurant_phone'] ?? '';
+
     bytes += generator.reset();
-    bytes += generator.text('Resto Code With Bahri',
+    bytes += generator.text(appName,
         styles: const PosStyles(
           bold: true,
           align: PosAlign.center,
@@ -49,8 +58,12 @@ class PrintDataoutputs {
           width: PosTextSize.size1,
         ));
 
-    bytes += generator.text('Jalan Nanasa No. 1',
+    bytes += generator.text(address,
         styles: const PosStyles(bold: true, align: PosAlign.center));
+    if (phone.isNotEmpty) {
+      bytes += generator.text(phone,
+          styles: const PosStyles(bold: false, align: PosAlign.center));
+    }
     bytes += generator.text(
         'Date : ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}',
         styles: const PosStyles(bold: false, align: PosAlign.center));
@@ -123,7 +136,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Pajak PB1 (10%)',
+        text: 'Pajak PB1 ($taxPercentage%)',
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -174,7 +187,8 @@ class PrintDataoutputs {
     ]);
 
     bytes += generator.feed(1);
-    bytes += generator.text('Terima kasih',
+    final footer = settings['receipt_footer_text'] ?? 'Terima kasih';
+    bytes += generator.text(footer,
         styles: const PosStyles(bold: false, align: PosAlign.center));
     bytes += generator.feed(3);
 
@@ -208,7 +222,13 @@ class PrintDataoutputs {
     //   bytes += generator.feed(3);
     // }
 
-    bytes += generator.text('Resto Code With Bahri',
+    // Fetch Settings
+    final settings = await SettingsLocalDatasource().getSettings();
+    final appName = settings['app_name'] ?? 'Self Order POS';
+    final address = settings['restaurant_address'] ?? 'Jl. Raya No. 123, Jakarta';
+    final phone = settings['restaurant_phone'] ?? '';
+
+    bytes += generator.text(appName,
         styles: const PosStyles(
           bold: true,
           align: PosAlign.center,
@@ -216,14 +236,12 @@ class PrintDataoutputs {
           width: PosTextSize.size2,
         ));
 
-    bytes += generator.text('Jalan Nanasa No. 1',
+    bytes += generator.text(address,
         styles: const PosStyles(bold: false, align: PosAlign.center));
-    // bytes += generator.text('Kab. Sleman, DI Yogyakarta',
-    //     styles: const PosStyles(bold: false, align: PosAlign.center));
-    // bytes += generator.text('coffeewithbahri@gmail.com',
-    //     styles: const PosStyles(bold: false, align: PosAlign.center));
-    // bytes += generator.text('085640899224',
-    //     styles: const PosStyles(bold: false, align: PosAlign.center));
+    if (phone.isNotEmpty) {
+      bytes += generator.text(phone,
+          styles: const PosStyles(bold: false, align: PosAlign.center));
+    }
 
     bytes += generator.feed(1);
 
@@ -493,6 +511,10 @@ class PrintDataoutputs {
     String namaKasir,
     String customerName,
     int paper,
+    int taxPercentage,
+    int servicePercentage,
+    String orderType, // NEW
+    String tableName, // NEW
   ) async {
     List<int> bytes = [];
 
@@ -513,7 +535,13 @@ class PrintDataoutputs {
       bytes += generator.feed(3);
     }
 
-    bytes += generator.text('ARCH',
+    // Fetch Settings
+    final settings = await SettingsLocalDatasource().getSettings();
+    final appName = settings['app_name'] ?? 'Self Order POS';
+    final address = settings['restaurant_address'] ?? 'Jl. Raya No. 123, Jakarta';
+    final phone = settings['restaurant_phone'] ?? '';
+
+    bytes += generator.text(appName,
         styles: const PosStyles(
           bold: true,
           align: PosAlign.center,
@@ -521,12 +549,12 @@ class PrintDataoutputs {
           width: PosTextSize.size2,
         ));
 
-    bytes += generator.text('Jl. Kebun Raya No. 1, Sinduhadi, Ngaglik',
+    bytes += generator.text(address,
         styles: const PosStyles(bold: false, align: PosAlign.center));
-    bytes += generator.text('Kab. Sleman, DI Yogyakarta',
-        styles: const PosStyles(bold: false, align: PosAlign.center));
-    bytes += generator.text('085640899224',
-        styles: const PosStyles(bold: false, align: PosAlign.center));
+    if (phone.isNotEmpty) {
+      bytes += generator.text(phone,
+          styles: const PosStyles(bold: false, align: PosAlign.center));
+    }
 
     bytes += generator.text(
         paper == 80
@@ -561,19 +589,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Order ID',
-        width: 6,
-        styles: const PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: Random().nextInt(100000).toString(),
-        width: 6,
-        styles: const PosStyles(align: PosAlign.right),
-      ),
-    ]);
-    bytes += generator.row([
-      PosColumn(
-        text: 'Bill Name',
+        text: 'Customer',
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -585,7 +601,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Collected By',
+        text: 'Cashier',
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -600,8 +616,23 @@ class PrintDataoutputs {
             ? '------------------------------------------------'
             : '--------------------------------',
         styles: const PosStyles(bold: false, align: PosAlign.center));
-    bytes += generator.text('Dine In',
+    
+    // Display Order Type
+    String displayOrderType = 'Dine In';
+    if (orderType.toLowerCase().contains('takeaway') || orderType.toLowerCase().contains('take_away')) {
+      displayOrderType = 'Take Away';
+    } else if (orderType.toLowerCase().contains('self')) {
+      displayOrderType = 'Self Order';
+    }
+    
+    bytes += generator.text(displayOrderType,
         styles: const PosStyles(bold: true, align: PosAlign.center));
+        
+    // Display Table Name if Dine In
+    if ((displayOrderType == 'Dine In' || displayOrderType == 'Self Order') && tableName.isNotEmpty) {
+       bytes += generator.text('Table: $tableName',
+        styles: const PosStyles(bold: true, align: PosAlign.center));
+    }
     bytes += generator.text(
         paper == 80
             ? '------------------------------------------------'
@@ -661,24 +692,24 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Tax PB1 (10%)',
+        text: 'Tax PB1 ($taxPercentage%)',
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: '${(totalPrice * 0.1).ceil()}'.currencyFormatRpV2,
+        text: pajak.currencyFormatRpV2,
         width: 6,
         styles: const PosStyles(align: PosAlign.right),
       ),
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Service Charge(5%)',
+        text: 'Service Charge($servicePercentage%)',
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: '${(totalPrice * 0.05).ceil()}'.currencyFormatRpV2,
+        text: serviceCharge.currencyFormatRpV2,
         width: 6,
         styles: const PosStyles(align: PosAlign.right),
       ),
@@ -702,19 +733,19 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Cash',
-        width: 6,
+        text: 'Payment ($paymentMethod)',
+        width: 8,
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
         text: nominalBayar.currencyFormatRpV2,
-        width: 6,
+        width: 4,
         styles: const PosStyles(align: PosAlign.right),
       ),
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Return',
+        text: 'Change',
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -779,7 +810,7 @@ class PrintDataoutputs {
   }
 
   /// Generate text version of receipt for sharing
-  String generateReceiptText(
+  Future<String> generateReceiptText(
     List<ProductQuantity> products,
     int totalQuantity,
     int totalPrice,
@@ -792,14 +823,48 @@ class PrintDataoutputs {
     int serviceCharge,
     String namaKasir,
     String customerName,
-  ) {
+    int taxPercentage,
+    int servicePercentage,
+  ) async {
     final buffer = StringBuffer();
     final now = DateTime.now();
     
-    buffer.writeln('ARCH');
-    buffer.writeln('Jl. Kebun Raya No. 1, Sinduhadi, Ngaglik');
-    buffer.writeln('Kab. Sleman, DI Yogyakarta');
-    buffer.writeln('085640899224');
+    // Note: generateReceiptText is synchronous, so we can't await here.
+    // However, we can pass the settings as arguments or make this async.
+    // For now, let's make it async and return Future<String>.
+    // Wait, changing return type might break callers.
+    // Let's check callers. Only used in Share.share?
+    // If we can't make it async easily, we might need to rely on passed arguments.
+    // But the user wants it dynamic.
+    // Let's assume we can make it async or callers can handle Future.
+    
+    // Actually, to avoid breaking changes in this step, I will use a hack:
+    // I'll assume the caller has already fetched settings or I'll use defaults if I can't await.
+    // BUT, the user explicitly asked for this file to be checked.
+    // I should change the signature to `Future<String>` and update callers.
+    
+    // ... wait, I can't easily update all callers in one go if I don't know them.
+    // Let's look at `generateReceiptText` usage.
+    // It's likely used in `HistoryPage` or `SuccessPaymentDialog`.
+    
+    // Alternative: Pass settings map to this method.
+    // I'll stick to hardcoded replacement for now but add a TODO or try to make it async if possible.
+    // Actually, `generateReceiptPdf` is async, so `generateReceiptText` should probably be async too.
+    
+    // Let's look at the method signature again.
+    // String generateReceiptText(...)
+    
+    // I will change it to Future<String> generateReceiptText(...) async
+    
+    final settings = await SettingsLocalDatasource().getSettings();
+    final appName = settings['app_name'] ?? 'Self Order POS';
+    final address = settings['restaurant_address'] ?? 'Jl. Raya No. 123, Jakarta';
+    final phone = settings['restaurant_phone'] ?? '';
+    final footer = settings['receipt_footer_text'] ?? 'Terima Kasih';
+
+    buffer.writeln(appName);
+    buffer.writeln(address);
+    if (phone.isNotEmpty) buffer.writeln(phone);
     buffer.writeln('--------------------------------');
     
     buffer.writeln('Date: ${DateFormat('dd MMM yyyy HH:mm').format(now)}');
@@ -821,17 +886,17 @@ class PrintDataoutputs {
       buffer.writeln('Discount: -${discount.currencyFormatRp}');
     }
     if (pajak > 0) {
-      buffer.writeln('Tax (10%): ${pajak.currencyFormatRp}');
+      buffer.writeln('Tax ($taxPercentage%): ${pajak.currencyFormatRp}');
     }
     if (serviceCharge > 0) {
-      buffer.writeln('Service (5%): ${serviceCharge.currencyFormatRp}');
+      buffer.writeln('Service ($servicePercentage%): ${serviceCharge.currencyFormatRp}');
     }
     buffer.writeln('--------------------------------');
     buffer.writeln('TOTAL: ${totalPrice.currencyFormatRp}');
     buffer.writeln('Payment ($paymentMethod): ${nominalBayar.currencyFormatRp}');
     buffer.writeln('Change: ${kembalian.currencyFormatRp}');
     buffer.writeln('--------------------------------');
-    buffer.writeln('Terima Kasih');
+    buffer.writeln(footer);
     
     return buffer.toString();
   }
@@ -851,12 +916,20 @@ class PrintDataoutputs {
     String namaKasir,
     String customerName,
     String orderType,
+    String tableName, // NEW
     int taxPercentage, // NEW
     int servicePercentage, // NEW
   ) async {
     final pdf = pw.Document();
     final now = DateTime.now();
     final dateFormat = DateFormat('dd MMM yyyy HH:mm');
+
+    // Fetch Settings
+    final settings = await SettingsLocalDatasource().getSettings();
+    final appName = settings['app_name'] ?? 'Self Order POS';
+    final address = settings['restaurant_address'] ?? 'Jl. Raya No. 123, Jakarta';
+    final phone = settings['restaurant_phone'] ?? '';
+    final footer = settings['receipt_footer_text'] ?? 'Terima Kasih';
 
     // Format Order Type
     String formattedOrderType = 'Dine In';
@@ -873,10 +946,10 @@ class PrintDataoutputs {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Center(child: pw.Text('ARCH', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16))),
-              pw.Center(child: pw.Text('Jl. Kebun Raya No. 1, Sinduhadi, Ngaglik', style: const pw.TextStyle(fontSize: 10))),
-              pw.Center(child: pw.Text('Kab. Sleman, DI Yogyakarta', style: const pw.TextStyle(fontSize: 10))),
-              pw.Center(child: pw.Text('085640899224', style: const pw.TextStyle(fontSize: 10))),
+              pw.Center(child: pw.Text(appName, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16))),
+              pw.Center(child: pw.Text(address, style: const pw.TextStyle(fontSize: 10), textAlign: pw.TextAlign.center)),
+              if (phone.isNotEmpty)
+                pw.Center(child: pw.Text(phone, style: const pw.TextStyle(fontSize: 10))),
               pw.Divider(),
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
                 pw.Text('Date:', style: const pw.TextStyle(fontSize: 10)),
@@ -895,7 +968,9 @@ class PrintDataoutputs {
                 pw.Text(namaKasir, style: const pw.TextStyle(fontSize: 10)),
               ]),
               pw.Divider(),
-              pw.Center(child: pw.Text(formattedOrderType, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))), // UPDATED
+              pw.Center(child: pw.Text(formattedOrderType, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+              if ((formattedOrderType == 'Dine In' || formattedOrderType == 'Self Order') && tableName.isNotEmpty)
+                pw.Center(child: pw.Text('Table: $tableName', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
               pw.Divider(),
               ...products.map((item) {
                 return pw.Column(
@@ -945,7 +1020,7 @@ class PrintDataoutputs {
                 pw.Text(kembalian.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
               ]),
               pw.Divider(),
-              pw.Center(child: pw.Text('Terima Kasih', style: const pw.TextStyle(fontSize: 12))),
+              pw.Center(child: pw.Text(footer)),
             ],
           );
         },

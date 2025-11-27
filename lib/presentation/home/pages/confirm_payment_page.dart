@@ -1268,7 +1268,10 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                         'paid',
                                                         'Cash',
                                                         finalTotal,
-                                                        widget.orderType)); // Pass order type
+                                                        widget.orderType,
+                                                        taxPercentage, // NEW
+                                                        servicePercentage, // NEW
+                                                    )); // Pass order type
                                                 
                                                 log("⏳ Waiting for OrderBloc to emit loaded state...");
                                                 

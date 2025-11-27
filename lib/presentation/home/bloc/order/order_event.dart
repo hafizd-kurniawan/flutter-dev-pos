@@ -17,5 +17,7 @@ class OrderEvent with _$OrderEvent {
     String paymentMethod,
     int totalPriceFinal,
     String orderType, // Added: 'dine_in' or 'takeaway'
+    int taxPercentage, // NEW
+    int serviceChargePercentage, // NEW
   ) = _Order;
 }

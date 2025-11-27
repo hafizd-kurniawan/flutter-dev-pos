@@ -214,6 +214,21 @@ class OrderCard extends StatelessWidget {
               const SizedBox(height: 8),
             ],
 
+            // Cashier Info - NEW
+            if (order.cashierName != null) ...[
+              Row(
+                children: [
+                  const Icon(Icons.badge, size: 18, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Cashier: ${order.cashierName}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
+
             // Time
             Row(
               children: [
@@ -427,58 +442,69 @@ class OrderCard extends StatelessWidget {
 
             // Action Buttons (Status Update, Print, Share)
             const SizedBox(height: 16),
+            // Action Buttons (Status Update, Print, Share)
+            const SizedBox(height: 16),
             Row(
+              mainAxisAlignment: MainAxisAlignment.end, // Align to right
               children: [
-                // Status Update Button (Expanded)
-                if (order.status != 'complete') 
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: onStatusUpdate,
-                      icon: Icon(
-                        order.status == 'paid'
-                            ? Icons.restaurant
-                            : Icons.check_circle,
-                      ),
-                      label: Text(_getButtonText()),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _getStatusColor(),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                
-                if (order.status != 'complete') const SizedBox(width: 8),
-
                 // Print Button
                 if (onPrint != null)
                   Container(
+                    margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.print, color: Colors.black87),
+                      icon: const Icon(Icons.print, size: 20, color: Colors.black87),
                       tooltip: 'Print Receipt',
+                      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                      padding: EdgeInsets.zero,
                       onPressed: onPrint,
                     ),
                   ),
 
-                const SizedBox(width: 8),
-
                 // Share Button
                 if (onShare != null)
                   Container(
+                    margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Colors.blue[50],
                       borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue.shade200),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.share, color: Colors.blue),
+                      icon: const Icon(Icons.share, size: 20, color: Colors.blue),
                       tooltip: 'Share Receipt',
+                      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                      padding: EdgeInsets.zero,
                       onPressed: onShare,
+                    ),
+                  ),
+
+                // Status Update Button (Compact)
+                if (order.status != 'complete') 
+                  ElevatedButton.icon(
+                    onPressed: onStatusUpdate,
+                    icon: Icon(
+                      order.status == 'paid'
+                          ? Icons.restaurant
+                          : Icons.check_circle,
+                      size: 18,
+                    ),
+                    label: Text(
+                      _getButtonText(),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _getStatusColor(),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 0,
                     ),
                   ),
               ],

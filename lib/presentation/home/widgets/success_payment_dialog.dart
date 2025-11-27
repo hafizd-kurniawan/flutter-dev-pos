@@ -20,6 +20,7 @@ import 'package:flutter_posresto_app/data/datasources/product_remote_datasource.
 import 'package:flutter_posresto_app/data/datasources/product_storage_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
+import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/components/buttons.dart';
@@ -331,6 +332,10 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
 
                           // Receipt Printer
                           if (receiptPrinter != null) {
+                            // Calculate percentages
+                            final taxPercentage = widget.subTotal > 0 ? ((widget.totalTax / widget.subTotal) * 100).round() : 0;
+                            final servicePercentage = widget.subTotal > 0 ? ((widget.totalService / widget.subTotal) * 100).round() : 0;
+
                             final printValue =
                                 await PrintDataoutputs.instance.printOrderV3(
                               widget.data,
@@ -346,6 +351,10 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                               'Cashier Bahri',
                               widget.draftName,
                               receiptPrinter.paper.toIntegerFromText,
+                              taxPercentage,
+                              servicePercentage,
+                              widget.orderType ?? 'Dine In', // NEW
+                              widget.tableName ?? '', // NEW
                             );
                             if (receiptPrinter!.type == 'Bluetooth') {
                               await PrintBluetoothThermal.writeBytes(
@@ -461,12 +470,17 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                           cashierName,
                           widget.draftName,
                           widget.orderType ?? 'Dine In',
-                          taxPercentage, // NEW
-                          servicePercentage, // NEW
+                          widget.tableName ?? '', // NEW
+                          taxPercentage,
+                          servicePercentage,
                         );
                         
                         print('PDF generated at: ${xFile.path}');
-                        await Share.shareXFiles([xFile], text: 'Receipt from ARCH');
+                        // Fetch Settings for Share Text
+                        final settings = await SettingsLocalDatasource().getSettings();
+                        final appName = settings['app_name'] ?? 'Self Order POS';
+
+                        await Share.shareXFiles([xFile], text: 'Receipt from $appName');
                       } catch (e, stackTrace) {
                         print('Error sharing receipt: $e');
                         print('Stack trace: $stackTrace');

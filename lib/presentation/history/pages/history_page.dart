@@ -8,12 +8,14 @@ import 'package:flutter_posresto_app/data/dataoutputs/print_dataoutputs.dart';
 import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 import 'package:flutter_posresto_app/presentation/history/widgets/order_card.dart';
+import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_esc_pos_network/flutter_esc_pos_network.dart';
 import 'dart:developer';
 import 'package:flutter_posresto_app/core/extensions/string_ext.dart'; // NEW: Import String Ext
 import 'package:flutter_posresto_app/data/models/response/product_response_model.dart'; // NEW: Import Product Model
+import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -270,9 +272,13 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         order.discountAmount ?? 0,
         order.taxAmount ?? 0,
         order.serviceChargeAmount ?? 0,
-        'Kasir', // Default cashier name
+        order.cashierName ?? 'Cashier', // Use dynamic cashier name
         order.customerName ?? 'Guest',
         receiptPrinter.paper.toIntegerFromText,
+        order.taxPercentage ?? 0,
+        order.serviceChargePercentage ?? 0,
+        order.orderType ?? 'Dine In', // NEW
+        order.tableNumber ?? '', // NEW
       );
 
       if (receiptPrinter.type == 'Bluetooth') {
@@ -331,11 +337,16 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         order.cashierName ?? 'Cashier',
         order.customerName ?? 'Guest',
         order.orderType ?? 'Dine In',
-        order.taxPercentage ?? 0, // NEW
-        order.serviceChargePercentage ?? 0, // NEW
+        order.tableNumber ?? '', // NEW
+        order.taxPercentage ?? 0,
+        order.serviceChargePercentage ?? 0,
       );
 
-      await Share.shareXFiles([xFile], text: 'Receipt from ARCH');
+      // Fetch Settings for Share Text
+      final settings = await SettingsLocalDatasource().getSettings();
+      final appName = settings['app_name'] ?? 'Self Order POS';
+
+      await Share.shareXFiles([xFile], text: 'Receipt from $appName');
     } catch (e) {
       log('Error sharing: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -348,9 +359,11 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Management'),
+        title: const Text('History Orders', style: TextStyle(fontWeight: FontWeight.bold)),
+        elevation: 0,
         centerTitle: true,
         actions: [
+
           // Date Filter Button
           IconButton(
             icon: Stack(

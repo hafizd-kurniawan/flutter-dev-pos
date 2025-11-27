@@ -142,7 +142,10 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                             'paid',
                             'Qris',
                             widget.price,
-                            widget.orderType)); // Pass order type
+                            widget.orderType,
+                            widget.subTotal > 0 ? ((widget.tax / widget.subTotal) * 100).round() : 0, // NEW: taxPercentage
+                            widget.subTotal > 0 ? ((widget.serviceCharge / widget.subTotal) * 100).round() : 0, // NEW: servicePercentage
+                        )); // Pass order type
                         await showDialog(
                           context: context,
                           barrierDismissible: false,

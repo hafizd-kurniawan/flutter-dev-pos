@@ -16,12 +16,19 @@ class OrderRemoteDatasource {
   //save order to remote server
   Future<bool> saveOrder(OrderModel orderModel) async {
     final headers = await ApiHelper.getHeaders();
+    // Fetch current user for cashier name
+    final authData = await AuthLocalDataSource().getAuthData();
+    final cashierName = authData?.user?.name ?? 'Unknown Cashier';
+    
+    final orderMap = orderModel.toServerMap();
+    orderMap['cashier_name'] = cashierName; // NEW: Add cashier name
+    
     log("📤 Sending Order to API...");
-    log("Order Data: ${orderModel.toJson()}");
+    log("Order Data: $orderMap");
     
     final response = await http.post(
       Uri.parse('${Variables.baseUrl}/api/save-order'),
-      body: orderModel.toJson(), // Already JSON encoded string
+      body: jsonEncode(orderMap), // Encode the modified map
       headers: headers,
     );
     
