@@ -909,26 +909,28 @@ class _HomePageState extends State<HomePage> {
                                                   }
                                                   
                                                   // Stock validated, proceed to payment
-                                                  final shouldReset = await context.push(ConfirmPaymentPage(
+                                                  // Stock validated, proceed to payment
+                                                  await context.push(ConfirmPaymentPage(
                                                     isTable: _orderType == 'dine_in',
                                                     table: _selectedTable ?? widget.table,
                                                     orderType: _orderType,
+                                                    onPaymentSuccess: () {
+                                                      // Reset local state
+                                                      setState(() {
+                                                        _selectedTable = null;
+                                                        print('✅ HomePage: Table selection reset after payment (via callback)');
+                                                      });
+                                                      
+                                                      // Also reset DashboardPage state
+                                                      if (widget.onPaymentSuccess != null) {
+                                                        widget.onPaymentSuccess!();
+                                                        print('✅ Notified DashboardPage to reset table');
+                                                      }
+                                                    },
                                                   ));
                                                   
-                                                  // Reset state after successful payment (both dine-in & takeaway)
-                                                  if (shouldReset == true) {
-                                                    // Reset local state
-                                                    setState(() {
-                                                      _selectedTable = null;
-                                                      print('✅ HomePage: Table selection reset after payment');
-                                                    });
-                                                    
-                                                    // Also reset DashboardPage state
-                                                    if (widget.onPaymentSuccess != null) {
-                                                      widget.onPaymentSuccess!();
-                                                      print('✅ Notified DashboardPage to reset table');
-                                                    }
-                                                  }
+                                                  // NOTE: Result check removed because popToRoot() returns null
+                                                  // The callback above handles the reset logic.
                                                 } else {
                                                   // Stock insufficient
                                                   final errors = validation['errors'] as Map<String, dynamic>?;

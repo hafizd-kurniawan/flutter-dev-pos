@@ -17,7 +17,9 @@ class OrderResponseModel {
   final String paymentMethod;
   final String? placedAt;
   final String? completedAt;
+
   final String? orderType; // NEW: 'dine_in', 'takeaway', or 'self_order'
+  final String? cashierName; // NEW
   final List<OrderItemResponseModel> orderItems;
 
   OrderResponseModel({
@@ -37,7 +39,9 @@ class OrderResponseModel {
     required this.paymentMethod,
     this.placedAt,
     this.completedAt,
+
     this.orderType, // NEW
+    this.cashierName, // NEW
     required this.orderItems,
   });
 
@@ -67,7 +71,9 @@ class OrderResponseModel {
       paymentMethod: json['payment_method'] ?? 'cash',
       placedAt: json['placed_at'],
       completedAt: json['completed_at'],
+
       orderType: json['order_type'], // NEW: Parse from backend
+      cashierName: json['cashier_name'], // NEW: Parse from backend
       orderItems: json['order_items'] != null
           ? (json['order_items'] as List)
               .map((item) => OrderItemResponseModel.fromJson(item))
@@ -105,7 +111,9 @@ class OrderResponseModel {
       'payment_method': paymentMethod,
       'placed_at': placedAt,
       'completed_at': completedAt,
+
       'order_type': orderType, // NEW
+      'cashier_name': cashierName, // NEW
       'order_items': orderItems.map((item) => item.toJson()).toList(),
     };
   }

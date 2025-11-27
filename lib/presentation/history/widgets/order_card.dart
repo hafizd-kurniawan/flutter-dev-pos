@@ -6,11 +6,15 @@ import 'package:intl/intl.dart';
 class OrderCard extends StatelessWidget {
   final OrderResponseModel order;
   final VoidCallback onStatusUpdate;
+  final VoidCallback? onPrint; // NEW
+  final VoidCallback? onShare; // NEW
 
   const OrderCard({
     Key? key,
     required this.order,
     required this.onStatusUpdate,
+    this.onPrint, // NEW
+    this.onShare, // NEW
   }) : super(key: key);
 
   Color _getStatusColor() {
@@ -419,29 +423,66 @@ class OrderCard extends StatelessWidget {
               ],
             ),
 
-            // Action Button
-            if (order.status != 'complete') ...[
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: onStatusUpdate,
-                  icon: Icon(
-                    order.status == 'paid'
-                        ? Icons.restaurant
-                        : Icons.check_circle,
-                  ),
-                  label: Text(_getButtonText()),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _getStatusColor(),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+
+
+            // Action Buttons (Status Update, Print, Share)
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                // Status Update Button (Expanded)
+                if (order.status != 'complete') 
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: onStatusUpdate,
+                      icon: Icon(
+                        order.status == 'paid'
+                            ? Icons.restaurant
+                            : Icons.check_circle,
+                      ),
+                      label: Text(_getButtonText()),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _getStatusColor(),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ],
+                
+                if (order.status != 'complete') const SizedBox(width: 8),
+
+                // Print Button
+                if (onPrint != null)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.print, color: Colors.black87),
+                      tooltip: 'Print Receipt',
+                      onPressed: onPrint,
+                    ),
+                  ),
+
+                const SizedBox(width: 8),
+
+                // Share Button
+                if (onShare != null)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.share, color: Colors.blue),
+                      tooltip: 'Share Receipt',
+                      onPressed: onShare,
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       ),

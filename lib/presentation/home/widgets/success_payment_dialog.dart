@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_esc_pos_network/flutter_esc_pos_network.dart';
 import 'package:intl/intl.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+import 'package:share_plus/share_plus.dart'; // NEW: Share Plus
 
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
@@ -45,6 +46,7 @@ class SuccessPaymentDialog extends StatefulWidget {
     this.isTablePaymentPage = false,
     this.tableName, // NEW: Table name for dine-in
     this.orderType, // NEW: 'dine_in' or 'takeaway'
+    this.onPaymentSuccess, // NEW: Callback for success
   }) : super(key: key);
   final List<ProductQuantity> data;
   final int totalQty;
@@ -59,6 +61,7 @@ class SuccessPaymentDialog extends StatefulWidget {
   final bool? isTablePaymentPage;
   final String? tableName; // NEW: Table name (e.g., "Meja 5")
   final String? orderType; // NEW: Order type (dine_in/takeaway)
+  final VoidCallback? onPaymentSuccess; // NEW: Callback
   @override
   State<SuccessPaymentDialog> createState() => _SuccessPaymentDialogState();
 }
@@ -270,18 +273,17 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                         },
                       );
                       
-                      // 5. Close dialog and navigate back to home with reset signal
+                      // 5. Trigger callback if provided
+                      if (widget.onPaymentSuccess != null) {
+                        log('✅ Triggering onPaymentSuccess callback...');
+                        widget.onPaymentSuccess!();
+                      }
+                      
+                      // 6. Close dialog and navigate back to home with popToRoot
                       if (context.mounted) {
-                        log('✅ AUTO-REDIRECT: Navigating to home with settings preserved and products refreshed...');
-                        Navigator.of(context).pop(); // Close dialog first
-                        
-                        // Wait a bit then pop confirm_payment_page
-                        await Future.delayed(const Duration(milliseconds: 150));
-                        
-                        if (context.mounted && Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop(true); // Pop confirm_payment_page with reset signal
-                          log('✅ Successfully returned to HomePage');
-                        }
+                        log('✅ AUTO-REDIRECT: Navigating to home using popToRoot...');
+                        context.popToRoot();
+                        log('✅ Successfully returned to HomePage');
                       }
                     },
                     label: 'Selesai',
@@ -421,6 +423,62 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                         label: 'Print',
                       );
                     },
+                  ),
+                ),
+                const SpaceWidth(10.0),
+                Flexible(
+                  child: Button.outlined(
+                    onPressed: () async {
+                      try {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('📄 Generating PDF...')),
+                        );
+
+                        final paymentAmountValue = widget.paymentAmount ?? widget.totalPrice;
+                        final kembalian = paymentAmountValue - widget.totalPrice;
+                        
+                        log('Generating PDF for order...');
+                        
+                        // Get current user for Cashier Name
+                        final authData = await AuthLocalDataSource().getAuthData();
+                        final cashierName = authData?.user?.name ?? 'Cashier';
+
+                        // Calculate percentages
+                        final taxPercentage = widget.subTotal > 0 ? ((widget.totalTax / widget.subTotal) * 100).round() : 0;
+                        final servicePercentage = widget.subTotal > 0 ? ((widget.totalService / widget.subTotal) * 100).round() : 0;
+
+                        final xFile = await PrintDataoutputs.instance.generateReceiptPdf(
+                          widget.data,
+                          widget.totalQty,
+                          widget.totalPrice,
+                          'Cash',
+                          paymentAmountValue,
+                          kembalian,
+                          widget.subTotal,
+                          widget.totalDiscount,
+                          widget.totalTax,
+                          widget.totalService,
+                          cashierName,
+                          widget.draftName,
+                          widget.orderType ?? 'Dine In',
+                          taxPercentage, // NEW
+                          servicePercentage, // NEW
+                        );
+                        
+                        print('PDF generated at: ${xFile.path}');
+                        await Share.shareXFiles([xFile], text: 'Receipt from ARCH');
+                      } catch (e, stackTrace) {
+                        print('Error sharing receipt: $e');
+                        print('Stack trace: $stackTrace');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('❌ Error: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    label: 'Kirim Struk',
                   ),
                 ),
               ],

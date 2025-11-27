@@ -6,6 +6,12 @@ import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/string_ext.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart'; // NEW
+import 'package:pdf/widgets.dart' as pw; // NEW
+import 'package:path_provider/path_provider.dart'; // NEW
+import 'dart:io'; // NEW
+import 'package:share_plus/share_plus.dart'; // NEW
+import 'package:flutter/foundation.dart' show kIsWeb; // NEW: Check for Web
 import 'package:image/image.dart' as img;
 
 class PrintDataoutputs {
@@ -770,6 +776,199 @@ class PrintDataoutputs {
     bytes += generator.cut();
 
     return bytes;
+  }
+
+  /// Generate text version of receipt for sharing
+  String generateReceiptText(
+    List<ProductQuantity> products,
+    int totalQuantity,
+    int totalPrice,
+    String paymentMethod,
+    int nominalBayar,
+    int kembalian,
+    int subTotal,
+    int discount,
+    int pajak,
+    int serviceCharge,
+    String namaKasir,
+    String customerName,
+  ) {
+    final buffer = StringBuffer();
+    final now = DateTime.now();
+    
+    buffer.writeln('ARCH');
+    buffer.writeln('Jl. Kebun Raya No. 1, Sinduhadi, Ngaglik');
+    buffer.writeln('Kab. Sleman, DI Yogyakarta');
+    buffer.writeln('085640899224');
+    buffer.writeln('--------------------------------');
+    
+    buffer.writeln('Date: ${DateFormat('dd MMM yyyy HH:mm').format(now)}');
+    buffer.writeln('Receipt: JF-${DateFormat('yyyyMMddhhmm').format(now)}');
+    buffer.writeln('Customer: $customerName');
+    buffer.writeln('Cashier: $namaKasir');
+    buffer.writeln('--------------------------------');
+    buffer.writeln('Dine In');
+    buffer.writeln('--------------------------------');
+    
+    for (final product in products) {
+      buffer.writeln('${product.quantity}x ${product.product.name}');
+      buffer.writeln('   ${(product.product.price!.toIntegerFromText * product.quantity).currencyFormatRp}');
+    }
+    
+    buffer.writeln('--------------------------------');
+    buffer.writeln('Subtotal: ${subTotal.currencyFormatRp}');
+    if (discount > 0) {
+      buffer.writeln('Discount: -${discount.currencyFormatRp}');
+    }
+    if (pajak > 0) {
+      buffer.writeln('Tax (10%): ${pajak.currencyFormatRp}');
+    }
+    if (serviceCharge > 0) {
+      buffer.writeln('Service (5%): ${serviceCharge.currencyFormatRp}');
+    }
+    buffer.writeln('--------------------------------');
+    buffer.writeln('TOTAL: ${totalPrice.currencyFormatRp}');
+    buffer.writeln('Payment ($paymentMethod): ${nominalBayar.currencyFormatRp}');
+    buffer.writeln('Change: ${kembalian.currencyFormatRp}');
+    buffer.writeln('--------------------------------');
+    buffer.writeln('Terima Kasih');
+    
+    return buffer.toString();
+  }
+
+  /// Generate PDF version of receipt for sharing
+  Future<XFile> generateReceiptPdf(
+    List<ProductQuantity> products,
+    int totalQuantity,
+    int totalPrice,
+    String paymentMethod,
+    int nominalBayar,
+    int kembalian,
+    int subTotal,
+    int discount,
+    int pajak,
+    int serviceCharge,
+    String namaKasir,
+    String customerName,
+    String orderType,
+    int taxPercentage, // NEW
+    int servicePercentage, // NEW
+  ) async {
+    final pdf = pw.Document();
+    final now = DateTime.now();
+    final dateFormat = DateFormat('dd MMM yyyy HH:mm');
+
+    // Format Order Type
+    String formattedOrderType = 'Dine In';
+    if (orderType.toLowerCase().contains('takeaway') || orderType.toLowerCase().contains('take_away')) {
+      formattedOrderType = 'Take Away';
+    } else if (orderType.toLowerCase().contains('self')) {
+      formattedOrderType = 'Self Order';
+    }
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.roll80,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Center(child: pw.Text('ARCH', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16))),
+              pw.Center(child: pw.Text('Jl. Kebun Raya No. 1, Sinduhadi, Ngaglik', style: const pw.TextStyle(fontSize: 10))),
+              pw.Center(child: pw.Text('Kab. Sleman, DI Yogyakarta', style: const pw.TextStyle(fontSize: 10))),
+              pw.Center(child: pw.Text('085640899224', style: const pw.TextStyle(fontSize: 10))),
+              pw.Divider(),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                pw.Text('Date:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(dateFormat.format(now), style: const pw.TextStyle(fontSize: 10)),
+              ]),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                pw.Text('Receipt:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text('JF-${DateFormat('yyyyMMddhhmm').format(now)}', style: const pw.TextStyle(fontSize: 10)),
+              ]),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                pw.Text('Customer:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(customerName, style: const pw.TextStyle(fontSize: 10)),
+              ]),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                pw.Text('Cashier:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(namaKasir, style: const pw.TextStyle(fontSize: 10)),
+              ]),
+              pw.Divider(),
+              pw.Center(child: pw.Text(formattedOrderType, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))), // UPDATED
+              pw.Divider(),
+              ...products.map((item) {
+                return pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text('${item.quantity}x ${item.product.name}', style: const pw.TextStyle(fontSize: 10)),
+                    pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                      pw.SizedBox(),
+                      pw.Text((item.product.price!.toIntegerFromText * item.quantity).currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
+                    ]),
+                    pw.SizedBox(height: 4),
+                  ],
+                );
+              }).toList(),
+              pw.Divider(),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                pw.Text('Subtotal:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(subTotal.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
+              ]),
+              if (discount > 0)
+                pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                  pw.Text('Discount:', style: const pw.TextStyle(fontSize: 10, color: PdfColors.red)),
+                  pw.Text('-${discount.currencyFormatRp}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.red)),
+                ]),
+              if (pajak > 0)
+                pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                  pw.Text('Tax ($taxPercentage%):', style: const pw.TextStyle(fontSize: 10)),
+                  pw.Text(pajak.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
+                ]),
+              if (serviceCharge > 0)
+                pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                  pw.Text('Service ($servicePercentage%):', style: const pw.TextStyle(fontSize: 10)),
+                  pw.Text(serviceCharge.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
+                ]),
+              pw.Divider(),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                pw.Text('TOTAL:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12)),
+                pw.Text(totalPrice.currencyFormatRp, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12)),
+              ]),
+              pw.SizedBox(height: 4),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                pw.Text('Payment ($paymentMethod):', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(nominalBayar.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
+              ]),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                pw.Text('Change:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(kembalian.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
+              ]),
+              pw.Divider(),
+              pw.Center(child: pw.Text('Terima Kasih', style: const pw.TextStyle(fontSize: 12))),
+            ],
+          );
+        },
+      ),
+    );
+
+    final bytes = await pdf.save();
+
+    if (kIsWeb) {
+      // For Web: Return XFile from bytes directly
+      // Note: SharePlus on Web might trigger a download or open a new tab depending on browser support
+      return XFile.fromData(
+        bytes,
+        mimeType: 'application/pdf',
+        name: 'receipt_${DateFormat('yyyyMMddHHmmss').format(now)}.pdf',
+      );
+    } else {
+      // For Mobile/Desktop: Save to temporary file
+      final output = await getTemporaryDirectory();
+      final file = File('${output.path}/receipt_${DateFormat('yyyyMMddHHmmss').format(now)}.pdf');
+      await file.writeAsBytes(bytes);
+      return XFile(file.path);
+    }
   }
 
   Future<List<int>> printChecker(List<ProductQuantity> products,

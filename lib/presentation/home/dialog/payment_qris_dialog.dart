@@ -38,6 +38,7 @@ class PaymentQrisDialog extends StatefulWidget {
   final bool? isTablePaymentPage;
   final String orderType; // 'dine_in' or 'takeaway'
   final String? tableName; // NEW: Table name for display
+  final VoidCallback? onPaymentSuccess; // NEW: Callback
   const PaymentQrisDialog({
     super.key,
     required this.items,
@@ -57,6 +58,7 @@ class PaymentQrisDialog extends StatefulWidget {
     this.isTablePaymentPage = false,
     this.orderType = 'dine_in', // Default to dine_in
     this.tableName, // NEW: Optional table name
+    this.onPaymentSuccess, // NEW: Callback
   });
 
   @override
@@ -158,6 +160,7 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                             paymentAmount: widget.paymentAmount, // Pass payment amount
                             tableName: widget.tableName, // NEW: Pass table name
                             orderType: widget.orderType, // NEW: Pass order type
+                            onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
                           ),
                         );
                       });
