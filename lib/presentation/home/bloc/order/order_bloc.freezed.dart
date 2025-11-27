@@ -297,7 +297,6 @@ abstract class _$$OrderImplCopyWith<$Res> {
       String paymentStatus,
       String paymentMethod,
       int totalPriceFinal,
-
       String orderType,
       int taxPercentage,
       int serviceChargePercentage});
@@ -450,8 +449,10 @@ class _$OrderImpl implements _Order {
   final int totalPriceFinal;
   @override
   final String orderType;
+// Added: 'dine_in' or 'takeaway'
   @override
   final int taxPercentage;
+// NEW
   @override
   final int serviceChargePercentage;
 
@@ -490,7 +491,8 @@ class _$OrderImpl implements _Order {
                 other.orderType == orderType) &&
             (identical(other.taxPercentage, taxPercentage) ||
                 other.taxPercentage == taxPercentage) &&
-            (identical(other.serviceChargePercentage, serviceChargePercentage) ||
+            (identical(
+                    other.serviceChargePercentage, serviceChargePercentage) ||
                 other.serviceChargePercentage == serviceChargePercentage));
   }
 
@@ -507,7 +509,6 @@ class _$OrderImpl implements _Order {
       tableNumber,
       status,
       paymentStatus,
-
       paymentMethod,
       totalPriceFinal,
       orderType,
@@ -708,10 +709,9 @@ abstract class _Order implements OrderEvent {
   String get paymentStatus;
   String get paymentMethod;
   int get totalPriceFinal;
-  String get orderType;
-  int get taxPercentage;
+  String get orderType; // Added: 'dine_in' or 'takeaway'
+  int get taxPercentage; // NEW
   int get serviceChargePercentage;
-
 
   /// Create a copy of OrderEvent
   /// with the given fields replaced by the non-null parameter values.
