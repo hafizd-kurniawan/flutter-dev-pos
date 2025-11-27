@@ -60,6 +60,57 @@ class _HomePageState extends State<HomePage> {
   String _orderType = 'dine_in'; // dine_in or takeaway
   TableModel? _selectedTable;
 
+  // 🎯 RESPONSIVE UTILITIES (based on available width after sidebar)
+  
+  /// Get grid columns based on available content width
+  /// Adjusted to be more conservative to prevent overflow
+  int _getGridCrossAxisCount(double availableWidth) {
+    if (availableWidth < 600) return 2;      // Mobile/Small Tablet
+    if (availableWidth < 900) return 3;      // Medium Tablet
+    if (availableWidth < 1200) return 4;     // Large Tablet/Desktop
+    return 5;                                // XL Desktop
+  }
+  
+  /// Products flex (left side) - based on available width
+  int _getProductFlex(double availableWidth) {
+    if (availableWidth < 600) return 1;      // Mobile: equal split (or stack)
+    if (availableWidth < 800) return 3;      // Tablet: more space for products
+    return 4;                                // Desktop: dominant products
+  }
+  
+  /// Cart flex (right side) - ensure minimum viable width
+  int _getCartFlex(double availableWidth) {
+    if (availableWidth < 600) return 1;      // Mobile
+    if (availableWidth < 800) return 2;      // Tablet: 3:2 ratio
+    return 2;                                // Desktop: 4:2 (2:1) ratio
+  }
+  
+  /// Grid spacing
+  double _getGridSpacing(double availableWidth) {
+    if (availableWidth < 600) return 12.0;
+    return 16.0;  // Standard spacing
+  }
+  
+  /// Cart padding
+  EdgeInsets _getCartPadding(double availableWidth) {
+    return const EdgeInsets.all(16.0); // Consistent padding
+  }
+  
+  /// Products section padding
+  EdgeInsets _getProductsPadding(double availableWidth) {
+    return const EdgeInsets.all(16.0); // Consistent padding
+  }
+  
+  /// Cart font size
+  double _getCartFontSize(double availableWidth) {
+    return 14.0; // Standard size
+  }
+  
+  /// Should cart buttons wrap?
+  bool _shouldWrapCartButtons(double availableWidth) {
+    return availableWidth < 900;  // Wrap on tablets too
+  }
+
   @override
   void initState() {
     super.initState();
@@ -319,15 +370,19 @@ class _HomePageState extends State<HomePage> {
     return Hero(
       tag: 'confirmation_screen',
       child: Scaffold(
-        body: Row(
-          children: [
-            // LEFT SIDE: Products Grid (flex: 3)
-            Expanded(
-              flex: 3,
-              child: Align(
-                alignment: AlignmentDirectional.topStart,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final availableWidth = constraints.maxWidth;
+            
+            return Row(
+              children: [
+                // LEFT SIDE: Products Grid
+                Expanded(
+                  flex: _getProductFlex(availableWidth),
+                  child: Align(
+                    alignment: AlignmentDirectional.topStart,
+                    child: Padding(
+                      padding: _getProductsPadding(availableWidth),
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -399,11 +454,11 @@ class _HomePageState extends State<HomePage> {
                                 // Build dynamic tab views
                                 final tabViews = [
                                   // "Semua" tab - show all products
-                                  _buildProductGrid(null),
+                                  _buildProductGrid(null, availableWidth),
                                   
                                   // Dynamic category tabs - filter by category ID
                                   ...categories.map((category) => 
-                                    _buildProductGrid(category.id)
+                                    _buildProductGrid(category.id, availableWidth)
                                   ),
                                 ];
                                 
@@ -423,18 +478,23 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             
-            // RIGHT SIDE: Cart/Order (flex: 2)
+            // RIGHT SIDE: Cart with responsive constraints
             Expanded(
-              flex: 2,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Stack(
-                  children: [
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+              flex: _getCartFlex(availableWidth),
+              child: Container(
+                constraints: BoxConstraints(
+                  minWidth: 280,
+                  maxWidth: availableWidth > 1100 ? 450 : double.infinity,
+                ),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Stack(
+                    children: [
+                      SingleChildScrollView(
+                        padding: _getCartPadding(availableWidth),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                           // Table Selection - Professional Design
                           _buildTableSelector(),
                           const SpaceHeight(8.0),
@@ -904,11 +964,14 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+            ),
           ],
-        ),
-      ),
-    );
-  }
+        );
+      },
+    ),
+  ),
+);
+}
   
   // Professional Table Selector
   Widget _buildTableSelector() {
@@ -1142,7 +1205,8 @@ class _HomePageState extends State<HomePage> {
 
   /// Build product grid with optional category filter
   /// categoryId: null = show all, int = filter by category
-  Widget _buildProductGrid(int? categoryId) {
+  /// availableWidth: available content width for responsive grid
+  Widget _buildProductGrid(int? categoryId, double availableWidth) {
     return BlocBuilder<LocalProductBloc, LocalProductState>(
       builder: (context, state) {
         return state.maybeWhen(
@@ -1187,11 +1251,11 @@ class _HomePageState extends State<HomePage> {
               shrinkWrap: true,
               itemCount: filteredProducts.length,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: 0.85,
-                crossAxisCount: 3,
-                crossAxisSpacing: 30.0,
-                mainAxisSpacing: 30.0,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                childAspectRatio: 0.75,  // ✅ Taller cards to prevent overflow
+                crossAxisCount: _getGridCrossAxisCount(availableWidth),
+                crossAxisSpacing: _getGridSpacing(availableWidth),
+                mainAxisSpacing: _getGridSpacing(availableWidth),
               ),
               itemBuilder: (context, index) => ProductCard(
                 data: filteredProducts[index],
