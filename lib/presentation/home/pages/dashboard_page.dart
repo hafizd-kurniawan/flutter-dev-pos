@@ -76,6 +76,13 @@ class _DashboardPageState extends State<DashboardPage> {
         isTable: false,
         table: _selectedTable,
         onNavigateToTables: () => _onItemTapped(1),
+        onPaymentSuccess: () {
+          // Reset table selection after successful payment
+          setState(() {
+            _selectedTable = null;
+            print('✅ DashboardPage: Table selection reset after payment');
+          });
+        },
       ),
       TableManagementApiPage(
         onTableSelected: _onTableSelected,
