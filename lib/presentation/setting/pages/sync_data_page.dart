@@ -39,12 +39,7 @@ class _SyncDataPageState extends State<SyncDataPage> {
                     ),
                   );
                 },
-                loaded: (productResponseModel) async {
-                  await ProductLocalDatasource.instance.deleteAllProducts();
-                  await ProductLocalDatasource.instance.insertProducts(
-                    productResponseModel.data ?? [],
-                  );
-                  
+                loaded: (productResponseModel) {
                   // Reload home page
                   if (context.mounted) {
                     context.read<LocalProductBloc>().add(

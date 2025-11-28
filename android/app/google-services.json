@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "377487321936",
+    "project_id": "cafe-7b531",
+    "storage_bucket": "cafe-7b531.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377487321936:android:90b094d719881853d4da55",
+        "android_client_info": {
+          "package_name": "com.jagoflutter.qrorder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-4vTG9NNfWMtU8b5W2ZWUAQ4v0EbbWmM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
