@@ -38,12 +38,14 @@ class HomePage extends StatefulWidget {
   final bool isTable;
   final TableModel? table;
   final VoidCallback? onNavigateToTables;
+  final VoidCallback? onPaymentSuccess;
   
   const HomePage({
     Key? key,
     required this.isTable,
     this.table,
     this.onNavigateToTables,
+    this.onPaymentSuccess,
   }) : super(key: key);
 
   @override
@@ -66,6 +68,8 @@ class _HomePageState extends State<HomePage> {
     
     // Initialize selected table from widget
     _selectedTable = widget.table;
+    _orderType = widget.isTable ? 'dine_in' : 'takeaway';
+    print('🏠 Init: orderType=$_orderType, table=${_selectedTable?.name}');
     
     // Fetch categories from API
     context.read<CategoryBloc>().add(const CategoryEvent.getCategories());
@@ -87,6 +91,27 @@ class _HomePageState extends State<HomePage> {
       print('📌 PostFrameCallback: Loading saved settings...');
       _loadSavedSettings();
     });
+  }
+  
+  @override
+  void didUpdateWidget(HomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // Update selected table when widget.table changes
+    if (widget.table != oldWidget.table) {
+      setState(() {
+        _selectedTable = widget.table;
+        print('✅ Table updated via didUpdateWidget: ${_selectedTable?.name}');
+      });
+    }
+    
+    // Update order type when widget.isTable changes
+    if (widget.isTable != oldWidget.isTable) {
+      setState(() {
+        _orderType = widget.isTable ? 'dine_in' : 'takeaway';
+        print('✅ Order type updated: $_orderType');
+      });
+    }
   }
   
   /// Load saved tax & service from local storage and apply to CheckoutBloc
@@ -832,15 +857,17 @@ class _HomePageState extends State<HomePage> {
                                                   
                                                   // Reset state after successful payment (both dine-in & takeaway)
                                                   if (shouldReset == true) {
+                                                    // Reset local state
                                                     setState(() {
-                                                      if (_orderType == 'dine_in') {
-                                                        _selectedTable = null;
-                                                        print('✅ Table selection reset after dine-in payment');
-                                                      } else {
-                                                        print('✅ Takeaway order completed successfully');
-                                                      }
-                                                      // Refresh UI for both types
+                                                      _selectedTable = null;
+                                                      print('✅ HomePage: Table selection reset after payment');
                                                     });
+                                                    
+                                                    // Also reset DashboardPage state
+                                                    if (widget.onPaymentSuccess != null) {
+                                                      widget.onPaymentSuccess!();
+                                                      print('✅ Notified DashboardPage to reset table');
+                                                    }
                                                   }
                                                 } else {
                                                   // Stock insufficient
