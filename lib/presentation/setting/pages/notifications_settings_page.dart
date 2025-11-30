@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_posresto_app/core/constants/colors.dart';
+import 'package:flutter_posresto_app/services/notification_service.dart';
 
 class NotificationsSettingsPage extends StatefulWidget {
   const NotificationsSettingsPage({Key? key}) : super(key: key);
@@ -70,39 +71,39 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
     );
   }
 
-  void _testNotification() {
-    // Show a test notification (simple snackbar for now)
-    // In production, this would trigger an actual FCM notification
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.notifications_active, color: Colors.white),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Test Notification',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text('This is how notifications will appear'),
-                ],
-              ),
+  void _testNotification() async {
+    // Show a real local notification using NotificationService
+    try {
+      await NotificationService.showTestNotification();
+      
+      // Also show snackbar for confirmation
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.notifications_active, color: Colors.white),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text('Test notification sent! Check your notification tray.'),
+                ),
+              ],
             ),
-          ],
-        ),
-        backgroundColor: AppColors.primary,
-        duration: const Duration(seconds: 4),
-        action: SnackBarAction(
-          label: 'OK',
-          textColor: Colors.white,
-          onPressed: () {},
-        ),
-      ),
-    );
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sending notification: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -145,6 +146,77 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                 color: Colors.grey[600],
               ),
             ),
+            const SizedBox(height: 24),
+            
+            // FCM Status Card
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: NotificationService.isInitialized() 
+                    ? Colors.green.shade50 
+                    : Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: NotificationService.isInitialized() 
+                      ? Colors.green.shade200 
+                      : Colors.orange.shade200,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        NotificationService.isInitialized() 
+                            ? Icons.check_circle 
+                            : Icons.warning,
+                        color: NotificationService.isInitialized() 
+                            ? Colors.green.shade700 
+                            : Colors.orange.shade700,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          NotificationService.isInitialized()
+                              ? 'FCM Service Active'
+                              : 'FCM Service Not Initialized',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: NotificationService.isInitialized() 
+                                ? Colors.green.shade900 
+                                : Colors.orange.shade900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (NotificationService.getFcmToken() != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Token: ${NotificationService.getFcmToken()!.substring(0, 20)}...',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[700],
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ],
+                  if (!NotificationService.isInitialized()) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Configure Firebase to enable push notifications',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.orange.shade900,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            
             const SizedBox(height: 32),
 
             // FCM Enabled Card

@@ -56,13 +56,33 @@ import 'presentation/home/pages/dashboard_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('✅ Firebase initialized');
+    
+    // Initialize Notification Service
+    await NotificationService.init();
+    print('✅ Notification Service initialized');
+  } catch (e) {
+    print('❌ Firebase/Notification initialization error: $e');
+    print('⚠️ App will continue without notifications');
+  }
+  
   // await LamanPrint.init();
   // final dir = await getApplicationDocumentsDirectory();
   // Hive.init(dir.path);
   // Hive.registerAdapter(TableDataAdapter());
+  
   runApp(ProviderScope(child: MyApp()));
 }
 
