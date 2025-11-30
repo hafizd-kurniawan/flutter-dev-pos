@@ -12,9 +12,13 @@ class GetPrinterKitchenBloc
   GetPrinterKitchenBloc() : super(_Initial()) {
     on<_Get>((event, emit) async {
       emit(_Loading());
-      final result =
-          await ProductLocalDatasource.instance.getPrinterByCode('kitchen');
-      emit(_Success(result));
+      try {
+        final result =
+            await ProductLocalDatasource.instance.getPrinterByCode('kitchen');
+        emit(_Success(result));
+      } catch (e) {
+        emit(const _Success(null));
+      }
     });
   }
 }

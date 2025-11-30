@@ -15,6 +15,9 @@ import '../../core/components/spaces.dart';
 import '../../core/constants/colors.dart';
 import '../home/pages/dashboard_page.dart';
 import 'bloc/login/login_bloc.dart';
+import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW
+
+import 'package:flutter_posresto_app/core/services/notification_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -109,6 +112,13 @@ class _LoginPageState extends State<LoginPage> {
                   // 1. Save auth data
                   await AuthLocalDataSource().saveAuthData(authResponseModel);
                   print('✅ Auth data saved');
+
+                  // Initialize Notification Service (NEW)
+                  NotificationService().init();
+
+                  // 1.5 Fetch Settings (NEW)
+                  context.read<SettingsBloc>().add(const SettingsEvent.fetchSettings());
+                  print('✅ Settings fetch triggered');
                   
                   // 2. Show loading dialog for product sync
                   if (context.mounted) {

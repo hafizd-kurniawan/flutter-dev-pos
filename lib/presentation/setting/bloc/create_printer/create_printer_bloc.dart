@@ -12,11 +12,15 @@ part 'create_printer_bloc.freezed.dart';
 class CreatePrinterBloc extends Bloc<CreatePrinterEvent, CreatePrinterState> {
   CreatePrinterBloc() : super(_Initial()) {
     on<_CreatePrinter>((event, emit) async {
-      emit(_Loading());
-      await ProductLocalDatasource.instance.createPrinter(
-        event.print,
-      );
-      emit(_Success('Create Table Success'));
+      emit(const _Loading());
+      try {
+        await ProductLocalDatasource.instance.createPrinter(
+          event.print,
+        );
+        emit(const _Success('Create Printer Success'));
+      } catch (e) {
+        emit(_Error(e.toString()));
+      }
     });
   }
 }

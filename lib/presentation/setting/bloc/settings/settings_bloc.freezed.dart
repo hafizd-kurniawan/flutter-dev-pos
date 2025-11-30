@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'create_printer_bloc.dart';
+part of 'settings_bloc.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,65 +15,65 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$CreatePrinterEvent {
+mixin _$SettingsEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function(PrintModel print) createPrinter,
+    required TResult Function() fetchSettings,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function(PrintModel print)? createPrinter,
+    TResult? Function()? fetchSettings,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function(PrintModel print)? createPrinter,
+    TResult Function()? fetchSettings,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
-    required TResult Function(_CreatePrinter value) createPrinter,
+    required TResult Function(_FetchSettings value) fetchSettings,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
-    TResult? Function(_CreatePrinter value)? createPrinter,
+    TResult? Function(_FetchSettings value)? fetchSettings,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
-    TResult Function(_CreatePrinter value)? createPrinter,
+    TResult Function(_FetchSettings value)? fetchSettings,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $CreatePrinterEventCopyWith<$Res> {
-  factory $CreatePrinterEventCopyWith(
-          CreatePrinterEvent value, $Res Function(CreatePrinterEvent) then) =
-      _$CreatePrinterEventCopyWithImpl<$Res, CreatePrinterEvent>;
+abstract class $SettingsEventCopyWith<$Res> {
+  factory $SettingsEventCopyWith(
+          SettingsEvent value, $Res Function(SettingsEvent) then) =
+      _$SettingsEventCopyWithImpl<$Res, SettingsEvent>;
 }
 
 /// @nodoc
-class _$CreatePrinterEventCopyWithImpl<$Res, $Val extends CreatePrinterEvent>
-    implements $CreatePrinterEventCopyWith<$Res> {
-  _$CreatePrinterEventCopyWithImpl(this._value, this._then);
+class _$SettingsEventCopyWithImpl<$Res, $Val extends SettingsEvent>
+    implements $SettingsEventCopyWith<$Res> {
+  _$SettingsEventCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of CreatePrinterEvent
+  /// Create a copy of SettingsEvent
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -86,13 +86,13 @@ abstract class _$$StartedImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$StartedImplCopyWithImpl<$Res>
-    extends _$CreatePrinterEventCopyWithImpl<$Res, _$StartedImpl>
+    extends _$SettingsEventCopyWithImpl<$Res, _$StartedImpl>
     implements _$$StartedImplCopyWith<$Res> {
   __$$StartedImplCopyWithImpl(
       _$StartedImpl _value, $Res Function(_$StartedImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of CreatePrinterEvent
+  /// Create a copy of SettingsEvent
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -103,7 +103,7 @@ class _$StartedImpl implements _Started {
 
   @override
   String toString() {
-    return 'CreatePrinterEvent.started()';
+    return 'SettingsEvent.started()';
   }
 
   @override
@@ -119,7 +119,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function(PrintModel print) createPrinter,
+    required TResult Function() fetchSettings,
   }) {
     return started();
   }
@@ -128,7 +128,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function(PrintModel print)? createPrinter,
+    TResult? Function()? fetchSettings,
   }) {
     return started?.call();
   }
@@ -137,7 +137,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function(PrintModel print)? createPrinter,
+    TResult Function()? fetchSettings,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -150,7 +150,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
-    required TResult Function(_CreatePrinter value) createPrinter,
+    required TResult Function(_FetchSettings value) fetchSettings,
   }) {
     return started(this);
   }
@@ -159,7 +159,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
-    TResult? Function(_CreatePrinter value)? createPrinter,
+    TResult? Function(_FetchSettings value)? fetchSettings,
   }) {
     return started?.call(this);
   }
@@ -168,7 +168,7 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
-    TResult Function(_CreatePrinter value)? createPrinter,
+    TResult Function(_FetchSettings value)? fetchSettings,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -178,102 +178,75 @@ class _$StartedImpl implements _Started {
   }
 }
 
-abstract class _Started implements CreatePrinterEvent {
+abstract class _Started implements SettingsEvent {
   const factory _Started() = _$StartedImpl;
 }
 
 /// @nodoc
-abstract class _$$CreatePrinterImplCopyWith<$Res> {
-  factory _$$CreatePrinterImplCopyWith(
-          _$CreatePrinterImpl value, $Res Function(_$CreatePrinterImpl) then) =
-      __$$CreatePrinterImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({PrintModel print});
+abstract class _$$FetchSettingsImplCopyWith<$Res> {
+  factory _$$FetchSettingsImplCopyWith(
+          _$FetchSettingsImpl value, $Res Function(_$FetchSettingsImpl) then) =
+      __$$FetchSettingsImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$CreatePrinterImplCopyWithImpl<$Res>
-    extends _$CreatePrinterEventCopyWithImpl<$Res, _$CreatePrinterImpl>
-    implements _$$CreatePrinterImplCopyWith<$Res> {
-  __$$CreatePrinterImplCopyWithImpl(
-      _$CreatePrinterImpl _value, $Res Function(_$CreatePrinterImpl) _then)
+class __$$FetchSettingsImplCopyWithImpl<$Res>
+    extends _$SettingsEventCopyWithImpl<$Res, _$FetchSettingsImpl>
+    implements _$$FetchSettingsImplCopyWith<$Res> {
+  __$$FetchSettingsImplCopyWithImpl(
+      _$FetchSettingsImpl _value, $Res Function(_$FetchSettingsImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of CreatePrinterEvent
+  /// Create a copy of SettingsEvent
   /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? print = null,
-  }) {
-    return _then(_$CreatePrinterImpl(
-      null == print
-          ? _value.print
-          : print // ignore: cast_nullable_to_non_nullable
-              as PrintModel,
-    ));
-  }
 }
 
 /// @nodoc
 
-class _$CreatePrinterImpl implements _CreatePrinter {
-  const _$CreatePrinterImpl(this.print);
-
-  @override
-  final PrintModel print;
+class _$FetchSettingsImpl implements _FetchSettings {
+  const _$FetchSettingsImpl();
 
   @override
   String toString() {
-    return 'CreatePrinterEvent.createPrinter(print: $print)';
+    return 'SettingsEvent.fetchSettings()';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CreatePrinterImpl &&
-            (identical(other.print, print) || other.print == print));
+        (other.runtimeType == runtimeType && other is _$FetchSettingsImpl);
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, print);
-
-  /// Create a copy of CreatePrinterEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CreatePrinterImplCopyWith<_$CreatePrinterImpl> get copyWith =>
-      __$$CreatePrinterImplCopyWithImpl<_$CreatePrinterImpl>(this, _$identity);
+  int get hashCode => runtimeType.hashCode;
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function(PrintModel print) createPrinter,
+    required TResult Function() fetchSettings,
   }) {
-    return createPrinter(print);
+    return fetchSettings();
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function(PrintModel print)? createPrinter,
+    TResult? Function()? fetchSettings,
   }) {
-    return createPrinter?.call(print);
+    return fetchSettings?.call();
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function(PrintModel print)? createPrinter,
+    TResult Function()? fetchSettings,
     required TResult orElse(),
   }) {
-    if (createPrinter != null) {
-      return createPrinter(print);
+    if (fetchSettings != null) {
+      return fetchSettings();
     }
     return orElse();
   }
@@ -282,53 +255,45 @@ class _$CreatePrinterImpl implements _CreatePrinter {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
-    required TResult Function(_CreatePrinter value) createPrinter,
+    required TResult Function(_FetchSettings value) fetchSettings,
   }) {
-    return createPrinter(this);
+    return fetchSettings(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
-    TResult? Function(_CreatePrinter value)? createPrinter,
+    TResult? Function(_FetchSettings value)? fetchSettings,
   }) {
-    return createPrinter?.call(this);
+    return fetchSettings?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
-    TResult Function(_CreatePrinter value)? createPrinter,
+    TResult Function(_FetchSettings value)? fetchSettings,
     required TResult orElse(),
   }) {
-    if (createPrinter != null) {
-      return createPrinter(this);
+    if (fetchSettings != null) {
+      return fetchSettings(this);
     }
     return orElse();
   }
 }
 
-abstract class _CreatePrinter implements CreatePrinterEvent {
-  const factory _CreatePrinter(final PrintModel print) = _$CreatePrinterImpl;
-
-  PrintModel get print;
-
-  /// Create a copy of CreatePrinterEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$CreatePrinterImplCopyWith<_$CreatePrinterImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+abstract class _FetchSettings implements SettingsEvent {
+  const factory _FetchSettings() = _$FetchSettingsImpl;
 }
 
 /// @nodoc
-mixin _$CreatePrinterState {
+mixin _$SettingsState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String message) success,
+    required TResult Function(SettingsResponseModel model) loaded,
     required TResult Function(String message) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -336,7 +301,7 @@ mixin _$CreatePrinterState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String message)? success,
+    TResult? Function(SettingsResponseModel model)? loaded,
     TResult? Function(String message)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -344,7 +309,7 @@ mixin _$CreatePrinterState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String message)? success,
+    TResult Function(SettingsResponseModel model)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) =>
@@ -353,7 +318,7 @@ mixin _$CreatePrinterState {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -361,7 +326,7 @@ mixin _$CreatePrinterState {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -369,7 +334,7 @@ mixin _$CreatePrinterState {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) =>
@@ -377,23 +342,23 @@ mixin _$CreatePrinterState {
 }
 
 /// @nodoc
-abstract class $CreatePrinterStateCopyWith<$Res> {
-  factory $CreatePrinterStateCopyWith(
-          CreatePrinterState value, $Res Function(CreatePrinterState) then) =
-      _$CreatePrinterStateCopyWithImpl<$Res, CreatePrinterState>;
+abstract class $SettingsStateCopyWith<$Res> {
+  factory $SettingsStateCopyWith(
+          SettingsState value, $Res Function(SettingsState) then) =
+      _$SettingsStateCopyWithImpl<$Res, SettingsState>;
 }
 
 /// @nodoc
-class _$CreatePrinterStateCopyWithImpl<$Res, $Val extends CreatePrinterState>
-    implements $CreatePrinterStateCopyWith<$Res> {
-  _$CreatePrinterStateCopyWithImpl(this._value, this._then);
+class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
+    implements $SettingsStateCopyWith<$Res> {
+  _$SettingsStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of CreatePrinterState
+  /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -406,13 +371,13 @@ abstract class _$$InitialImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$InitialImplCopyWithImpl<$Res>
-    extends _$CreatePrinterStateCopyWithImpl<$Res, _$InitialImpl>
+    extends _$SettingsStateCopyWithImpl<$Res, _$InitialImpl>
     implements _$$InitialImplCopyWith<$Res> {
   __$$InitialImplCopyWithImpl(
       _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of CreatePrinterState
+  /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -423,7 +388,7 @@ class _$InitialImpl implements _Initial {
 
   @override
   String toString() {
-    return 'CreatePrinterState.initial()';
+    return 'SettingsState.initial()';
   }
 
   @override
@@ -440,7 +405,7 @@ class _$InitialImpl implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String message) success,
+    required TResult Function(SettingsResponseModel model) loaded,
     required TResult Function(String message) error,
   }) {
     return initial();
@@ -451,7 +416,7 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String message)? success,
+    TResult? Function(SettingsResponseModel model)? loaded,
     TResult? Function(String message)? error,
   }) {
     return initial?.call();
@@ -462,7 +427,7 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String message)? success,
+    TResult Function(SettingsResponseModel model)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -477,7 +442,7 @@ class _$InitialImpl implements _Initial {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) {
     return initial(this);
@@ -488,7 +453,7 @@ class _$InitialImpl implements _Initial {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) {
     return initial?.call(this);
@@ -499,7 +464,7 @@ class _$InitialImpl implements _Initial {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -510,7 +475,7 @@ class _$InitialImpl implements _Initial {
   }
 }
 
-abstract class _Initial implements CreatePrinterState {
+abstract class _Initial implements SettingsState {
   const factory _Initial() = _$InitialImpl;
 }
 
@@ -523,13 +488,13 @@ abstract class _$$LoadingImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$LoadingImplCopyWithImpl<$Res>
-    extends _$CreatePrinterStateCopyWithImpl<$Res, _$LoadingImpl>
+    extends _$SettingsStateCopyWithImpl<$Res, _$LoadingImpl>
     implements _$$LoadingImplCopyWith<$Res> {
   __$$LoadingImplCopyWithImpl(
       _$LoadingImpl _value, $Res Function(_$LoadingImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of CreatePrinterState
+  /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -540,7 +505,7 @@ class _$LoadingImpl implements _Loading {
 
   @override
   String toString() {
-    return 'CreatePrinterState.loading()';
+    return 'SettingsState.loading()';
   }
 
   @override
@@ -557,7 +522,7 @@ class _$LoadingImpl implements _Loading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String message) success,
+    required TResult Function(SettingsResponseModel model) loaded,
     required TResult Function(String message) error,
   }) {
     return loading();
@@ -568,7 +533,7 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String message)? success,
+    TResult? Function(SettingsResponseModel model)? loaded,
     TResult? Function(String message)? error,
   }) {
     return loading?.call();
@@ -579,7 +544,7 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String message)? success,
+    TResult Function(SettingsResponseModel model)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -594,7 +559,7 @@ class _$LoadingImpl implements _Loading {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) {
     return loading(this);
@@ -605,7 +570,7 @@ class _$LoadingImpl implements _Loading {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) {
     return loading?.call(this);
@@ -616,7 +581,7 @@ class _$LoadingImpl implements _Loading {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -627,84 +592,84 @@ class _$LoadingImpl implements _Loading {
   }
 }
 
-abstract class _Loading implements CreatePrinterState {
+abstract class _Loading implements SettingsState {
   const factory _Loading() = _$LoadingImpl;
 }
 
 /// @nodoc
-abstract class _$$SuccessImplCopyWith<$Res> {
-  factory _$$SuccessImplCopyWith(
-          _$SuccessImpl value, $Res Function(_$SuccessImpl) then) =
-      __$$SuccessImplCopyWithImpl<$Res>;
+abstract class _$$LoadedImplCopyWith<$Res> {
+  factory _$$LoadedImplCopyWith(
+          _$LoadedImpl value, $Res Function(_$LoadedImpl) then) =
+      __$$LoadedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String message});
+  $Res call({SettingsResponseModel model});
 }
 
 /// @nodoc
-class __$$SuccessImplCopyWithImpl<$Res>
-    extends _$CreatePrinterStateCopyWithImpl<$Res, _$SuccessImpl>
-    implements _$$SuccessImplCopyWith<$Res> {
-  __$$SuccessImplCopyWithImpl(
-      _$SuccessImpl _value, $Res Function(_$SuccessImpl) _then)
+class __$$LoadedImplCopyWithImpl<$Res>
+    extends _$SettingsStateCopyWithImpl<$Res, _$LoadedImpl>
+    implements _$$LoadedImplCopyWith<$Res> {
+  __$$LoadedImplCopyWithImpl(
+      _$LoadedImpl _value, $Res Function(_$LoadedImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of CreatePrinterState
+  /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? message = null,
+    Object? model = null,
   }) {
-    return _then(_$SuccessImpl(
-      null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
+    return _then(_$LoadedImpl(
+      null == model
+          ? _value.model
+          : model // ignore: cast_nullable_to_non_nullable
+              as SettingsResponseModel,
     ));
   }
 }
 
 /// @nodoc
 
-class _$SuccessImpl implements _Success {
-  const _$SuccessImpl(this.message);
+class _$LoadedImpl implements _Loaded {
+  const _$LoadedImpl(this.model);
 
   @override
-  final String message;
+  final SettingsResponseModel model;
 
   @override
   String toString() {
-    return 'CreatePrinterState.success(message: $message)';
+    return 'SettingsState.loaded(model: $model)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SuccessImpl &&
-            (identical(other.message, message) || other.message == message));
+            other is _$LoadedImpl &&
+            (identical(other.model, model) || other.model == model));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, message);
+  int get hashCode => Object.hash(runtimeType, model);
 
-  /// Create a copy of CreatePrinterState
+  /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
-      __$$SuccessImplCopyWithImpl<_$SuccessImpl>(this, _$identity);
+  _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
+      __$$LoadedImplCopyWithImpl<_$LoadedImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String message) success,
+    required TResult Function(SettingsResponseModel model) loaded,
     required TResult Function(String message) error,
   }) {
-    return success(message);
+    return loaded(model);
   }
 
   @override
@@ -712,10 +677,10 @@ class _$SuccessImpl implements _Success {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String message)? success,
+    TResult? Function(SettingsResponseModel model)? loaded,
     TResult? Function(String message)? error,
   }) {
-    return success?.call(message);
+    return loaded?.call(model);
   }
 
   @override
@@ -723,12 +688,12 @@ class _$SuccessImpl implements _Success {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String message)? success,
+    TResult Function(SettingsResponseModel model)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
-    if (success != null) {
-      return success(message);
+    if (loaded != null) {
+      return loaded(model);
     }
     return orElse();
   }
@@ -738,10 +703,10 @@ class _$SuccessImpl implements _Success {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) {
-    return success(this);
+    return loaded(this);
   }
 
   @override
@@ -749,10 +714,10 @@ class _$SuccessImpl implements _Success {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) {
-    return success?.call(this);
+    return loaded?.call(this);
   }
 
   @override
@@ -760,26 +725,26 @@ class _$SuccessImpl implements _Success {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
-    if (success != null) {
-      return success(this);
+    if (loaded != null) {
+      return loaded(this);
     }
     return orElse();
   }
 }
 
-abstract class _Success implements CreatePrinterState {
-  const factory _Success(final String message) = _$SuccessImpl;
+abstract class _Loaded implements SettingsState {
+  const factory _Loaded(final SettingsResponseModel model) = _$LoadedImpl;
 
-  String get message;
+  SettingsResponseModel get model;
 
-  /// Create a copy of CreatePrinterState
+  /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
+  _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -794,13 +759,13 @@ abstract class _$$ErrorImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$ErrorImplCopyWithImpl<$Res>
-    extends _$CreatePrinterStateCopyWithImpl<$Res, _$ErrorImpl>
+    extends _$SettingsStateCopyWithImpl<$Res, _$ErrorImpl>
     implements _$$ErrorImplCopyWith<$Res> {
   __$$ErrorImplCopyWithImpl(
       _$ErrorImpl _value, $Res Function(_$ErrorImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of CreatePrinterState
+  /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -826,7 +791,7 @@ class _$ErrorImpl implements _Error {
 
   @override
   String toString() {
-    return 'CreatePrinterState.error(message: $message)';
+    return 'SettingsState.error(message: $message)';
   }
 
   @override
@@ -840,7 +805,7 @@ class _$ErrorImpl implements _Error {
   @override
   int get hashCode => Object.hash(runtimeType, message);
 
-  /// Create a copy of CreatePrinterState
+  /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
@@ -853,7 +818,7 @@ class _$ErrorImpl implements _Error {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String message) success,
+    required TResult Function(SettingsResponseModel model) loaded,
     required TResult Function(String message) error,
   }) {
     return error(message);
@@ -864,7 +829,7 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String message)? success,
+    TResult? Function(SettingsResponseModel model)? loaded,
     TResult? Function(String message)? error,
   }) {
     return error?.call(message);
@@ -875,7 +840,7 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String message)? success,
+    TResult Function(SettingsResponseModel model)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -890,7 +855,7 @@ class _$ErrorImpl implements _Error {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) {
     return error(this);
@@ -901,7 +866,7 @@ class _$ErrorImpl implements _Error {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) {
     return error?.call(this);
@@ -912,7 +877,7 @@ class _$ErrorImpl implements _Error {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -923,12 +888,12 @@ class _$ErrorImpl implements _Error {
   }
 }
 
-abstract class _Error implements CreatePrinterState {
+abstract class _Error implements SettingsState {
   const factory _Error(final String message) = _$ErrorImpl;
 
   String get message;
 
-  /// Create a copy of CreatePrinterState
+  /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>

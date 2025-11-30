@@ -48,7 +48,7 @@ class _ReceiptPrinterPageState extends State<ReceiptPrinterPage> {
           builder: (context, state) {
             return state.maybeWhen(
               orElse: () {
-                return SizedBox.shrink();
+                return const Center(child: CircularProgressIndicator());
               },
               loading: () {
                 return Center(child: CircularProgressIndicator());
@@ -176,6 +176,14 @@ class _ReceiptPrinterPageState extends State<ReceiptPrinterPage> {
                                         .read<GetPrinterReceiptBloc>()
                                         .add(GetPrinterReceiptEvent.get());
                                   },
+                                  error: (message) {
+                                    final snackBar = SnackBar(
+                                      content: Text(message),
+                                      backgroundColor: AppColors.red,
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  },
                                 );
                               },
                               builder: (context, state) {
@@ -219,6 +227,14 @@ class _ReceiptPrinterPageState extends State<ReceiptPrinterPage> {
                                     context
                                         .read<GetPrinterReceiptBloc>()
                                         .add(GetPrinterReceiptEvent.get());
+                                  },
+                                  error: (message) {
+                                    final snackBar = SnackBar(
+                                      content: Text(message),
+                                      backgroundColor: AppColors.red,
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
                                   },
                                 );
                               },

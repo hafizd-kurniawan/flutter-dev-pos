@@ -80,21 +80,21 @@ class _SettingsPageState extends State<PrinterConfigurationPage> {
                         currentIndex == 0 ? AppColors.card : Colors.transparent,
                     onTap: () => indexValue(0),
                   ),
-                  ListTile(
-                    // contentPadding: const EdgeInsets.all(12.0),
-                    // leading: Assets.icons.kelolaPrinter.svg(),
-                    title: const Text('Checker Printer',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        )),
-                    subtitle: const Text('Print checker chit'),
-                    textColor: AppColors.primary,
-                    tileColor: currentIndex == 1
-                        ? AppColors.blueLight
-                        : Colors.transparent,
-                    onTap: () => indexValue(1),
-                  ),
+                  // ListTile(
+                  //   // contentPadding: const EdgeInsets.all(12.0),
+                  //   // leading: Assets.icons.kelolaPrinter.svg(),
+                  //   title: const Text('Checker Printer',
+                  //       style: TextStyle(
+                  //         fontSize: 16,
+                  //         fontWeight: FontWeight.w600,
+                  //       )),
+                  //   subtitle: const Text('Print checker chit'),
+                  //   textColor: AppColors.primary,
+                  //   tileColor: currentIndex == 1
+                  //       ? AppColors.blueLight
+                  //       : Colors.transparent,
+                  //   onTap: () => indexValue(1),
+                  // ),
                   ListTile(
                     // contentPadding: const EdgeInsets.all(12.0),
                     // leading: Assets.icons.kelolaPajak.svg(),
@@ -110,39 +110,39 @@ class _SettingsPageState extends State<PrinterConfigurationPage> {
                         : Colors.transparent,
                     onTap: () => indexValue(2),
                   ),
-                  ListTile(
-                    // contentPadding: const EdgeInsets.all(12.0),
-                    // leading: Assets.icons.kelolaPajak.svg(),
-                    title: const Text('Bar Printer',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        )),
-                    subtitle: const Text('To print drink to bar'),
-                    textColor: AppColors.primary,
-                    tileColor: currentIndex == 3
-                        ? AppColors.blueLight
-                        : Colors.transparent,
-                    onTap: () => indexValue(3),
-                  ),
-                  ListTile(
-                    // contentPadding: const EdgeInsets.all(12.0),
-                    // leading: Image.asset(Assets.images.manageQr.path,
-                    //     fit: BoxFit.contain),
-                    title: const Text('Additional Printer',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        )),
-                    subtitle:
-                        const Text('To print additional kitchen/bar printer'),
-
-                    textColor: AppColors.primary,
-                    tileColor: currentIndex == 4
-                        ? AppColors.blueLight
-                        : Colors.transparent,
-                    onTap: () => indexValue(4),
-                  ),
+                  // ListTile(
+                  //   // contentPadding: const EdgeInsets.all(12.0),
+                  //   // leading: Assets.icons.kelolaPajak.svg(),
+                  //   title: const Text('Bar Printer',
+                  //       style: TextStyle(
+                  //         fontSize: 16,
+                  //         fontWeight: FontWeight.w600,
+                  //       )),
+                  //   subtitle: const Text('To print drink to bar'),
+                  //   textColor: AppColors.primary,
+                  //   tileColor: currentIndex == 3
+                  //       ? AppColors.blueLight
+                  //       : Colors.transparent,
+                  //   onTap: () => indexValue(3),
+                  // ),
+                  // ListTile(
+                  //   // contentPadding: const EdgeInsets.all(12.0),
+                  //   // leading: Image.asset(Assets.images.manageQr.path,
+                  //   //     fit: BoxFit.contain),
+                  //   title: const Text('Additional Printer',
+                  //       style: TextStyle(
+                  //         fontSize: 16,
+                  //         fontWeight: FontWeight.w600,
+                  //       )),
+                  //   subtitle:
+                  //       const Text('To print additional kitchen/bar printer'),
+                  //
+                  //   textColor: AppColors.primary,
+                  //   tileColor: currentIndex == 4
+                  //       ? AppColors.blueLight
+                  //       : Colors.transparent,
+                  //   onTap: () => indexValue(4),
+                  // ),
                 ],
               ),
             ),
@@ -159,9 +159,9 @@ class _SettingsPageState extends State<PrinterConfigurationPage> {
                   index: currentIndex,
                   children: [
                     ReceiptPrinterPage(),
-                    CheckerPrinterPage(),
+                    SizedBox.shrink(), // CheckerPrinterPage placeholder
                     KitchenPrinterPage(),
-                    BarPrinterPage(),
+                    SizedBox.shrink(), // BarPrinterPage placeholder
                   ],
                 ),
               ),

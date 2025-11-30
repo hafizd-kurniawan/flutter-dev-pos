@@ -4,7 +4,18 @@ import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/data/datasources/order_remote_datasource.dart';
 import 'package:flutter_posresto_app/data/models/response/order_response_model.dart';
 import 'package:flutter_posresto_app/presentation/history/bloc/history/history_bloc.dart';
+import 'package:flutter_posresto_app/data/dataoutputs/print_dataoutputs.dart';
+import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
+import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 import 'package:flutter_posresto_app/presentation/history/widgets/order_card.dart';
+import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW
+import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:flutter_esc_pos_network/flutter_esc_pos_network.dart';
+import 'dart:developer';
+import 'package:flutter_posresto_app/core/extensions/string_ext.dart'; // NEW: Import String Ext
+import 'package:flutter_posresto_app/data/models/response/product_response_model.dart'; // NEW: Import Product Model
+import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -220,13 +231,139 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
     );
   }
 
+  // NEW: Handle Print Receipt
+  Future<void> _handlePrintReceipt(OrderResponseModel order) async {
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('🖨️ Printing receipt...')),
+      );
+
+      final receiptPrinter = await ProductLocalDatasource.instance.getPrinterByCode('receipt');
+      if (receiptPrinter == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('⚠️ No receipt printer found')),
+        );
+        return;
+      }
+
+      // Convert OrderItems to ProductQuantity for printing
+      final products = order.orderItems.map((item) {
+        return ProductQuantity(
+          product: Product(
+            id: item.productId,
+            name: item.productName,
+            price: item.price.toString(),
+          ),
+          quantity: item.quantity,
+        );
+      }).toList();
+
+      // Calculate total items
+      final totalItem = order.orderItems.fold(0, (sum, item) => sum + item.quantity);
+
+      final printValue = await PrintDataoutputs.instance.printOrderV3(
+        products,
+        totalItem,
+        order.totalAmount,
+        order.paymentMethod,
+        order.totalAmount, // Assuming exact payment for history
+        0, // No change info in history
+        order.subtotal,
+        order.discountAmount ?? 0,
+        order.taxAmount ?? 0,
+        order.serviceChargeAmount ?? 0,
+        order.cashierName ?? 'Cashier', // Use dynamic cashier name
+        order.customerName ?? 'Guest',
+        receiptPrinter.paper.toIntegerFromText,
+        order.taxPercentage ?? 0,
+        order.serviceChargePercentage ?? 0,
+        order.orderType ?? 'Dine In', // NEW
+        order.tableNumber ?? '', // NEW
+      );
+
+      if (receiptPrinter.type == 'Bluetooth') {
+        await PrintBluetoothThermal.writeBytes(printValue);
+      } else {
+        final printer = PrinterNetworkManager(receiptPrinter.address);
+        final connect = await printer.connect();
+        if (connect == PosPrintResult.success) {
+          await printer.printTicket(printValue);
+          printer.disconnect();
+        } else {
+          log("Failed to connect to printer");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('❌ Failed to connect to printer')),
+          );
+        }
+      }
+    } catch (e) {
+      log('Error printing: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Error printing: $e')),
+      );
+    }
+  }
+
+  // NEW: Handle Share Receipt
+  Future<void> _handleShareReceipt(OrderResponseModel order) async {
+    try {
+      // Convert OrderItems to ProductQuantity
+      final products = order.orderItems.map((item) {
+        return ProductQuantity(
+          product: Product(
+            id: item.productId,
+            name: item.productName,
+            price: item.price.toString(),
+          ),
+          quantity: item.quantity,
+        );
+      }).toList();
+
+      // Calculate total items
+      final totalItem = order.orderItems.fold(0, (sum, item) => sum + item.quantity);
+
+      final xFile = await PrintDataoutputs.instance.generateReceiptPdf(
+        products,
+        totalItem,
+        order.totalAmount,
+        order.paymentMethod,
+        order.totalAmount,
+        0,
+        order.subtotal,
+        order.discountAmount ?? 0,
+        order.taxAmount ?? 0,
+
+        order.serviceChargeAmount ?? 0,
+        order.cashierName ?? 'Cashier',
+        order.customerName ?? 'Guest',
+        order.orderType ?? 'Dine In',
+        order.tableNumber ?? '', // NEW
+        order.taxPercentage ?? 0,
+        order.serviceChargePercentage ?? 0,
+      );
+
+      // Fetch Settings for Share Text
+      final settings = await SettingsLocalDatasource().getSettings();
+      final appName = settings['app_name'] ?? 'Self Order POS';
+
+      await Share.shareXFiles([xFile], text: 'Receipt from $appName');
+    } catch (e) {
+      log('Error sharing: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Error sharing: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Management'),
+        title: const Text('History Orders', style: TextStyle(fontWeight: FontWeight.bold)),
+        elevation: 0,
         centerTitle: true,
         actions: [
+
           // Date Filter Button
           IconButton(
             icon: Stack(
@@ -508,6 +645,8 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
               return OrderCard(
                 order: order,
                 onStatusUpdate: () => _showStatusUpdateDialog(context, order),
+                onPrint: () => _handlePrintReceipt(order), // NEW
+                onShare: () => _handleShareReceipt(order), // NEW
               );
             },
           ),

@@ -15,6 +15,7 @@ import 'package:flutter_posresto_app/presentation/home/widgets/success_payment_d
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_order/sync_order_bloc.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/components/spaces.dart';
 import '../../../core/constants/colors.dart';
@@ -38,6 +39,7 @@ class PaymentQrisDialog extends StatefulWidget {
   final bool? isTablePaymentPage;
   final String orderType; // 'dine_in' or 'takeaway'
   final String? tableName; // NEW: Table name for display
+  final VoidCallback? onPaymentSuccess; // NEW: Callback
   const PaymentQrisDialog({
     super.key,
     required this.items,
@@ -57,6 +59,7 @@ class PaymentQrisDialog extends StatefulWidget {
     this.isTablePaymentPage = false,
     this.orderType = 'dine_in', // Default to dine_in
     this.tableName, // NEW: Optional table name
+    this.onPaymentSuccess, // NEW: Callback
   });
 
   @override
@@ -74,6 +77,9 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
     context.read<QrisBloc>().add(QrisEvent.generateQRCode(
           orderId,
           widget.price,
+          widget.items,
+          widget.customerName,
+          widget.tableNumber,
         ));
     super.initState();
   }
@@ -127,7 +133,7 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                               ));
                         });
                       }, success: (message) async {
-                        context.read<OrderBloc>().add(OrderEvent.order(
+                        context.read<OrderBloc>().add(OrderEvent.paymentSuccess(
                             widget.items,
                             widget.discount,
                             widget.discountAmount,
@@ -140,7 +146,10 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                             'paid',
                             'Qris',
                             widget.price,
-                            widget.orderType)); // Pass order type
+                            widget.orderType,
+                            widget.subTotal > 0 ? ((widget.tax / widget.subTotal) * 100).round() : 0, // NEW: taxPercentage
+                            widget.subTotal > 0 ? ((widget.serviceCharge / widget.subTotal) * 100).round() : 0, // NEW: servicePercentage
+                        )); // Pass order type
                         await showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -158,6 +167,7 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                             paymentAmount: widget.paymentAmount, // Pass payment amount
                             tableName: widget.tableName, // NEW: Pass table name
                             orderType: widget.orderType, // NEW: Pass order type
+                            onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
                           ),
                         );
                       });
@@ -171,6 +181,9 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                           },
                           qrisResponse: (data) {
                             log("URL: ${data.actions!.first.url!}");
+                            final url = data.actions!.first.url!;
+                            final isXendit = url.contains('xendit');
+                            
                             return WidgetsToImage(
                               controller: controller,
                               child: Container(
@@ -183,8 +196,14 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                                 child: Column(
                                   children: [
                                     Center(
-                                      child: Image.network(
-                                        data.actions!.first.url!,
+                                      child: isXendit 
+                                      ? QrImageView(
+                                          data: url,
+                                          version: QrVersions.auto,
+                                          size: 200.0,
+                                        )
+                                      : Image.network(
+                                        url,
                                       ),
                                     ),
                                     // const SpaceHeight(5.0),

@@ -3,7 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/constants/colors.dart';
 
 class EnhancedNavItem extends StatefulWidget {
-  final String iconPath;
+  final String? iconPath;
+  final IconData? icon;
   final String label;
   final bool isActive;
   final VoidCallback onTap;
@@ -12,13 +13,14 @@ class EnhancedNavItem extends StatefulWidget {
 
   const EnhancedNavItem({
     super.key,
-    required this.iconPath,
+    this.iconPath,
+    this.icon,
     required this.label,
     required this.isActive,
     required this.onTap,
     this.badgeCount,
     this.color = AppColors.white,
-  });
+  }) : assert(iconPath != null || icon != null, 'Either iconPath or icon must be provided');
 
   @override
   State<EnhancedNavItem> createState() => _EnhancedNavItemState();
@@ -59,13 +61,19 @@ class _EnhancedNavItemState extends State<EnhancedNavItem> {
                   SizedBox(
                     width: 24.0,
                     height: 24.0,
-                    child: SvgPicture.asset(
-                      widget.iconPath,
-                      colorFilter: ColorFilter.mode(
-                        widget.color,
-                        BlendMode.srcIn,
-                      ),
-                    ),
+                    child: widget.icon != null
+                        ? Icon(
+                            widget.icon,
+                            color: widget.color,
+                            size: 24.0,
+                          )
+                        : SvgPicture.asset(
+                            widget.iconPath!,
+                            colorFilter: ColorFilter.mode(
+                              widget.color,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                   ),
                   if (widget.badgeCount != null && widget.badgeCount! > 0)
                     Positioned(
