@@ -90,5 +90,63 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         id,
       ));
     });
+
+    on<_PaymentSuccess>((event, emit) async {
+      emit(const _Loading());
+      
+      final subTotal = event.items.fold<int>(
+          0,
+          (previousValue, element) =>
+              previousValue +
+              (element.product.price!.toIntegerFromText * element.quantity));
+
+      final totalItem = event.items.fold<int>(
+          0, (previousValue, element) => previousValue + element.quantity);
+
+      final userData = await AuthLocalDataSource().getAuthData();
+
+      final dataInput = OrderModel(
+        subTotal: subTotal,
+        paymentAmount: event.paymentAmount,
+        tax: event.tax,
+        discount: event.discount,
+        discountAmount: event.discountAmount,
+        serviceCharge: event.serviceCharge,
+        total: event.totalPriceFinal,
+        paymentMethod: event.paymentMethod,
+        totalItem: totalItem,
+        idKasir: userData.user?.id ?? 1,
+        namaKasir: userData.user?.name ?? 'Kasir A',
+        transactionTime: DateTime.now().toIso8601String(),
+        customerName: event.customerName,
+        tableNumber: event.tableNumber,
+        status: event.status,
+        paymentStatus: event.paymentStatus,
+        orderType: event.orderType,
+        taxPercentage: event.taxPercentage,
+        serviceChargePercentage: event.serviceChargePercentage,
+        isSync: 1, // Already synced (created on backend)
+        orderItems: event.items,
+      );
+
+      int id = 0;
+      
+      // Only save to local database if NOT web
+      if (!kIsWeb) {
+        log("📱 Mobile: Saving to local SQLite database (Payment Success)...");
+        // Save as synced since it exists on backend
+        id = await ProductLocalDatasource.instance
+            .saveOrder(dataInput.copyWith(isSync: 1));
+        log("✅ Saved to local database with ID: $id");
+      } else {
+        log("🌐 Web: Skipping local database save");
+        id = 0;
+      }
+
+      emit(_Loaded(
+        dataInput,
+        id,
+      ));
+    });
   }
 }

@@ -4,8 +4,13 @@ part of 'qris_bloc.dart';
 class QrisEvent with _$QrisEvent {
   const factory QrisEvent.started() = _Started;
   //generateQRCode
-  const factory QrisEvent.generateQRCode(String orderId, int grossAmount) =
-      _GenerateQRCode;
+  const factory QrisEvent.generateQRCode(
+    String orderId,
+    int grossAmount,
+    List<ProductQuantity> items,
+    String customerName,
+    int tableNumber,
+  ) = _GenerateQRCode;
 
   //checkPaymentStatus
   const factory QrisEvent.checkPaymentStatus(String orderId) =

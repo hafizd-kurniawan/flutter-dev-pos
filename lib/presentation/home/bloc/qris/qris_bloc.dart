@@ -6,6 +6,7 @@ import 'package:flutter_posresto_app/data/datasources/midtrans_remote_datasource
 import 'package:flutter_posresto_app/data/models/response/qris_response_model.dart';
 import 'package:flutter_posresto_app/data/models/response/qris_status_response_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 
 part 'qris_event.dart';
 part 'qris_state.dart';
@@ -18,10 +19,20 @@ class QrisBloc extends Bloc<QrisEvent, QrisState> {
   ) : super(const _Initial()) {
     on<_GenerateQRCode>((event, emit) async {
       emit(const QrisState.loading());
-      final response =
-          await datasource.generateQRCode(event.orderId, event.grossAmount);
-      log("response: ${response}");
-      emit(_QrisResponse(response));
+      try {
+        final response = await datasource.generateQRCode(
+          event.orderId,
+          event.grossAmount,
+          event.items,
+          event.customerName,
+          event.tableNumber,
+        );
+        log("response: ${response}");
+        emit(_QrisResponse(response));
+      } catch (e) {
+        log("Error generating QR: $e");
+        // emit error state if possible, or just log for now
+      }
     });
 
     on<_CheckPaymentStatus>((event, emit) async {

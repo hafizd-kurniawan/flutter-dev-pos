@@ -15,6 +15,7 @@ import 'package:flutter_posresto_app/presentation/home/widgets/success_payment_d
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_order/sync_order_bloc.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/components/spaces.dart';
 import '../../../core/constants/colors.dart';
@@ -76,6 +77,9 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
     context.read<QrisBloc>().add(QrisEvent.generateQRCode(
           orderId,
           widget.price,
+          widget.items,
+          widget.customerName,
+          widget.tableNumber,
         ));
     super.initState();
   }
@@ -129,7 +133,7 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                               ));
                         });
                       }, success: (message) async {
-                        context.read<OrderBloc>().add(OrderEvent.order(
+                        context.read<OrderBloc>().add(OrderEvent.paymentSuccess(
                             widget.items,
                             widget.discount,
                             widget.discountAmount,
@@ -177,6 +181,9 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                           },
                           qrisResponse: (data) {
                             log("URL: ${data.actions!.first.url!}");
+                            final url = data.actions!.first.url!;
+                            final isXendit = url.contains('xendit');
+                            
                             return WidgetsToImage(
                               controller: controller,
                               child: Container(
@@ -189,8 +196,14 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                                 child: Column(
                                   children: [
                                     Center(
-                                      child: Image.network(
-                                        data.actions!.first.url!,
+                                      child: isXendit 
+                                      ? QrImageView(
+                                          data: url,
+                                          version: QrVersions.auto,
+                                          size: 200.0,
+                                        )
+                                      : Image.network(
+                                        url,
                                       ),
                                     ),
                                     // const SpaceHeight(5.0),
