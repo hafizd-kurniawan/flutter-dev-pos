@@ -37,6 +37,8 @@ class OrderModel {
   final String paymentStatus;
   final String orderType; // 'dine_in' or 'takeaway'
   final int isSync;
+  final int taxPercentage; // NEW
+  final int serviceChargePercentage; // NEW
   final List<ProductQuantity> orderItems;
   OrderModel({
     this.id,
@@ -58,6 +60,8 @@ class OrderModel {
     required this.paymentStatus,
     this.orderType = 'dine_in', // Default to dine_in
     required this.isSync,
+    this.taxPercentage = 0, // NEW
+    this.serviceChargePercentage = 0, // NEW
     required this.orderItems,
   });
 
@@ -93,6 +97,8 @@ class OrderModel {
       'payment_status': paymentStatus,
       'order_type': orderType,
       'transaction_time': transactionTime,
+      'tax_percentage': taxPercentage, // NEW
+      'service_charge_percentage': serviceChargePercentage, // NEW
       'order_items': orderItems.map((e) => e.toServerMap(id)).toList(),
     };
   }
@@ -118,6 +124,8 @@ class OrderModel {
       'payment_status': paymentStatus,
       'order_type': orderType,
       'is_sync': isSync,
+      'tax_percentage': taxPercentage, // NEW
+      'service_charge_percentage': serviceChargePercentage, // NEW
     };
   }
 
@@ -143,6 +151,8 @@ class OrderModel {
       status: map['status'] ?? '',
       paymentStatus: map['payment_status'] ?? '',
       orderType: map['order_type'] ?? 'dine_in',
+      taxPercentage: map['tax_percentage']?.toInt() ?? 0, // NEW
+      serviceChargePercentage: map['service_charge_percentage']?.toInt() ?? 0, // NEW
       orderItems: [],
     );
   }
@@ -172,6 +182,8 @@ class OrderModel {
     String? paymentStatus,
     String? orderType,
     int? isSync,
+    int? taxPercentage, // NEW
+    int? serviceChargePercentage, // NEW
     List<ProductQuantity>? orderItems,
   }) {
     return OrderModel(
@@ -194,6 +206,8 @@ class OrderModel {
       paymentStatus: paymentStatus ?? this.paymentStatus,
       orderType: orderType ?? this.orderType,
       isSync: isSync ?? this.isSync,
+      taxPercentage: taxPercentage ?? this.taxPercentage, // NEW
+      serviceChargePercentage: serviceChargePercentage ?? this.serviceChargePercentage, // NEW
       orderItems: orderItems ?? this.orderItems,
     );
   }

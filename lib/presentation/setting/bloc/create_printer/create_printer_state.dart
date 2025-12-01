@@ -5,4 +5,5 @@ class CreatePrinterState with _$CreatePrinterState {
   const factory CreatePrinterState.initial() = _Initial;
   const factory CreatePrinterState.loading() = _Loading;
   const factory CreatePrinterState.success(String message) = _Success;
+  const factory CreatePrinterState.error(String message) = _Error;
 }

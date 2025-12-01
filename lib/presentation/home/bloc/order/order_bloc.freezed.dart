@@ -32,8 +32,27 @@ mixin _$OrderEvent {
             String paymentStatus,
             String paymentMethod,
             int totalPriceFinal,
-            String orderType)
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)
         order,
+    required TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)
+        paymentSuccess,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -52,8 +71,27 @@ mixin _$OrderEvent {
             String paymentStatus,
             String paymentMethod,
             int totalPriceFinal,
-            String orderType)?
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
         order,
+    TResult? Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        paymentSuccess,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -72,8 +110,27 @@ mixin _$OrderEvent {
             String paymentStatus,
             String paymentMethod,
             int totalPriceFinal,
-            String orderType)?
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
         order,
+    TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        paymentSuccess,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -81,18 +138,21 @@ mixin _$OrderEvent {
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
     required TResult Function(_Order value) order,
+    required TResult Function(_PaymentSuccess value) paymentSuccess,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
     TResult? Function(_Order value)? order,
+    TResult? Function(_PaymentSuccess value)? paymentSuccess,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
     TResult Function(_Order value)? order,
+    TResult Function(_PaymentSuccess value)? paymentSuccess,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -174,8 +234,27 @@ class _$StartedImpl implements _Started {
             String paymentStatus,
             String paymentMethod,
             int totalPriceFinal,
-            String orderType)
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)
         order,
+    required TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)
+        paymentSuccess,
   }) {
     return started();
   }
@@ -197,8 +276,27 @@ class _$StartedImpl implements _Started {
             String paymentStatus,
             String paymentMethod,
             int totalPriceFinal,
-            String orderType)?
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
         order,
+    TResult? Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        paymentSuccess,
   }) {
     return started?.call();
   }
@@ -220,8 +318,27 @@ class _$StartedImpl implements _Started {
             String paymentStatus,
             String paymentMethod,
             int totalPriceFinal,
-            String orderType)?
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
         order,
+    TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        paymentSuccess,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -235,6 +352,7 @@ class _$StartedImpl implements _Started {
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
     required TResult Function(_Order value) order,
+    required TResult Function(_PaymentSuccess value) paymentSuccess,
   }) {
     return started(this);
   }
@@ -244,6 +362,7 @@ class _$StartedImpl implements _Started {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
     TResult? Function(_Order value)? order,
+    TResult? Function(_PaymentSuccess value)? paymentSuccess,
   }) {
     return started?.call(this);
   }
@@ -253,6 +372,7 @@ class _$StartedImpl implements _Started {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
     TResult Function(_Order value)? order,
+    TResult Function(_PaymentSuccess value)? paymentSuccess,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -285,7 +405,9 @@ abstract class _$$OrderImplCopyWith<$Res> {
       String paymentStatus,
       String paymentMethod,
       int totalPriceFinal,
-      String orderType});
+      String orderType,
+      int taxPercentage,
+      int serviceChargePercentage});
 }
 
 /// @nodoc
@@ -314,6 +436,8 @@ class __$$OrderImplCopyWithImpl<$Res>
     Object? paymentMethod = null,
     Object? totalPriceFinal = null,
     Object? orderType = null,
+    Object? taxPercentage = null,
+    Object? serviceChargePercentage = null,
   }) {
     return _then(_$OrderImpl(
       null == items
@@ -368,6 +492,14 @@ class __$$OrderImplCopyWithImpl<$Res>
           ? _value.orderType
           : orderType // ignore: cast_nullable_to_non_nullable
               as String,
+      null == taxPercentage
+          ? _value.taxPercentage
+          : taxPercentage // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == serviceChargePercentage
+          ? _value.serviceChargePercentage
+          : serviceChargePercentage // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -388,7 +520,9 @@ class _$OrderImpl implements _Order {
       this.paymentStatus,
       this.paymentMethod,
       this.totalPriceFinal,
-      this.orderType)
+      this.orderType,
+      this.taxPercentage,
+      this.serviceChargePercentage)
       : _items = items;
 
   final List<ProductQuantity> _items;
@@ -423,10 +557,16 @@ class _$OrderImpl implements _Order {
   final int totalPriceFinal;
   @override
   final String orderType;
+// Added: 'dine_in' or 'takeaway'
+  @override
+  final int taxPercentage;
+// NEW
+  @override
+  final int serviceChargePercentage;
 
   @override
   String toString() {
-    return 'OrderEvent.order(items: $items, discount: $discount, discountAmount: $discountAmount, tax: $tax, serviceCharge: $serviceCharge, paymentAmount: $paymentAmount, customerName: $customerName, tableNumber: $tableNumber, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, totalPriceFinal: $totalPriceFinal, orderType: $orderType)';
+    return 'OrderEvent.order(items: $items, discount: $discount, discountAmount: $discountAmount, tax: $tax, serviceCharge: $serviceCharge, paymentAmount: $paymentAmount, customerName: $customerName, tableNumber: $tableNumber, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, totalPriceFinal: $totalPriceFinal, orderType: $orderType, taxPercentage: $taxPercentage, serviceChargePercentage: $serviceChargePercentage)';
   }
 
   @override
@@ -456,7 +596,12 @@ class _$OrderImpl implements _Order {
             (identical(other.totalPriceFinal, totalPriceFinal) ||
                 other.totalPriceFinal == totalPriceFinal) &&
             (identical(other.orderType, orderType) ||
-                other.orderType == orderType));
+                other.orderType == orderType) &&
+            (identical(other.taxPercentage, taxPercentage) ||
+                other.taxPercentage == taxPercentage) &&
+            (identical(
+                    other.serviceChargePercentage, serviceChargePercentage) ||
+                other.serviceChargePercentage == serviceChargePercentage));
   }
 
   @override
@@ -474,7 +619,9 @@ class _$OrderImpl implements _Order {
       paymentStatus,
       paymentMethod,
       totalPriceFinal,
-      orderType);
+      orderType,
+      taxPercentage,
+      serviceChargePercentage);
 
   /// Create a copy of OrderEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -501,8 +648,27 @@ class _$OrderImpl implements _Order {
             String paymentStatus,
             String paymentMethod,
             int totalPriceFinal,
-            String orderType)
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)
         order,
+    required TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)
+        paymentSuccess,
   }) {
     return order(
         items,
@@ -517,7 +683,9 @@ class _$OrderImpl implements _Order {
         paymentStatus,
         paymentMethod,
         totalPriceFinal,
-        orderType);
+        orderType,
+        taxPercentage,
+        serviceChargePercentage);
   }
 
   @override
@@ -537,8 +705,27 @@ class _$OrderImpl implements _Order {
             String paymentStatus,
             String paymentMethod,
             int totalPriceFinal,
-            String orderType)?
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
         order,
+    TResult? Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        paymentSuccess,
   }) {
     return order?.call(
         items,
@@ -553,7 +740,9 @@ class _$OrderImpl implements _Order {
         paymentStatus,
         paymentMethod,
         totalPriceFinal,
-        orderType);
+        orderType,
+        taxPercentage,
+        serviceChargePercentage);
   }
 
   @override
@@ -573,8 +762,27 @@ class _$OrderImpl implements _Order {
             String paymentStatus,
             String paymentMethod,
             int totalPriceFinal,
-            String orderType)?
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
         order,
+    TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        paymentSuccess,
     required TResult orElse(),
   }) {
     if (order != null) {
@@ -591,7 +799,9 @@ class _$OrderImpl implements _Order {
           paymentStatus,
           paymentMethod,
           totalPriceFinal,
-          orderType);
+          orderType,
+          taxPercentage,
+          serviceChargePercentage);
     }
     return orElse();
   }
@@ -601,6 +811,7 @@ class _$OrderImpl implements _Order {
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
     required TResult Function(_Order value) order,
+    required TResult Function(_PaymentSuccess value) paymentSuccess,
   }) {
     return order(this);
   }
@@ -610,6 +821,7 @@ class _$OrderImpl implements _Order {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
     TResult? Function(_Order value)? order,
+    TResult? Function(_PaymentSuccess value)? paymentSuccess,
   }) {
     return order?.call(this);
   }
@@ -619,6 +831,7 @@ class _$OrderImpl implements _Order {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
     TResult Function(_Order value)? order,
+    TResult Function(_PaymentSuccess value)? paymentSuccess,
     required TResult orElse(),
   }) {
     if (order != null) {
@@ -642,7 +855,504 @@ abstract class _Order implements OrderEvent {
       final String paymentStatus,
       final String paymentMethod,
       final int totalPriceFinal,
-      final String orderType) = _$OrderImpl;
+      final String orderType,
+      final int taxPercentage,
+      final int serviceChargePercentage) = _$OrderImpl;
+
+  List<ProductQuantity> get items;
+  int get discount;
+  int get discountAmount;
+  int get tax;
+  int get serviceCharge;
+  int get paymentAmount;
+  String get customerName;
+  int get tableNumber;
+  String get status;
+  String get paymentStatus;
+  String get paymentMethod;
+  int get totalPriceFinal;
+  String get orderType; // Added: 'dine_in' or 'takeaway'
+  int get taxPercentage; // NEW
+  int get serviceChargePercentage;
+
+  /// Create a copy of OrderEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$OrderImplCopyWith<_$OrderImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$PaymentSuccessImplCopyWith<$Res> {
+  factory _$$PaymentSuccessImplCopyWith(_$PaymentSuccessImpl value,
+          $Res Function(_$PaymentSuccessImpl) then) =
+      __$$PaymentSuccessImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call(
+      {List<ProductQuantity> items,
+      int discount,
+      int discountAmount,
+      int tax,
+      int serviceCharge,
+      int paymentAmount,
+      String customerName,
+      int tableNumber,
+      String status,
+      String paymentStatus,
+      String paymentMethod,
+      int totalPriceFinal,
+      String orderType,
+      int taxPercentage,
+      int serviceChargePercentage});
+}
+
+/// @nodoc
+class __$$PaymentSuccessImplCopyWithImpl<$Res>
+    extends _$OrderEventCopyWithImpl<$Res, _$PaymentSuccessImpl>
+    implements _$$PaymentSuccessImplCopyWith<$Res> {
+  __$$PaymentSuccessImplCopyWithImpl(
+      _$PaymentSuccessImpl _value, $Res Function(_$PaymentSuccessImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of OrderEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? discount = null,
+    Object? discountAmount = null,
+    Object? tax = null,
+    Object? serviceCharge = null,
+    Object? paymentAmount = null,
+    Object? customerName = null,
+    Object? tableNumber = null,
+    Object? status = null,
+    Object? paymentStatus = null,
+    Object? paymentMethod = null,
+    Object? totalPriceFinal = null,
+    Object? orderType = null,
+    Object? taxPercentage = null,
+    Object? serviceChargePercentage = null,
+  }) {
+    return _then(_$PaymentSuccessImpl(
+      null == items
+          ? _value._items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<ProductQuantity>,
+      null == discount
+          ? _value.discount
+          : discount // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == discountAmount
+          ? _value.discountAmount
+          : discountAmount // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == tax
+          ? _value.tax
+          : tax // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == serviceCharge
+          ? _value.serviceCharge
+          : serviceCharge // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == paymentAmount
+          ? _value.paymentAmount
+          : paymentAmount // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == customerName
+          ? _value.customerName
+          : customerName // ignore: cast_nullable_to_non_nullable
+              as String,
+      null == tableNumber
+          ? _value.tableNumber
+          : tableNumber // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      null == paymentStatus
+          ? _value.paymentStatus
+          : paymentStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      null == paymentMethod
+          ? _value.paymentMethod
+          : paymentMethod // ignore: cast_nullable_to_non_nullable
+              as String,
+      null == totalPriceFinal
+          ? _value.totalPriceFinal
+          : totalPriceFinal // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == orderType
+          ? _value.orderType
+          : orderType // ignore: cast_nullable_to_non_nullable
+              as String,
+      null == taxPercentage
+          ? _value.taxPercentage
+          : taxPercentage // ignore: cast_nullable_to_non_nullable
+              as int,
+      null == serviceChargePercentage
+          ? _value.serviceChargePercentage
+          : serviceChargePercentage // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$PaymentSuccessImpl implements _PaymentSuccess {
+  const _$PaymentSuccessImpl(
+      final List<ProductQuantity> items,
+      this.discount,
+      this.discountAmount,
+      this.tax,
+      this.serviceCharge,
+      this.paymentAmount,
+      this.customerName,
+      this.tableNumber,
+      this.status,
+      this.paymentStatus,
+      this.paymentMethod,
+      this.totalPriceFinal,
+      this.orderType,
+      this.taxPercentage,
+      this.serviceChargePercentage)
+      : _items = items;
+
+  final List<ProductQuantity> _items;
+  @override
+  List<ProductQuantity> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
+
+  @override
+  final int discount;
+  @override
+  final int discountAmount;
+  @override
+  final int tax;
+  @override
+  final int serviceCharge;
+  @override
+  final int paymentAmount;
+  @override
+  final String customerName;
+  @override
+  final int tableNumber;
+  @override
+  final String status;
+  @override
+  final String paymentStatus;
+  @override
+  final String paymentMethod;
+  @override
+  final int totalPriceFinal;
+  @override
+  final String orderType;
+  @override
+  final int taxPercentage;
+  @override
+  final int serviceChargePercentage;
+
+  @override
+  String toString() {
+    return 'OrderEvent.paymentSuccess(items: $items, discount: $discount, discountAmount: $discountAmount, tax: $tax, serviceCharge: $serviceCharge, paymentAmount: $paymentAmount, customerName: $customerName, tableNumber: $tableNumber, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, totalPriceFinal: $totalPriceFinal, orderType: $orderType, taxPercentage: $taxPercentage, serviceChargePercentage: $serviceChargePercentage)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PaymentSuccessImpl &&
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.discount, discount) ||
+                other.discount == discount) &&
+            (identical(other.discountAmount, discountAmount) ||
+                other.discountAmount == discountAmount) &&
+            (identical(other.tax, tax) || other.tax == tax) &&
+            (identical(other.serviceCharge, serviceCharge) ||
+                other.serviceCharge == serviceCharge) &&
+            (identical(other.paymentAmount, paymentAmount) ||
+                other.paymentAmount == paymentAmount) &&
+            (identical(other.customerName, customerName) ||
+                other.customerName == customerName) &&
+            (identical(other.tableNumber, tableNumber) ||
+                other.tableNumber == tableNumber) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.paymentStatus, paymentStatus) ||
+                other.paymentStatus == paymentStatus) &&
+            (identical(other.paymentMethod, paymentMethod) ||
+                other.paymentMethod == paymentMethod) &&
+            (identical(other.totalPriceFinal, totalPriceFinal) ||
+                other.totalPriceFinal == totalPriceFinal) &&
+            (identical(other.orderType, orderType) ||
+                other.orderType == orderType) &&
+            (identical(other.taxPercentage, taxPercentage) ||
+                other.taxPercentage == taxPercentage) &&
+            (identical(
+                    other.serviceChargePercentage, serviceChargePercentage) ||
+                other.serviceChargePercentage == serviceChargePercentage));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_items),
+      discount,
+      discountAmount,
+      tax,
+      serviceCharge,
+      paymentAmount,
+      customerName,
+      tableNumber,
+      status,
+      paymentStatus,
+      paymentMethod,
+      totalPriceFinal,
+      orderType,
+      taxPercentage,
+      serviceChargePercentage);
+
+  /// Create a copy of OrderEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$PaymentSuccessImplCopyWith<_$PaymentSuccessImpl> get copyWith =>
+      __$$PaymentSuccessImplCopyWithImpl<_$PaymentSuccessImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() started,
+    required TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)
+        order,
+    required TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)
+        paymentSuccess,
+  }) {
+    return paymentSuccess(
+        items,
+        discount,
+        discountAmount,
+        tax,
+        serviceCharge,
+        paymentAmount,
+        customerName,
+        tableNumber,
+        status,
+        paymentStatus,
+        paymentMethod,
+        totalPriceFinal,
+        orderType,
+        taxPercentage,
+        serviceChargePercentage);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? started,
+    TResult? Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        order,
+    TResult? Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        paymentSuccess,
+  }) {
+    return paymentSuccess?.call(
+        items,
+        discount,
+        discountAmount,
+        tax,
+        serviceCharge,
+        paymentAmount,
+        customerName,
+        tableNumber,
+        status,
+        paymentStatus,
+        paymentMethod,
+        totalPriceFinal,
+        orderType,
+        taxPercentage,
+        serviceChargePercentage);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? started,
+    TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        order,
+    TResult Function(
+            List<ProductQuantity> items,
+            int discount,
+            int discountAmount,
+            int tax,
+            int serviceCharge,
+            int paymentAmount,
+            String customerName,
+            int tableNumber,
+            String status,
+            String paymentStatus,
+            String paymentMethod,
+            int totalPriceFinal,
+            String orderType,
+            int taxPercentage,
+            int serviceChargePercentage)?
+        paymentSuccess,
+    required TResult orElse(),
+  }) {
+    if (paymentSuccess != null) {
+      return paymentSuccess(
+          items,
+          discount,
+          discountAmount,
+          tax,
+          serviceCharge,
+          paymentAmount,
+          customerName,
+          tableNumber,
+          status,
+          paymentStatus,
+          paymentMethod,
+          totalPriceFinal,
+          orderType,
+          taxPercentage,
+          serviceChargePercentage);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Started value) started,
+    required TResult Function(_Order value) order,
+    required TResult Function(_PaymentSuccess value) paymentSuccess,
+  }) {
+    return paymentSuccess(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Started value)? started,
+    TResult? Function(_Order value)? order,
+    TResult? Function(_PaymentSuccess value)? paymentSuccess,
+  }) {
+    return paymentSuccess?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Started value)? started,
+    TResult Function(_Order value)? order,
+    TResult Function(_PaymentSuccess value)? paymentSuccess,
+    required TResult orElse(),
+  }) {
+    if (paymentSuccess != null) {
+      return paymentSuccess(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _PaymentSuccess implements OrderEvent {
+  const factory _PaymentSuccess(
+      final List<ProductQuantity> items,
+      final int discount,
+      final int discountAmount,
+      final int tax,
+      final int serviceCharge,
+      final int paymentAmount,
+      final String customerName,
+      final int tableNumber,
+      final String status,
+      final String paymentStatus,
+      final String paymentMethod,
+      final int totalPriceFinal,
+      final String orderType,
+      final int taxPercentage,
+      final int serviceChargePercentage) = _$PaymentSuccessImpl;
 
   List<ProductQuantity> get items;
   int get discount;
@@ -657,11 +1367,13 @@ abstract class _Order implements OrderEvent {
   String get paymentMethod;
   int get totalPriceFinal;
   String get orderType;
+  int get taxPercentage;
+  int get serviceChargePercentage;
 
   /// Create a copy of OrderEvent
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$OrderImplCopyWith<_$OrderImpl> get copyWith =>
+  _$$PaymentSuccessImplCopyWith<_$PaymentSuccessImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

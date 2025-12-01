@@ -27,11 +27,13 @@ class ConfirmPaymentPage extends StatefulWidget {
   final bool isTable;
   final TableModel? table;
   final String orderType; // 'dine_in' or 'takeaway'
+  final VoidCallback? onPaymentSuccess; // NEW: Callback
   const ConfirmPaymentPage({
     Key? key,
     required this.isTable,
     this.table,
     this.orderType = 'dine_in', // Default to dine_in
+    this.onPaymentSuccess, // NEW: Callback
   }) : super(key: key);
 
   @override
@@ -177,8 +179,12 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
     return SafeArea(
       // REMOVED Hero widget to prevent validation conflicts
       child: Scaffold(
-          body: Row(
-            children: [
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              final isLarge = constraints.maxWidth > 800;
+              return Flex(
+                direction: isLarge ? Axis.horizontal : Axis.vertical,
+                children: [
               Expanded(
                 flex: 2,
                 child: Align(
@@ -1262,7 +1268,10 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                         'paid',
                                                         'Cash',
                                                         finalTotal,
-                                                        widget.orderType)); // Pass order type
+                                                        widget.orderType,
+                                                        taxPercentage, // NEW
+                                                        servicePercentage, // NEW
+                                                    )); // Pass order type
                                                 
                                                 log("⏳ Waiting for OrderBloc to emit loaded state...");
                                                 
@@ -1296,6 +1305,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                       paymentAmount: paymentAmountValue, // Pass actual payment
                                                       tableName: widget.table?.name, // NEW: Pass table name
                                                       orderType: widget.orderType, // NEW: Pass order type
+                                                      onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
                                                     ),
                                                   );
                                                 }
@@ -1328,6 +1338,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                     status: 'paid', // Changed: was 'completed', now 'paid' for order tracking
                                                     orderType: widget.orderType,
                                                     tableName: widget.table?.name, // NEW: Pass table name
+                                                    onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
                                                   ),
                                                 );
                                               }
@@ -1379,8 +1390,10 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                   ),
                 ),
               ),
-            ],
-          ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

@@ -44,4 +44,21 @@ class AuthRemoteDatasource {
       return const Left('Failed to logout');
     }
   }
+
+  // Update FCM Token
+  Future<Either<String, bool>> updateFcmToken(String token) async {
+    final headers = await ApiHelper.getHeaders();
+    final url = Uri.parse('${Variables.baseUrl}/api/fcm-token');
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode({'fcm_token': token}),
+    );
+
+    if (response.statusCode == 200) {
+      return const Right(true);
+    } else {
+      return const Left('Failed to update FCM token');
+    }
+  }
 }

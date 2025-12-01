@@ -32,6 +32,8 @@ import '../widgets/collapsed_nav_item.dart';
 import '../widgets/nav_user_info_card.dart';
 import 'home_page.dart';
 
+import 'package:flutter_posresto_app/core/services/notification_service.dart';
+
 class DashboardPage extends StatefulWidget {
   final int? index;
   final TableModel? table;
@@ -97,6 +99,9 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    // Initialize Notification Service
+    NotificationService().init();
+    
     _selectedIndex = widget.index!;
     _selectedTable = widget.table;
     
@@ -218,20 +223,20 @@ class _DashboardPageState extends State<DashboardPage> {
                       onTap: () => _onItemTapped(0),
                     ),
                     EnhancedNavItem(
-                      iconPath: Assets.icons.kelolaProduk.path,
+                      icon: Icons.table_restaurant,
                       label: 'Tables',
                       isActive: _selectedIndex == 1,
                       onTap: () => _onItemTapped(1),
                     ),
                     EnhancedNavItem(
-                      iconPath: Assets.icons.dashboard.path,
+                      iconPath: Assets.icons.history.path,
                       label: 'History',
                       isActive: _selectedIndex == 2,
                       onTap: () => _onItemTapped(2),
                       badgeCount: 0,
                     ),
                     EnhancedNavItem(
-                      iconPath: Assets.icons.report.path,
+                      iconPath: Assets.icons.dashboard.path,
                       label: 'Dashboard',
                       isActive: _selectedIndex == 3,
                       onTap: () => _onItemTapped(3),
@@ -255,18 +260,18 @@ class _DashboardPageState extends State<DashboardPage> {
                       onTap: () => _onItemTapped(0),
                     ),
                     CollapsedNavItem(
-                      iconPath: Assets.icons.kelolaProduk.path,
+                      icon: Icons.table_restaurant,
                       isActive: _selectedIndex == 1,
                       onTap: () => _onItemTapped(1),
                     ),
                     CollapsedNavItem(
-                      iconPath: Assets.icons.dashboard.path,
+                      iconPath: Assets.icons.history.path,
                       isActive: _selectedIndex == 2,
                       onTap: () => _onItemTapped(2),
                       badgeCount: 0,
                     ),
                     CollapsedNavItem(
-                      iconPath: Assets.icons.report.path,
+                      iconPath: Assets.icons.dashboard.path,
                       isActive: _selectedIndex == 3,
                       onTap: () => _onItemTapped(3),
                     ),
@@ -451,15 +456,26 @@ class _DashboardPageState extends State<DashboardPage> {
                             },
                           );
                         },
-                        child: NavItem(
-                          iconPath: Assets.icons.logout.path,
-                          isActive: false,
-                          onTap: () {
-                            context
-                                .read<LogoutBloc>()
-                                .add(const LogoutEvent.logout());
-                          },
-                        ),
+                        child: _isSidebarExpanded
+                            ? EnhancedNavItem(
+                                icon: Icons.logout,
+                                label: 'Logout',
+                                isActive: false,
+                                onTap: () {
+                                  context
+                                      .read<LogoutBloc>()
+                                      .add(const LogoutEvent.logout());
+                                },
+                              )
+                            : CollapsedNavItem(
+                                icon: Icons.logout,
+                                isActive: false,
+                                onTap: () {
+                                  context
+                                      .read<LogoutBloc>()
+                                      .add(const LogoutEvent.logout());
+                                },
+                              ),
                       ),
                     ],
                   ),

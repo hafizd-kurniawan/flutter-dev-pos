@@ -784,11 +784,40 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                         ),
                                       );
 
+                                      final tax = state.maybeWhen(
+                                        orElse: () => 0,
+                                        loaded: (products,
+                                                discountModel,
+                                                discount,
+                                                discountAmount,
+                                                tax,
+                                                serviceCharge,
+                                                totalQuantity,
+                                                totalPrice,
+                                                draftName) =>
+                                            tax,
+                                      );
+                                      final serviceCharge = state.maybeWhen(
+                                        orElse: () => 0,
+                                        loaded: (products,
+                                                discountModel,
+                                                discount,
+                                                discountAmount,
+                                                tax,
+                                                serviceCharge,
+                                                totalQuantity,
+                                                totalPrice,
+                                                draftName) =>
+                                            serviceCharge,
+                                      );
+
                                       final subTotal =
                                           price - (discount / 100 * price);
                                       final totalDiscount =
                                           discount / 100 * price;
-                                      final finalTax = subTotal * 0.11;
+                                      final finalTax = subTotal * (tax / 100);
+                                      final finalService = subTotal * (serviceCharge / 100); // NEW: Calculate service
+                                      final totalPrice = subTotal + finalTax + finalService; // NEW: Include service
 
                                       List<ProductQuantity> items =
                                           state.maybeWhen(
@@ -810,8 +839,6 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                             previousValue + element.quantity,
                                       );
 
-                                      final totalPrice = subTotal + finalTax;
-
                                       return Flexible(
                                         child: Button.filled(
                                           onPressed: () async {
@@ -822,7 +849,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                       discount,
                                                       discountAmountFinal,
                                                       finalTax.toInt(),
-                                                      0,
+                                                      finalService.toInt(), // NEW: Pass service amount
                                                       totalPriceController.text
                                                           .toIntegerFromText,
                                                       customerController.text,
@@ -831,7 +858,10 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                       'paid',
                                                       isCash ? 'Cash' : 'Qris',
                                                       totalPriceFinal,
-                                                      'dine_in')); // Table payment is always dine_in
+                                                      'dine_in',
+                                                      tax, // NEW: taxPercentage
+                                                      serviceCharge, // NEW: servicePercentage
+                                                  )); // Table payment is always dine_in
 
                                               await showDialog(
                                                 context: context,
@@ -848,12 +878,13 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                       totalDiscount.toInt(),
                                                   subTotal: subTotal.toInt(),
                                                   normalPrice: price,
-                                                  totalService: 0,
+                                                  totalService: finalService.toInt(), // NEW: Pass service amount
                                                   draftName:
                                                       customerController.text,
                                                   paymentAmount: totalPriceController.text.toIntegerFromText, // ADDED
                                                 ),
                                               );
+
                                             } else {
                                               showDialog(
                                                 context: context,

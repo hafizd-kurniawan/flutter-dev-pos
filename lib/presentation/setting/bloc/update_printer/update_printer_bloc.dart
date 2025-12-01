@@ -10,12 +10,16 @@ part 'update_printer_bloc.freezed.dart';
 class UpdatePrinterBloc extends Bloc<UpdatePrinterEvent, UpdatePrinterState> {
   UpdatePrinterBloc() : super(_Initial()) {
     on<_UpdatePrinter>((event, emit) async {
-      emit(_Loading());
-      await ProductLocalDatasource.instance.updatePrinter(
-        event.print,
-        event.print.id!,
-      );
-      emit(_Success('Update Table Success'));
+      emit(const _Loading());
+      try {
+        await ProductLocalDatasource.instance.updatePrinter(
+          event.print,
+          event.print.id!,
+        );
+        emit(const _Success('Update Printer Success'));
+      } catch (e) {
+        emit(_Error(e.toString()));
+      }
     });
   }
 }
