@@ -16,127 +16,355 @@ class OrderMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Flexible(
-              child: InkWell(
-                onTap: () {
-                  // Show dialog to edit note
-                  _showNoteDialog(context);
-                },
-                child: ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                    child: data.product.image != null && data.product.image!.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: data.product.image!.contains('http')
-                                ? data.product.image!
-                                : '${Variables.baseUrl}/${data.product.image}',
-                            width: 50.0,
-                            height: 50.0,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) => Icon(
-                              Icons.fastfood,
-                              size: 50,
-                              color: AppColors.primary,
-                            ),
-                          )
-                        : Icon(
-                            Icons.fastfood,
-                            size: 50,
-                            color: AppColors.primary,
-                          ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Check if we are in a very narrow container (e.g. tablet sidebar)
+        final isCompact = constraints.maxWidth < 350;
+        
+        if (isCompact) {
+          return _buildCompactLayout(context);
+        } else {
+          return _buildSpaciousLayout(context);
+        }
+      },
+    );
+  }
+
+  // === SPACIOUS LAYOUT (Like ConfirmPaymentPage) ===
+  Widget _buildSpaciousLayout(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // 1. Image (Larger)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12.0),
+            child: data.product.image != null && data.product.image!.isNotEmpty
+                ? CachedNetworkImage(
+                    imageUrl: data.product.image!.toImageUrl,
+                    width: 64.0,
+                    height: 64.0,
+                    fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.fastfood,
+                      size: 64,
+                      color: AppColors.primary,
+                    ),
+                  )
+                : Icon(
+                    Icons.fastfood,
+                    size: 64,
+                    color: AppColors.primary,
                   ),
-                  title: Text(data.product.name ?? "-",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          (data.product.price ?? '0').toIntegerFromText.currencyFormatRp),
-                      if (data.note.isNotEmpty)
-                        Text(
-                          "Note: ${data.note}",
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                            fontStyle: FontStyle.italic,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Row(
+          ),
+          const SizedBox(width: 16),
+          
+          // 2. Details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    context
-                        .read<CheckoutBloc>()
-                        .add(CheckoutEvent.removeItem(data.product));
-                  },
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    color: AppColors.white,
-                    child: const Icon(
-                      Icons.remove_circle,
-                      color: AppColors.primary,
-                    ),
+                Text(
+                  data.product.name ?? "-",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
-                  width: 30.0,
-                  child: Center(
+                const SizedBox(height: 4),
+                Text(
+                  (data.product.price ?? '0').toIntegerFromText.currencyFormatRp,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (data.note.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  InkWell(
+                    onTap: () => _showNoteDialog(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                       child: Text(
-                    data.quantity.toString(),
-                  )),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    context
-                        .read<CheckoutBloc>()
-                        .add(CheckoutEvent.addItem(data.product));
-                  },
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    color: AppColors.white,
-                    child: const Icon(
-                      Icons.add_circle,
-                      color: AppColors.primary,
+                        "Note: ${data.note}",
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.primary,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
-                ),
+                ] else ...[
+                  const SizedBox(height: 4),
+                  InkWell(
+                    onTap: () => _showNoteDialog(context),
+                    child: Text(
+                      '+ Tambah Catatan',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
-            const SpaceWidth(8),
-            SizedBox(
-              width: 80.0,
-              child: Text(
+          ),
+          
+          // 3. Qty & Total (Vertical Stack)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Qty Controls
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                      onTap: () => context.read<CheckoutBloc>().add(CheckoutEvent.removeItem(data.product)),
+                      child: const Padding(
+                        padding: EdgeInsets.all(6.0),
+                        child: Icon(Icons.remove, size: 16, color: AppColors.primary),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 24,
+                      child: Center(
+                        child: Text(
+                          data.quantity.toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => context.read<CheckoutBloc>().add(CheckoutEvent.addItem(data.product)),
+                      child: const Padding(
+                        padding: EdgeInsets.all(6.0),
+                        child: Icon(Icons.add, size: 16, color: AppColors.primary),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
                 ((data.product.price ?? '0').toIntegerFromText * data.quantity)
                     .currencyFormatRp,
-                textAlign: TextAlign.right,
                 style: const TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
+                  fontSize: 15,
                 ),
               ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // === COMPACT LAYOUT (For Narrow Sidebar) ===
+  Widget _buildCompactLayout(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. Product Image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: data.product.image != null && data.product.image!.isNotEmpty
+                ? CachedNetworkImage(
+                    imageUrl: data.product.image!.toImageUrl,
+                    width: 40.0,
+                    height: 40.0,
+                    fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.fastfood,
+                      size: 40,
+                      color: AppColors.primary,
+                    ),
+                  )
+                : Icon(
+                    Icons.fastfood,
+                    size: 40,
+                    color: AppColors.primary,
+                  ),
+          ),
+          const SizedBox(width: 12),
+          
+          // 2. Product Details (Name, Price, Note)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Name
+                Text(
+                  data.product.name ?? "-",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                
+                // Price (Single Item)
+                Text(
+                  (data.product.price ?? '0').toIntegerFromText.currencyFormatRp,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                
+                // Note (if any)
+                if (data.note.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  InkWell(
+                    onTap: () => _showNoteDialog(context),
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit_note, size: 14, color: AppColors.primary),
+                        const SizedBox(width: 2),
+                        Expanded(
+                          child: Text(
+                            data.note,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.primary,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ] else ...[
+                  // Add Note Button (Small)
+                  const SizedBox(height: 2),
+                  InkWell(
+                    onTap: () => _showNoteDialog(context),
+                    child: Text(
+                      '+ Catatan',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
+          
+          // 3. Qty & Total Price Column
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Qty Controls
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildQtyButton(
+                    context, 
+                    icon: Icons.remove, 
+                    onTap: () => context.read<CheckoutBloc>().add(CheckoutEvent.removeItem(data.product)),
+                    isCompact: true,
+                  ),
+                  SizedBox(
+                    width: 20,
+                    child: Center(
+                      child: Text(
+                        data.quantity.toString(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                  _buildQtyButton(
+                    context, 
+                    icon: Icons.add, 
+                    onTap: () => context.read<CheckoutBloc>().add(CheckoutEvent.addItem(data.product)),
+                    isCompact: true,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              
+              // Total Price
+              Text(
+                ((data.product.price ?? '0').toIntegerFromText * data.quantity)
+                    .currencyFormatRp,
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQtyButton(BuildContext context, {
+    required IconData icon, 
+    required VoidCallback onTap,
+    required bool isCompact,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(4),
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(4),
         ),
-      ],
+        child: Icon(
+          icon,
+          size: isCompact ? 16 : 18,
+          color: AppColors.primary,
+        ),
+      ),
     );
   }
 
@@ -146,14 +374,15 @@ class OrderMenu extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Tambah Catatan'),
+          title: const Text('Catatan Item'),
           content: TextField(
             controller: noteController,
-            maxLength: 100, // Limit to 100 chars
-              decoration: const InputDecoration(
-                hintText: 'Contoh: Jangan pedas, Es sedikit',
-                border: OutlineInputBorder(),
-              ),
+            maxLength: 100,
+            decoration: const InputDecoration(
+              hintText: 'Contoh: Jangan pedas, Es sedikit',
+              border: OutlineInputBorder(),
+              helperText: 'Maksimal 100 karakter',
+            ),
             maxLines: 3,
           ),
           actions: [

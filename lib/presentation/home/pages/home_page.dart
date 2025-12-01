@@ -82,7 +82,8 @@ class _HomePageState extends State<HomePage> {
   int _getCartFlex(double availableWidth) {
     if (availableWidth < 600) return 1;      // Mobile
     if (availableWidth < 800) return 2;      // Tablet: 3:2 ratio
-    return 2;                                // Desktop: 4:2 (2:1) ratio
+    if (availableWidth < 1200) return 2;     // Desktop: 4:2 (2:1) ratio
+    return 3;                                // Large Desktop: 5:3 ratio (Wider cart)
   }
   
   /// Grid spacing
@@ -93,7 +94,8 @@ class _HomePageState extends State<HomePage> {
   
   /// Cart padding
   EdgeInsets _getCartPadding(double availableWidth) {
-    return const EdgeInsets.all(16.0); // Consistent padding
+    if (availableWidth > 1000) return const EdgeInsets.all(24.0); // Spacious padding
+    return const EdgeInsets.all(16.0); // Standard padding
   }
   
   /// Products section padding
@@ -484,7 +486,8 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 constraints: BoxConstraints(
                   minWidth: 280,
-                  maxWidth: availableWidth > 1100 ? 450 : double.infinity,
+                  // Allow wider cart on large screens
+                  maxWidth: availableWidth > 1100 ? 600 : 450,
                 ),
                 child: Align(
                   alignment: Alignment.topCenter,
@@ -613,7 +616,8 @@ class _HomePageState extends State<HomePage> {
                                     shrinkWrap: true,
                                     physics: const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) => OrderMenu(data: products[index]),
-                                    separatorBuilder: (context, index) => const SpaceHeight(1.0),
+                                    // Use wider spacing on large screens
+                                    separatorBuilder: (context, index) => SpaceHeight(availableWidth > 1000 ? 12.0 : 1.0),
                                     itemCount: products.length,
                                   );
                                 },
@@ -1286,7 +1290,7 @@ class _HomePageState extends State<HomePage> {
               itemCount: filteredProducts.length,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: 0.75,  // ✅ Taller cards to prevent overflow
+                childAspectRatio: 0.7,  // ✅ Taller cards to prevent overflow
                 crossAxisCount: _getGridCrossAxisCount(availableWidth),
                 crossAxisSpacing: _getGridSpacing(availableWidth),
                 mainAxisSpacing: _getGridSpacing(availableWidth),
