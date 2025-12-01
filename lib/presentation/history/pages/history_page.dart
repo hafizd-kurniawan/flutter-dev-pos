@@ -191,10 +191,50 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Update Order Status'),
-        content: Text(
-          order.status == 'paid'
-              ? 'Start cooking order ${order.code}?'
-              : 'Mark order ${order.code} as completed?',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              order.status == 'paid'
+                  ? 'Start cooking order ${order.code}?'
+                  : 'Mark order ${order.code} as completed?',
+            ),
+            if (order.note != null && order.note!.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.yellow[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.yellow.shade300),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Catatan Pesanan:',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange[800],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      order.note!,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.orange[900],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
         ),
         actions: [
           TextButton(
@@ -255,6 +295,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
             price: item.price.toString(),
           ),
           quantity: item.quantity,
+          note: item.note ?? '', // NEW: Pass item note for printing
         );
       }).toList();
 
@@ -279,6 +320,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         order.serviceChargePercentage ?? 0,
         order.orderType ?? 'Dine In', // NEW
         order.tableNumber ?? '', // NEW
+        order.note ?? '', // NEW: Global Order Note
       );
 
       if (receiptPrinter.type == 'Bluetooth') {
@@ -316,6 +358,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
             price: item.price.toString(),
           ),
           quantity: item.quantity,
+          note: item.note ?? '', // NEW: Pass item note for sharing
         );
       }).toList();
 
@@ -340,6 +383,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         order.tableNumber ?? '', // NEW
         order.taxPercentage ?? 0,
         order.serviceChargePercentage ?? 0,
+        order.note ?? '', // NEW: Pass Global Note
       );
 
       // Fetch Settings for Share Text

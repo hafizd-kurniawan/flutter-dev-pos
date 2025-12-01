@@ -39,6 +39,7 @@ class OrderModel {
   final int isSync;
   final int taxPercentage; // NEW
   final int serviceChargePercentage; // NEW
+  final String note; // NEW: Global Order Note
   final List<ProductQuantity> orderItems;
   OrderModel({
     this.id,
@@ -62,6 +63,7 @@ class OrderModel {
     required this.isSync,
     this.taxPercentage = 0, // NEW
     this.serviceChargePercentage = 0, // NEW
+    this.note = '', // Default empty
     required this.orderItems,
   });
 
@@ -99,6 +101,7 @@ class OrderModel {
       'transaction_time': transactionTime,
       'tax_percentage': taxPercentage, // NEW
       'service_charge_percentage': serviceChargePercentage, // NEW
+      'notes': note, // Map to 'notes' for backend
       'order_items': orderItems.map((e) => e.toServerMap(id)).toList(),
     };
   }
@@ -126,6 +129,7 @@ class OrderModel {
       'is_sync': isSync,
       'tax_percentage': taxPercentage, // NEW
       'service_charge_percentage': serviceChargePercentage, // NEW
+      'note': note, // Save locally
     };
   }
 
@@ -153,6 +157,7 @@ class OrderModel {
       orderType: map['order_type'] ?? 'dine_in',
       taxPercentage: map['tax_percentage']?.toInt() ?? 0, // NEW
       serviceChargePercentage: map['service_charge_percentage']?.toInt() ?? 0, // NEW
+      note: map['note'] ?? map['notes'] ?? '', // Handle both keys
       orderItems: [],
     );
   }
@@ -184,6 +189,7 @@ class OrderModel {
     int? isSync,
     int? taxPercentage, // NEW
     int? serviceChargePercentage, // NEW
+    String? note, // NEW
     List<ProductQuantity>? orderItems,
   }) {
     return OrderModel(
@@ -208,6 +214,7 @@ class OrderModel {
       isSync: isSync ?? this.isSync,
       taxPercentage: taxPercentage ?? this.taxPercentage, // NEW
       serviceChargePercentage: serviceChargePercentage ?? this.serviceChargePercentage, // NEW
+      note: note ?? this.note,
       orderItems: orderItems ?? this.orderItems,
     );
   }

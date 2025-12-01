@@ -22,6 +22,7 @@ import 'package:flutter_posresto_app/presentation/table/pages/new_table_manageme
 import 'package:flutter_posresto_app/presentation/table/pages/table_page.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/table_management_api_page.dart';
 import 'package:flutter_posresto_app/presentation/history/pages/history_page.dart';
+import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW IMPORT
 
 import '../../../core/assets/assets.gen.dart';
 import '../../auth/bloc/logout/logout_bloc.dart';
@@ -474,6 +475,64 @@ class _DashboardPageState extends State<DashboardPage> {
                                   context
                                       .read<LogoutBloc>()
                                       .add(const LogoutEvent.logout());
+                                },
+                              ),
+                      ),
+                      
+                      // SYNC SETTINGS BUTTON (NEW)
+                      BlocListener<SettingsBloc, SettingsState>(
+                        listener: (context, state) {
+                          state.maybeWhen(
+                            loaded: (response) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('✅ Settings Synced Successfully!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            },
+                            error: (message) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('❌ Sync Failed: $message'),
+                                  backgroundColor: Colors.red,
+                                  duration: const Duration(seconds: 5),
+                                ),
+                              );
+                            },
+                            orElse: () {},
+                          );
+                        },
+                        child: _isSidebarExpanded
+                            ? EnhancedNavItem(
+                                icon: Icons.sync,
+                                label: 'Sync Settings',
+                                isActive: false,
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('🔄 Syncing Settings...'),
+                                      duration: Duration(seconds: 1),
+                                    ),
+                                  );
+                                  context
+                                      .read<SettingsBloc>()
+                                      .add(const SettingsEvent.fetchSettings());
+                                },
+                              )
+                            : CollapsedNavItem(
+                                icon: Icons.sync,
+                                isActive: false,
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('🔄 Syncing Settings...'),
+                                      duration: Duration(seconds: 1),
+                                    ),
+                                  );
+                                  context
+                                      .read<SettingsBloc>()
+                                      .add(const SettingsEvent.fetchSettings());
                                 },
                               ),
                       ),

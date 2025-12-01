@@ -39,6 +39,7 @@ class PaymentQrisDialog extends StatefulWidget {
   final bool? isTablePaymentPage;
   final String orderType; // 'dine_in' or 'takeaway'
   final String? tableName; // NEW: Table name for display
+  final String? orderNote; // NEW: Global Order Note
   final VoidCallback? onPaymentSuccess; // NEW: Callback
   const PaymentQrisDialog({
     super.key,
@@ -59,6 +60,7 @@ class PaymentQrisDialog extends StatefulWidget {
     this.isTablePaymentPage = false,
     this.orderType = 'dine_in', // Default to dine_in
     this.tableName, // NEW: Optional table name
+    this.orderNote, // NEW: Global Order Note
     this.onPaymentSuccess, // NEW: Callback
   });
 
@@ -149,6 +151,7 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                             widget.orderType,
                             widget.subTotal > 0 ? ((widget.tax / widget.subTotal) * 100).round() : 0, // NEW: taxPercentage
                             widget.subTotal > 0 ? ((widget.serviceCharge / widget.subTotal) * 100).round() : 0, // NEW: servicePercentage
+                            widget.orderNote ?? '', // NEW: Pass Global Note
                         )); // Pass order type
                         await showDialog(
                           context: context,
@@ -167,6 +170,7 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                             paymentAmount: widget.paymentAmount, // Pass payment amount
                             tableName: widget.tableName, // NEW: Pass table name
                             orderType: widget.orderType, // NEW: Pass order type
+                            orderNote: widget.orderNote, // NEW: Pass Global Note
                             onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
                           ),
                         );
@@ -182,7 +186,8 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                           qrisResponse: (data) {
                             log("URL: ${data.actions!.first.url!}");
                             final url = data.actions!.first.url!;
-                            final isXendit = url.contains('xendit');
+                            // Check if it's a URL (http/https) or a raw QR string
+                            final isUrl = url.startsWith('http');
                             
                             return WidgetsToImage(
                               controller: controller,
@@ -196,7 +201,7 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                                 child: Column(
                                   children: [
                                     Center(
-                                      child: isXendit 
+                                      child: !isUrl 
                                       ? QrImageView(
                                           data: url,
                                           version: QrVersions.auto,
@@ -204,6 +209,12 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                                         )
                                       : Image.network(
                                         url,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return const SizedBox(
+                                            height: 200,
+                                            child: Center(child: Text('Failed to load QR Image')),
+                                          );
+                                        },
                                       ),
                                     ),
                                     // const SpaceHeight(5.0),

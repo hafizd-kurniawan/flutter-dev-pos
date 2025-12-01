@@ -241,6 +241,44 @@ class OrderCard extends StatelessWidget {
               ],
             ),
 
+
+            
+            // Global Note - NEW
+            if (order.note != null && order.note!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.yellow[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.yellow.shade300),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Catatan Pesanan:',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange[800],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      order.note!,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.orange[900],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             const SizedBox(height: 12),
 
             // Order Items
@@ -268,9 +306,23 @@ class OrderCard extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              child: Text(
-                                '${item.quantity}x ${item.productName}',
-                                style: const TextStyle(fontSize: 14),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${item.quantity}x ${item.productName}',
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  if (item.note != null && item.note!.isNotEmpty)
+                                    Text(
+                                      'Note: ${item.note}',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                             Text(

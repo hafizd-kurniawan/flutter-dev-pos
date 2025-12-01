@@ -295,7 +295,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                   serviceCharge,
                                   totalQuantity,
                                   totalPrice,
-                                  draftName) {
+                                  draftName,
+                                  orderNote) {
                                 if (products.isEmpty) {
                                   return const Center(
                                     child: Text('No Items'),
@@ -336,7 +337,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                             serviceCharge,
                                             totalQuantity,
                                             totalPrice,
-                                            draftName) =>
+                                            draftName,
+                                            orderNote) =>
                                         products.fold(
                                           0,
                                           (previousValue, element) =>
@@ -376,7 +378,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                       serviceCharge,
                                       totalQuantity,
                                       totalPrice,
-                                      draftName) {
+                                      draftName,
+                                      orderNote) {
                                     if (discountModel == null) {
                                       return const Text('-');
                                     }
@@ -454,7 +457,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                               serviceCharge,
                                               totalQuantity,
                                               totalPrice,
-                                              draftName) {
+                                              draftName,
+                                              orderNote) {
                                             if (tax == 0) {
                                               return const Text('0 %');
                                             }
@@ -534,7 +538,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                               serviceCharge,
                                               totalQuantity,
                                               totalPrice,
-                                              draftName) {
+                                              draftName,
+                                              orderNote) {
                                             if (serviceCharge == 0) {
                                               return const Text('0 %');
                                             }
@@ -606,7 +611,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                       serviceCharge,
                                       totalQuantity,
                                       totalPrice,
-                                      draftName) {
+                                      draftName,
+                                      orderNote) {
                                     // Calculate subtotal
                                     final subTotal = products.fold(
                                       0,
@@ -1039,7 +1045,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                 serviceCharge,
                                                 totalQuantity,
                                                 totalPrice,
-                                                draftName) =>
+                                                draftName,
+                                                orderNote) =>
                                             discountModel,
                                       );
 
@@ -1053,7 +1060,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                 serviceCharge,
                                                 totalQuantity,
                                                 totalPrice,
-                                                draftName) =>
+                                                draftName,
+                                                orderNote) =>
                                             products.fold(
                                           0,
                                           (previousValue, element) =>
@@ -1074,7 +1082,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                 serviceCharge,
                                                 totalQuantity,
                                                 totalPrice,
-                                                draftName) =>
+                                                draftName,
+                                                orderNote) =>
                                             tax,
                                       );
 
@@ -1088,7 +1097,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                 serviceCharge,
                                                 totalQuantity,
                                                 totalPrice,
-                                                draftName) =>
+                                                draftName,
+                                                orderNote) =>
                                             serviceCharge,
                                       );
 
@@ -1106,6 +1116,11 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                       final totalServiceCharge = calculated['serviceAmount']!;
                                       final finalTotal = calculated['total']!;
 
+                                      final orderNote = state.maybeWhen(
+                                        orElse: () => '',
+                                        loaded: (_, __, ___, ____, _____, ______, _______, ________, _________, note) => note,
+                                      );
+
                                       List<ProductQuantity> items =
                                           state.maybeWhen(
                                         orElse: () => [],
@@ -1117,7 +1132,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                 serviceCharge,
                                                 totalQuantity,
                                                 totalPrice,
-                                                draftName) =>
+                                                draftName,
+                                                orderNote) =>
                                             products,
                                       );
                                       final totalQty = items.fold(
@@ -1129,6 +1145,11 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                       return Flexible(
                                         child: Button.filled(
                                           onPressed: () async {
+                                            // ... (validations) ...
+                                            
+                                            // ... (payment logic) ...
+
+
                                             // VALIDATION: Customer name wajib diisi!
                                             final customerName = customerController.text.trim();
                                             if (customerName.isEmpty) {
@@ -1271,6 +1292,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                         widget.orderType,
                                                         taxPercentage, // NEW
                                                         servicePercentage, // NEW
+                                                        orderNote, // NEW
                                                     )); // Pass order type
                                                 
                                                 log("⏳ Waiting for OrderBloc to emit loaded state...");
@@ -1305,6 +1327,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                       paymentAmount: paymentAmountValue, // Pass actual payment
                                                       tableName: widget.table?.name, // NEW: Pass table name
                                                       orderType: widget.orderType, // NEW: Pass order type
+                                                      orderNote: orderNote, // NEW: Pass Global Note
                                                       onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
                                                     ),
                                                   );
@@ -1338,6 +1361,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                     status: 'paid', // Changed: was 'completed', now 'paid' for order tracking
                                                     orderType: widget.orderType,
                                                     tableName: widget.table?.name, // NEW: Pass table name
+                                                    orderNote: orderNote, // NEW: Pass Global Note
                                                     onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
                                                   ),
                                                 );
@@ -1369,6 +1393,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                                   table: selectTable!,
                                                   draftName:
                                                       customerController.text,
+                                                  orderNote: orderNote, // NEW
                                                 ),
                                               );
                                             }

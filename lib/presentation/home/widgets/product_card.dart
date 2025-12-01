@@ -32,7 +32,7 @@ class ProductCard extends StatelessWidget {
         
         checkoutState.maybeWhen(
           orElse: () {},
-          loaded: (products, _, __, ___, ____, _____, ______, _______, ________) {
+          loaded: (products, _, __, ___, ____, _____, ______, _______, ________, _________) {
             final existingItem = products.where((p) => p.product.id == data.id).firstOrNull;
             currentQtyInCart = existingItem?.quantity ?? 0;
           },
@@ -220,7 +220,8 @@ class ProductCard extends StatelessWidget {
                       serviceCharge,
                       totalQuantity,
                       totalPrice,
-                      draftName) {
+                      draftName,
+                      orderNote) {
                     return products.any((element) => element.product == data)
                         ? products
                                     .firstWhere(

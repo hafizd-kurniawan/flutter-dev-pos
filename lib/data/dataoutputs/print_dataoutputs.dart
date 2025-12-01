@@ -91,6 +91,11 @@ class PrintDataoutputs {
           styles: const PosStyles(align: PosAlign.right),
         ),
       ]);
+
+      if (product.note.isNotEmpty) {
+        bytes += generator.text('Note: ${product.note}',
+            styles: const PosStyles(align: PosAlign.left, fontType: PosFontType.fontB));
+      }
     }
 
     bytes += generator.feed(1);
@@ -515,6 +520,7 @@ class PrintDataoutputs {
     int servicePercentage,
     String orderType, // NEW
     String tableName, // NEW
+    String orderNote, // NEW: Global Order Note
   ) async {
     List<int> bytes = [];
 
@@ -652,6 +658,11 @@ class PrintDataoutputs {
           styles: const PosStyles(bold: true, align: PosAlign.right),
         ),
       ]);
+
+      if (product.note.isNotEmpty) {
+        bytes += generator.text('Note: ${product.note}',
+            styles: const PosStyles(align: PosAlign.left, fontType: PosFontType.fontB));
+      }
     }
     bytes += generator.text(
         paper == 80
@@ -760,6 +771,19 @@ class PrintDataoutputs {
             ? '------------------------------------------------'
             : '--------------------------------',
         styles: const PosStyles(bold: false, align: PosAlign.left));
+    
+    // Print Global Order Note
+    if (orderNote.isNotEmpty) {
+      bytes += generator.text('Order Note:',
+          styles: const PosStyles(bold: true, align: PosAlign.left));
+      bytes += generator.text(orderNote,
+          styles: const PosStyles(bold: false, align: PosAlign.left));
+      bytes += generator.text(
+          paper == 80
+              ? '------------------------------------------------'
+              : '--------------------------------',
+          styles: const PosStyles(bold: false, align: PosAlign.left));
+    }
     // bytes += generator.text('Notes',
     //     styles: const PosStyles(bold: false, align: PosAlign.center));
     // bytes += generator.text('Pass Wifi: fic14jilid2',
@@ -919,6 +943,7 @@ class PrintDataoutputs {
     String tableName, // NEW
     int taxPercentage, // NEW
     int servicePercentage, // NEW
+    String orderNote, // NEW
   ) async {
     final pdf = pw.Document();
     final now = DateTime.now();
@@ -981,6 +1006,8 @@ class PrintDataoutputs {
                       pw.SizedBox(),
                       pw.Text((item.product.price!.toIntegerFromText * item.quantity).currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
                     ]),
+                    if (item.note.isNotEmpty)
+                      pw.Text('Note: ${item.note}', style: pw.TextStyle(fontSize: 9, fontStyle: pw.FontStyle.italic)),
                     pw.SizedBox(height: 4),
                   ],
                 );
@@ -1020,6 +1047,11 @@ class PrintDataoutputs {
                 pw.Text(kembalian.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
               ]),
               pw.Divider(),
+              if (orderNote.isNotEmpty) ...[
+                pw.Text('Order Note:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
+                pw.Text(orderNote, style: const pw.TextStyle(fontSize: 10)),
+                pw.Divider(),
+              ],
               pw.Center(child: pw.Text(footer)),
             ],
           );
@@ -1046,8 +1078,14 @@ class PrintDataoutputs {
     }
   }
 
-  Future<List<int>> printChecker(List<ProductQuantity> products,
-      String tableName, String draftName, String cashierName, int paper) async {
+  Future<List<int>> printChecker(
+      List<ProductQuantity> products,
+      String tableName,
+      String draftName,
+      String cashierName,
+      int paper,
+      String orderNote, // NEW
+      ) async {
     List<int> bytes = [];
 
     final profile = await CapabilityProfile.load();
@@ -1157,6 +1195,20 @@ class PrintDataoutputs {
             ? '------------------------------------------------'
             : '--------------------------------',
         styles: const PosStyles(bold: false, align: PosAlign.center));
+
+    // Print Global Order Note
+    if (orderNote.isNotEmpty) {
+      bytes += generator.text('Order Note:',
+          styles: const PosStyles(bold: true, align: PosAlign.left));
+      bytes += generator.text(orderNote,
+          styles: const PosStyles(bold: false, align: PosAlign.left));
+      bytes += generator.text(
+          paper == 80
+              ? '------------------------------------------------'
+              : '--------------------------------',
+          styles: const PosStyles(bold: false, align: PosAlign.left));
+    }
+
     paper == 80 ? bytes += generator.feed(3) : bytes += generator.feed(1);
     //cut
     if (paper == 80) {
@@ -1166,8 +1218,16 @@ class PrintDataoutputs {
     return bytes;
   }
 
-  Future<List<int>> printKitchen(List<ProductQuantity> products,
-      String tableNumber, String draftName, String cashierName, int paper) async {
+  Future<List<int>> printKitchen(
+      List<ProductQuantity> products,
+      String tableNumber,
+      String draftName,
+      String cashierName,
+      int paper,
+      String orderType, // NEW
+      String tableName, // NEW
+      String orderNote, // NEW
+      ) async {
     List<int> bytes = [];
 
     final profile = await CapabilityProfile.load();
@@ -1176,7 +1236,7 @@ class PrintDataoutputs {
 
     bytes += generator.reset();
 
-    bytes += generator.text('Table Kitchen',
+    bytes += generator.text('KITCHEN',
         styles: const PosStyles(
           bold: true,
           align: PosAlign.center,
@@ -1184,6 +1244,28 @@ class PrintDataoutputs {
           width: PosTextSize.size2,
         ));
     bytes += generator.feed(1);
+
+    // Print Order Type (Dine In / Take Away)
+    bytes += generator.text(orderType,
+        styles: const PosStyles(
+          bold: true,
+          align: PosAlign.center,
+          height: PosTextSize.size1,
+          width: PosTextSize.size1,
+        ));
+    bytes += generator.feed(1);
+
+    // Print Table Name if available
+    if (tableName.isNotEmpty) {
+      bytes += generator.text('Table: $tableName',
+          styles: const PosStyles(
+            bold: true,
+            align: PosAlign.center,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2,
+          ));
+      bytes += generator.feed(1);
+    }
     if (tableNumber.isNotEmpty) {
       bytes += generator.text(tableNumber,
           styles: const PosStyles(
@@ -1223,6 +1305,7 @@ class PrintDataoutputs {
         styles: const PosStyles(align: PosAlign.right),
       ),
     ]);
+    //customer name
     bytes += generator.row([
       PosColumn(
         text: 'Customer - $draftName',
@@ -1230,7 +1313,7 @@ class PrintDataoutputs {
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: 'DINE IN',
+        text: orderType.toUpperCase(),
         width: 6,
         styles: const PosStyles(align: PosAlign.right, bold: true),
       ),
@@ -1253,6 +1336,11 @@ class PrintDataoutputs {
             height: PosTextSize.size2,
             width: PosTextSize.size1,
           ));
+      // Print Item Note
+      if (product.note.isNotEmpty) {
+        bytes += generator.text('Note: ${product.note}',
+            styles: const PosStyles(align: PosAlign.left, bold: true));
+      }
     }
 
     bytes += generator.feed(1);
@@ -1261,6 +1349,20 @@ class PrintDataoutputs {
             ? '------------------------------------------------'
             : '--------------------------------',
         styles: const PosStyles(bold: false, align: PosAlign.center));
+
+    // Print Global Order Note
+    if (orderNote.isNotEmpty) {
+      bytes += generator.text('Order Note:',
+          styles: const PosStyles(bold: true, align: PosAlign.left));
+      bytes += generator.text(orderNote,
+          styles: const PosStyles(bold: false, align: PosAlign.left));
+      bytes += generator.text(
+          paper == 80
+              ? '------------------------------------------------'
+              : '--------------------------------',
+          styles: const PosStyles(bold: false, align: PosAlign.left));
+    }
+
     paper == 80 ? bytes += generator.feed(3) : bytes += generator.feed(1);
     //cut
     if (paper == 80) {
@@ -1270,8 +1372,14 @@ class PrintDataoutputs {
     return bytes;
   }
 
-  Future<List<int>> printBar(List<ProductQuantity> products, String tableNumber,
-      String draftName, String cashierName, int paper) async {
+  Future<List<int>> printBar(
+      List<ProductQuantity> products,
+      String tableNumber,
+      String draftName,
+      String cashierName,
+      int paper,
+      String orderNote, // NEW
+      ) async {
     List<int> bytes = [];
 
     final profile = await CapabilityProfile.load();
@@ -1356,6 +1464,11 @@ class PrintDataoutputs {
             height: PosTextSize.size2,
             width: PosTextSize.size1,
           ));
+      // Print Item Note
+      if (product.note.isNotEmpty) {
+        bytes += generator.text('Note: ${product.note}',
+            styles: const PosStyles(align: PosAlign.left, bold: true));
+      }
     }
 
     bytes += generator.feed(1);
@@ -1364,6 +1477,20 @@ class PrintDataoutputs {
             ? '------------------------------------------------'
             : '--------------------------------',
         styles: const PosStyles(bold: false, align: PosAlign.center));
+
+    // Print Global Order Note
+    if (orderNote.isNotEmpty) {
+      bytes += generator.text('Order Note:',
+          styles: const PosStyles(bold: true, align: PosAlign.left));
+      bytes += generator.text(orderNote,
+          styles: const PosStyles(bold: false, align: PosAlign.left));
+      bytes += generator.text(
+          paper == 80
+              ? '------------------------------------------------'
+              : '--------------------------------',
+          styles: const PosStyles(bold: false, align: PosAlign.left));
+    }
+
     paper == 80 ? bytes += generator.feed(3) : bytes += generator.feed(1);
     //cut
     if (paper == 80) {

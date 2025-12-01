@@ -34,7 +34,8 @@ mixin _$OrderEvent {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)
+            int serviceChargePercentage,
+            String note)
         order,
     required TResult Function(
             List<ProductQuantity> items,
@@ -51,7 +52,8 @@ mixin _$OrderEvent {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)
+            int serviceChargePercentage,
+            String note)
         paymentSuccess,
   }) =>
       throw _privateConstructorUsedError;
@@ -73,7 +75,8 @@ mixin _$OrderEvent {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         order,
     TResult? Function(
             List<ProductQuantity> items,
@@ -90,7 +93,8 @@ mixin _$OrderEvent {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         paymentSuccess,
   }) =>
       throw _privateConstructorUsedError;
@@ -112,7 +116,8 @@ mixin _$OrderEvent {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         order,
     TResult Function(
             List<ProductQuantity> items,
@@ -129,7 +134,8 @@ mixin _$OrderEvent {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         paymentSuccess,
     required TResult orElse(),
   }) =>
@@ -236,7 +242,8 @@ class _$StartedImpl implements _Started {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)
+            int serviceChargePercentage,
+            String note)
         order,
     required TResult Function(
             List<ProductQuantity> items,
@@ -253,7 +260,8 @@ class _$StartedImpl implements _Started {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)
+            int serviceChargePercentage,
+            String note)
         paymentSuccess,
   }) {
     return started();
@@ -278,7 +286,8 @@ class _$StartedImpl implements _Started {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         order,
     TResult? Function(
             List<ProductQuantity> items,
@@ -295,7 +304,8 @@ class _$StartedImpl implements _Started {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         paymentSuccess,
   }) {
     return started?.call();
@@ -320,7 +330,8 @@ class _$StartedImpl implements _Started {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         order,
     TResult Function(
             List<ProductQuantity> items,
@@ -337,7 +348,8 @@ class _$StartedImpl implements _Started {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         paymentSuccess,
     required TResult orElse(),
   }) {
@@ -407,7 +419,8 @@ abstract class _$$OrderImplCopyWith<$Res> {
       int totalPriceFinal,
       String orderType,
       int taxPercentage,
-      int serviceChargePercentage});
+      int serviceChargePercentage,
+      String note});
 }
 
 /// @nodoc
@@ -438,6 +451,7 @@ class __$$OrderImplCopyWithImpl<$Res>
     Object? orderType = null,
     Object? taxPercentage = null,
     Object? serviceChargePercentage = null,
+    Object? note = null,
   }) {
     return _then(_$OrderImpl(
       null == items
@@ -500,6 +514,10 @@ class __$$OrderImplCopyWithImpl<$Res>
           ? _value.serviceChargePercentage
           : serviceChargePercentage // ignore: cast_nullable_to_non_nullable
               as int,
+      null == note
+          ? _value.note
+          : note // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -522,7 +540,8 @@ class _$OrderImpl implements _Order {
       this.totalPriceFinal,
       this.orderType,
       this.taxPercentage,
-      this.serviceChargePercentage)
+      this.serviceChargePercentage,
+      this.note)
       : _items = items;
 
   final List<ProductQuantity> _items;
@@ -563,10 +582,13 @@ class _$OrderImpl implements _Order {
 // NEW
   @override
   final int serviceChargePercentage;
+// NEW
+  @override
+  final String note;
 
   @override
   String toString() {
-    return 'OrderEvent.order(items: $items, discount: $discount, discountAmount: $discountAmount, tax: $tax, serviceCharge: $serviceCharge, paymentAmount: $paymentAmount, customerName: $customerName, tableNumber: $tableNumber, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, totalPriceFinal: $totalPriceFinal, orderType: $orderType, taxPercentage: $taxPercentage, serviceChargePercentage: $serviceChargePercentage)';
+    return 'OrderEvent.order(items: $items, discount: $discount, discountAmount: $discountAmount, tax: $tax, serviceCharge: $serviceCharge, paymentAmount: $paymentAmount, customerName: $customerName, tableNumber: $tableNumber, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, totalPriceFinal: $totalPriceFinal, orderType: $orderType, taxPercentage: $taxPercentage, serviceChargePercentage: $serviceChargePercentage, note: $note)';
   }
 
   @override
@@ -601,7 +623,8 @@ class _$OrderImpl implements _Order {
                 other.taxPercentage == taxPercentage) &&
             (identical(
                     other.serviceChargePercentage, serviceChargePercentage) ||
-                other.serviceChargePercentage == serviceChargePercentage));
+                other.serviceChargePercentage == serviceChargePercentage) &&
+            (identical(other.note, note) || other.note == note));
   }
 
   @override
@@ -621,7 +644,8 @@ class _$OrderImpl implements _Order {
       totalPriceFinal,
       orderType,
       taxPercentage,
-      serviceChargePercentage);
+      serviceChargePercentage,
+      note);
 
   /// Create a copy of OrderEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -650,7 +674,8 @@ class _$OrderImpl implements _Order {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)
+            int serviceChargePercentage,
+            String note)
         order,
     required TResult Function(
             List<ProductQuantity> items,
@@ -667,7 +692,8 @@ class _$OrderImpl implements _Order {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)
+            int serviceChargePercentage,
+            String note)
         paymentSuccess,
   }) {
     return order(
@@ -685,7 +711,8 @@ class _$OrderImpl implements _Order {
         totalPriceFinal,
         orderType,
         taxPercentage,
-        serviceChargePercentage);
+        serviceChargePercentage,
+        note);
   }
 
   @override
@@ -707,7 +734,8 @@ class _$OrderImpl implements _Order {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         order,
     TResult? Function(
             List<ProductQuantity> items,
@@ -724,7 +752,8 @@ class _$OrderImpl implements _Order {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         paymentSuccess,
   }) {
     return order?.call(
@@ -742,7 +771,8 @@ class _$OrderImpl implements _Order {
         totalPriceFinal,
         orderType,
         taxPercentage,
-        serviceChargePercentage);
+        serviceChargePercentage,
+        note);
   }
 
   @override
@@ -764,7 +794,8 @@ class _$OrderImpl implements _Order {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         order,
     TResult Function(
             List<ProductQuantity> items,
@@ -781,7 +812,8 @@ class _$OrderImpl implements _Order {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         paymentSuccess,
     required TResult orElse(),
   }) {
@@ -801,7 +833,8 @@ class _$OrderImpl implements _Order {
           totalPriceFinal,
           orderType,
           taxPercentage,
-          serviceChargePercentage);
+          serviceChargePercentage,
+          note);
     }
     return orElse();
   }
@@ -857,7 +890,8 @@ abstract class _Order implements OrderEvent {
       final int totalPriceFinal,
       final String orderType,
       final int taxPercentage,
-      final int serviceChargePercentage) = _$OrderImpl;
+      final int serviceChargePercentage,
+      final String note) = _$OrderImpl;
 
   List<ProductQuantity> get items;
   int get discount;
@@ -873,7 +907,8 @@ abstract class _Order implements OrderEvent {
   int get totalPriceFinal;
   String get orderType; // Added: 'dine_in' or 'takeaway'
   int get taxPercentage; // NEW
-  int get serviceChargePercentage;
+  int get serviceChargePercentage; // NEW
+  String get note;
 
   /// Create a copy of OrderEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -903,7 +938,8 @@ abstract class _$$PaymentSuccessImplCopyWith<$Res> {
       int totalPriceFinal,
       String orderType,
       int taxPercentage,
-      int serviceChargePercentage});
+      int serviceChargePercentage,
+      String note});
 }
 
 /// @nodoc
@@ -934,6 +970,7 @@ class __$$PaymentSuccessImplCopyWithImpl<$Res>
     Object? orderType = null,
     Object? taxPercentage = null,
     Object? serviceChargePercentage = null,
+    Object? note = null,
   }) {
     return _then(_$PaymentSuccessImpl(
       null == items
@@ -996,6 +1033,10 @@ class __$$PaymentSuccessImplCopyWithImpl<$Res>
           ? _value.serviceChargePercentage
           : serviceChargePercentage // ignore: cast_nullable_to_non_nullable
               as int,
+      null == note
+          ? _value.note
+          : note // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1018,7 +1059,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
       this.totalPriceFinal,
       this.orderType,
       this.taxPercentage,
-      this.serviceChargePercentage)
+      this.serviceChargePercentage,
+      this.note)
       : _items = items;
 
   final List<ProductQuantity> _items;
@@ -1057,10 +1099,12 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
   final int taxPercentage;
   @override
   final int serviceChargePercentage;
+  @override
+  final String note;
 
   @override
   String toString() {
-    return 'OrderEvent.paymentSuccess(items: $items, discount: $discount, discountAmount: $discountAmount, tax: $tax, serviceCharge: $serviceCharge, paymentAmount: $paymentAmount, customerName: $customerName, tableNumber: $tableNumber, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, totalPriceFinal: $totalPriceFinal, orderType: $orderType, taxPercentage: $taxPercentage, serviceChargePercentage: $serviceChargePercentage)';
+    return 'OrderEvent.paymentSuccess(items: $items, discount: $discount, discountAmount: $discountAmount, tax: $tax, serviceCharge: $serviceCharge, paymentAmount: $paymentAmount, customerName: $customerName, tableNumber: $tableNumber, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, totalPriceFinal: $totalPriceFinal, orderType: $orderType, taxPercentage: $taxPercentage, serviceChargePercentage: $serviceChargePercentage, note: $note)';
   }
 
   @override
@@ -1095,7 +1139,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
                 other.taxPercentage == taxPercentage) &&
             (identical(
                     other.serviceChargePercentage, serviceChargePercentage) ||
-                other.serviceChargePercentage == serviceChargePercentage));
+                other.serviceChargePercentage == serviceChargePercentage) &&
+            (identical(other.note, note) || other.note == note));
   }
 
   @override
@@ -1115,7 +1160,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
       totalPriceFinal,
       orderType,
       taxPercentage,
-      serviceChargePercentage);
+      serviceChargePercentage,
+      note);
 
   /// Create a copy of OrderEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -1145,7 +1191,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)
+            int serviceChargePercentage,
+            String note)
         order,
     required TResult Function(
             List<ProductQuantity> items,
@@ -1162,7 +1209,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)
+            int serviceChargePercentage,
+            String note)
         paymentSuccess,
   }) {
     return paymentSuccess(
@@ -1180,7 +1228,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
         totalPriceFinal,
         orderType,
         taxPercentage,
-        serviceChargePercentage);
+        serviceChargePercentage,
+        note);
   }
 
   @override
@@ -1202,7 +1251,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         order,
     TResult? Function(
             List<ProductQuantity> items,
@@ -1219,7 +1269,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         paymentSuccess,
   }) {
     return paymentSuccess?.call(
@@ -1237,7 +1288,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
         totalPriceFinal,
         orderType,
         taxPercentage,
-        serviceChargePercentage);
+        serviceChargePercentage,
+        note);
   }
 
   @override
@@ -1259,7 +1311,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         order,
     TResult Function(
             List<ProductQuantity> items,
@@ -1276,7 +1329,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
             int totalPriceFinal,
             String orderType,
             int taxPercentage,
-            int serviceChargePercentage)?
+            int serviceChargePercentage,
+            String note)?
         paymentSuccess,
     required TResult orElse(),
   }) {
@@ -1296,7 +1350,8 @@ class _$PaymentSuccessImpl implements _PaymentSuccess {
           totalPriceFinal,
           orderType,
           taxPercentage,
-          serviceChargePercentage);
+          serviceChargePercentage,
+          note);
     }
     return orElse();
   }
@@ -1352,7 +1407,8 @@ abstract class _PaymentSuccess implements OrderEvent {
       final int totalPriceFinal,
       final String orderType,
       final int taxPercentage,
-      final int serviceChargePercentage) = _$PaymentSuccessImpl;
+      final int serviceChargePercentage,
+      final String note) = _$PaymentSuccessImpl;
 
   List<ProductQuantity> get items;
   int get discount;
@@ -1369,6 +1425,7 @@ abstract class _PaymentSuccess implements OrderEvent {
   String get orderType;
   int get taxPercentage;
   int get serviceChargePercentage;
+  String get note;
 
   /// Create a copy of OrderEvent
   /// with the given fields replaced by the non-null parameter values.

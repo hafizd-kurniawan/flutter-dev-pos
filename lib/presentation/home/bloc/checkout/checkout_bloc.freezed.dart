@@ -32,6 +32,8 @@ mixin _$CheckoutEvent {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -49,6 +51,8 @@ mixin _$CheckoutEvent {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -66,6 +70,8 @@ mixin _$CheckoutEvent {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -83,6 +89,8 @@ mixin _$CheckoutEvent {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -99,6 +107,8 @@ mixin _$CheckoutEvent {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -115,6 +125,8 @@ mixin _$CheckoutEvent {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -196,6 +208,8 @@ class _$StartedImpl implements _Started {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return started();
   }
@@ -216,6 +230,8 @@ class _$StartedImpl implements _Started {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return started?.call();
   }
@@ -236,6 +252,8 @@ class _$StartedImpl implements _Started {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -259,6 +277,8 @@ class _$StartedImpl implements _Started {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return started(this);
   }
@@ -278,6 +298,8 @@ class _$StartedImpl implements _Started {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return started?.call(this);
   }
@@ -297,6 +319,8 @@ class _$StartedImpl implements _Started {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -365,6 +389,8 @@ class _$ClearItemsImpl implements _ClearItems {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return clearItems();
   }
@@ -385,6 +411,8 @@ class _$ClearItemsImpl implements _ClearItems {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return clearItems?.call();
   }
@@ -405,6 +433,8 @@ class _$ClearItemsImpl implements _ClearItems {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (clearItems != null) {
@@ -428,6 +458,8 @@ class _$ClearItemsImpl implements _ClearItems {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return clearItems(this);
   }
@@ -447,6 +479,8 @@ class _$ClearItemsImpl implements _ClearItems {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return clearItems?.call(this);
   }
@@ -466,6 +500,8 @@ class _$ClearItemsImpl implements _ClearItems {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (clearItems != null) {
@@ -561,6 +597,8 @@ class _$AddItemImpl implements _AddItem {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return addItem(product);
   }
@@ -581,6 +619,8 @@ class _$AddItemImpl implements _AddItem {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return addItem?.call(product);
   }
@@ -601,6 +641,8 @@ class _$AddItemImpl implements _AddItem {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (addItem != null) {
@@ -624,6 +666,8 @@ class _$AddItemImpl implements _AddItem {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return addItem(this);
   }
@@ -643,6 +687,8 @@ class _$AddItemImpl implements _AddItem {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return addItem?.call(this);
   }
@@ -662,6 +708,8 @@ class _$AddItemImpl implements _AddItem {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (addItem != null) {
@@ -765,6 +813,8 @@ class _$RemoveItemImpl implements _RemoveItem {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return removeItem(product);
   }
@@ -785,6 +835,8 @@ class _$RemoveItemImpl implements _RemoveItem {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return removeItem?.call(product);
   }
@@ -805,6 +857,8 @@ class _$RemoveItemImpl implements _RemoveItem {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (removeItem != null) {
@@ -828,6 +882,8 @@ class _$RemoveItemImpl implements _RemoveItem {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return removeItem(this);
   }
@@ -847,6 +903,8 @@ class _$RemoveItemImpl implements _RemoveItem {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return removeItem?.call(this);
   }
@@ -866,6 +924,8 @@ class _$RemoveItemImpl implements _RemoveItem {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (removeItem != null) {
@@ -970,6 +1030,8 @@ class _$AddDiscountImpl implements _AddDiscount {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return addDiscount(discount);
   }
@@ -990,6 +1052,8 @@ class _$AddDiscountImpl implements _AddDiscount {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return addDiscount?.call(discount);
   }
@@ -1010,6 +1074,8 @@ class _$AddDiscountImpl implements _AddDiscount {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (addDiscount != null) {
@@ -1033,6 +1099,8 @@ class _$AddDiscountImpl implements _AddDiscount {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return addDiscount(this);
   }
@@ -1052,6 +1120,8 @@ class _$AddDiscountImpl implements _AddDiscount {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return addDiscount?.call(this);
   }
@@ -1071,6 +1141,8 @@ class _$AddDiscountImpl implements _AddDiscount {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (addDiscount != null) {
@@ -1147,6 +1219,8 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return removeDiscount();
   }
@@ -1167,6 +1241,8 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return removeDiscount?.call();
   }
@@ -1187,6 +1263,8 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (removeDiscount != null) {
@@ -1210,6 +1288,8 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return removeDiscount(this);
   }
@@ -1229,6 +1309,8 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return removeDiscount?.call(this);
   }
@@ -1248,6 +1330,8 @@ class _$RemoveDiscountImpl implements _RemoveDiscount {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (removeDiscount != null) {
@@ -1343,6 +1427,8 @@ class _$AddTaxImpl implements _AddTax {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return addTax(tax);
   }
@@ -1363,6 +1449,8 @@ class _$AddTaxImpl implements _AddTax {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return addTax?.call(tax);
   }
@@ -1383,6 +1471,8 @@ class _$AddTaxImpl implements _AddTax {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (addTax != null) {
@@ -1406,6 +1496,8 @@ class _$AddTaxImpl implements _AddTax {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return addTax(this);
   }
@@ -1425,6 +1517,8 @@ class _$AddTaxImpl implements _AddTax {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return addTax?.call(this);
   }
@@ -1444,6 +1538,8 @@ class _$AddTaxImpl implements _AddTax {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (addTax != null) {
@@ -1549,6 +1645,8 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return addServiceCharge(serviceCharge);
   }
@@ -1569,6 +1667,8 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return addServiceCharge?.call(serviceCharge);
   }
@@ -1589,6 +1689,8 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (addServiceCharge != null) {
@@ -1612,6 +1714,8 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return addServiceCharge(this);
   }
@@ -1631,6 +1735,8 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return addServiceCharge?.call(this);
   }
@@ -1650,6 +1756,8 @@ class _$AddServiceChargeImpl implements _AddServiceCharge {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (addServiceCharge != null) {
@@ -1727,6 +1835,8 @@ class _$RemoveTaxImpl implements _RemoveTax {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return removeTax();
   }
@@ -1747,6 +1857,8 @@ class _$RemoveTaxImpl implements _RemoveTax {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return removeTax?.call();
   }
@@ -1767,6 +1879,8 @@ class _$RemoveTaxImpl implements _RemoveTax {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (removeTax != null) {
@@ -1790,6 +1904,8 @@ class _$RemoveTaxImpl implements _RemoveTax {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return removeTax(this);
   }
@@ -1809,6 +1925,8 @@ class _$RemoveTaxImpl implements _RemoveTax {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return removeTax?.call(this);
   }
@@ -1828,6 +1946,8 @@ class _$RemoveTaxImpl implements _RemoveTax {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (removeTax != null) {
@@ -1897,6 +2017,8 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return removeServiceCharge();
   }
@@ -1917,6 +2039,8 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return removeServiceCharge?.call();
   }
@@ -1937,6 +2061,8 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (removeServiceCharge != null) {
@@ -1960,6 +2086,8 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return removeServiceCharge(this);
   }
@@ -1979,6 +2107,8 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return removeServiceCharge?.call(this);
   }
@@ -1998,6 +2128,8 @@ class _$RemoveServiceChargeImpl implements _RemoveServiceCharge {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (removeServiceCharge != null) {
@@ -2115,6 +2247,8 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return saveDraftOrder(tableNumber, draftName, discountAmount);
   }
@@ -2135,6 +2269,8 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return saveDraftOrder?.call(tableNumber, draftName, discountAmount);
   }
@@ -2155,6 +2291,8 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (saveDraftOrder != null) {
@@ -2178,6 +2316,8 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return saveDraftOrder(this);
   }
@@ -2197,6 +2337,8 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return saveDraftOrder?.call(this);
   }
@@ -2216,6 +2358,8 @@ class _$SaveDraftOrderImpl implements _SaveDraftOrder {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (saveDraftOrder != null) {
@@ -2323,6 +2467,8 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
             int tableNumber, String draftName, int discountAmount)
         saveDraftOrder,
     required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
   }) {
     return loadDraftOrder(data);
   }
@@ -2343,6 +2489,8 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
     TResult? Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
   }) {
     return loadDraftOrder?.call(data);
   }
@@ -2363,6 +2511,8 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
     TResult Function(int tableNumber, String draftName, int discountAmount)?
         saveDraftOrder,
     TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
     required TResult orElse(),
   }) {
     if (loadDraftOrder != null) {
@@ -2386,6 +2536,8 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
     required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
     required TResult Function(_SaveDraftOrder value) saveDraftOrder,
     required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
   }) {
     return loadDraftOrder(this);
   }
@@ -2405,6 +2557,8 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
     TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
   }) {
     return loadDraftOrder?.call(this);
   }
@@ -2424,6 +2578,8 @@ class _$LoadDraftOrderImpl implements _LoadDraftOrder {
     TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
     TResult Function(_SaveDraftOrder value)? saveDraftOrder,
     TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
     required TResult orElse(),
   }) {
     if (loadDraftOrder != null) {
@@ -2447,6 +2603,448 @@ abstract class _LoadDraftOrder implements CheckoutEvent {
 }
 
 /// @nodoc
+abstract class _$$AddNoteToItemImplCopyWith<$Res> {
+  factory _$$AddNoteToItemImplCopyWith(
+          _$AddNoteToItemImpl value, $Res Function(_$AddNoteToItemImpl) then) =
+      __$$AddNoteToItemImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({Product product, String note});
+}
+
+/// @nodoc
+class __$$AddNoteToItemImplCopyWithImpl<$Res>
+    extends _$CheckoutEventCopyWithImpl<$Res, _$AddNoteToItemImpl>
+    implements _$$AddNoteToItemImplCopyWith<$Res> {
+  __$$AddNoteToItemImplCopyWithImpl(
+      _$AddNoteToItemImpl _value, $Res Function(_$AddNoteToItemImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of CheckoutEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? product = null,
+    Object? note = null,
+  }) {
+    return _then(_$AddNoteToItemImpl(
+      null == product
+          ? _value.product
+          : product // ignore: cast_nullable_to_non_nullable
+              as Product,
+      null == note
+          ? _value.note
+          : note // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$AddNoteToItemImpl implements _AddNoteToItem {
+  const _$AddNoteToItemImpl(this.product, this.note);
+
+  @override
+  final Product product;
+  @override
+  final String note;
+
+  @override
+  String toString() {
+    return 'CheckoutEvent.addNoteToItem(product: $product, note: $note)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AddNoteToItemImpl &&
+            (identical(other.product, product) || other.product == product) &&
+            (identical(other.note, note) || other.note == note));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, product, note);
+
+  /// Create a copy of CheckoutEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AddNoteToItemImplCopyWith<_$AddNoteToItemImpl> get copyWith =>
+      __$$AddNoteToItemImplCopyWithImpl<_$AddNoteToItemImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() started,
+    required TResult Function() clearItems,
+    required TResult Function(Product product) addItem,
+    required TResult Function(Product product) removeItem,
+    required TResult Function(Discount discount) addDiscount,
+    required TResult Function() removeDiscount,
+    required TResult Function(int tax) addTax,
+    required TResult Function(int serviceCharge) addServiceCharge,
+    required TResult Function() removeTax,
+    required TResult Function() removeServiceCharge,
+    required TResult Function(
+            int tableNumber, String draftName, int discountAmount)
+        saveDraftOrder,
+    required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
+  }) {
+    return addNoteToItem(product, note);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? started,
+    TResult? Function()? clearItems,
+    TResult? Function(Product product)? addItem,
+    TResult? Function(Product product)? removeItem,
+    TResult? Function(Discount discount)? addDiscount,
+    TResult? Function()? removeDiscount,
+    TResult? Function(int tax)? addTax,
+    TResult? Function(int serviceCharge)? addServiceCharge,
+    TResult? Function()? removeTax,
+    TResult? Function()? removeServiceCharge,
+    TResult? Function(int tableNumber, String draftName, int discountAmount)?
+        saveDraftOrder,
+    TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
+  }) {
+    return addNoteToItem?.call(product, note);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? started,
+    TResult Function()? clearItems,
+    TResult Function(Product product)? addItem,
+    TResult Function(Product product)? removeItem,
+    TResult Function(Discount discount)? addDiscount,
+    TResult Function()? removeDiscount,
+    TResult Function(int tax)? addTax,
+    TResult Function(int serviceCharge)? addServiceCharge,
+    TResult Function()? removeTax,
+    TResult Function()? removeServiceCharge,
+    TResult Function(int tableNumber, String draftName, int discountAmount)?
+        saveDraftOrder,
+    TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
+    required TResult orElse(),
+  }) {
+    if (addNoteToItem != null) {
+      return addNoteToItem(product, note);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
+    required TResult Function(_AddItem value) addItem,
+    required TResult Function(_RemoveItem value) removeItem,
+    required TResult Function(_AddDiscount value) addDiscount,
+    required TResult Function(_RemoveDiscount value) removeDiscount,
+    required TResult Function(_AddTax value) addTax,
+    required TResult Function(_AddServiceCharge value) addServiceCharge,
+    required TResult Function(_RemoveTax value) removeTax,
+    required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
+    required TResult Function(_SaveDraftOrder value) saveDraftOrder,
+    required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
+  }) {
+    return addNoteToItem(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
+    TResult? Function(_AddItem value)? addItem,
+    TResult? Function(_RemoveItem value)? removeItem,
+    TResult? Function(_AddDiscount value)? addDiscount,
+    TResult? Function(_RemoveDiscount value)? removeDiscount,
+    TResult? Function(_AddTax value)? addTax,
+    TResult? Function(_AddServiceCharge value)? addServiceCharge,
+    TResult? Function(_RemoveTax value)? removeTax,
+    TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
+    TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
+    TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
+  }) {
+    return addNoteToItem?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
+    TResult Function(_AddItem value)? addItem,
+    TResult Function(_RemoveItem value)? removeItem,
+    TResult Function(_AddDiscount value)? addDiscount,
+    TResult Function(_RemoveDiscount value)? removeDiscount,
+    TResult Function(_AddTax value)? addTax,
+    TResult Function(_AddServiceCharge value)? addServiceCharge,
+    TResult Function(_RemoveTax value)? removeTax,
+    TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
+    TResult Function(_SaveDraftOrder value)? saveDraftOrder,
+    TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
+    required TResult orElse(),
+  }) {
+    if (addNoteToItem != null) {
+      return addNoteToItem(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _AddNoteToItem implements CheckoutEvent {
+  const factory _AddNoteToItem(final Product product, final String note) =
+      _$AddNoteToItemImpl;
+
+  Product get product;
+  String get note;
+
+  /// Create a copy of CheckoutEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AddNoteToItemImplCopyWith<_$AddNoteToItemImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$AddOrderNoteImplCopyWith<$Res> {
+  factory _$$AddOrderNoteImplCopyWith(
+          _$AddOrderNoteImpl value, $Res Function(_$AddOrderNoteImpl) then) =
+      __$$AddOrderNoteImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String note});
+}
+
+/// @nodoc
+class __$$AddOrderNoteImplCopyWithImpl<$Res>
+    extends _$CheckoutEventCopyWithImpl<$Res, _$AddOrderNoteImpl>
+    implements _$$AddOrderNoteImplCopyWith<$Res> {
+  __$$AddOrderNoteImplCopyWithImpl(
+      _$AddOrderNoteImpl _value, $Res Function(_$AddOrderNoteImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of CheckoutEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? note = null,
+  }) {
+    return _then(_$AddOrderNoteImpl(
+      null == note
+          ? _value.note
+          : note // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$AddOrderNoteImpl implements _AddOrderNote {
+  const _$AddOrderNoteImpl(this.note);
+
+  @override
+  final String note;
+
+  @override
+  String toString() {
+    return 'CheckoutEvent.addOrderNote(note: $note)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AddOrderNoteImpl &&
+            (identical(other.note, note) || other.note == note));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, note);
+
+  /// Create a copy of CheckoutEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AddOrderNoteImplCopyWith<_$AddOrderNoteImpl> get copyWith =>
+      __$$AddOrderNoteImplCopyWithImpl<_$AddOrderNoteImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() started,
+    required TResult Function() clearItems,
+    required TResult Function(Product product) addItem,
+    required TResult Function(Product product) removeItem,
+    required TResult Function(Discount discount) addDiscount,
+    required TResult Function() removeDiscount,
+    required TResult Function(int tax) addTax,
+    required TResult Function(int serviceCharge) addServiceCharge,
+    required TResult Function() removeTax,
+    required TResult Function() removeServiceCharge,
+    required TResult Function(
+            int tableNumber, String draftName, int discountAmount)
+        saveDraftOrder,
+    required TResult Function(DraftOrderModel data) loadDraftOrder,
+    required TResult Function(Product product, String note) addNoteToItem,
+    required TResult Function(String note) addOrderNote,
+  }) {
+    return addOrderNote(note);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? started,
+    TResult? Function()? clearItems,
+    TResult? Function(Product product)? addItem,
+    TResult? Function(Product product)? removeItem,
+    TResult? Function(Discount discount)? addDiscount,
+    TResult? Function()? removeDiscount,
+    TResult? Function(int tax)? addTax,
+    TResult? Function(int serviceCharge)? addServiceCharge,
+    TResult? Function()? removeTax,
+    TResult? Function()? removeServiceCharge,
+    TResult? Function(int tableNumber, String draftName, int discountAmount)?
+        saveDraftOrder,
+    TResult? Function(DraftOrderModel data)? loadDraftOrder,
+    TResult? Function(Product product, String note)? addNoteToItem,
+    TResult? Function(String note)? addOrderNote,
+  }) {
+    return addOrderNote?.call(note);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? started,
+    TResult Function()? clearItems,
+    TResult Function(Product product)? addItem,
+    TResult Function(Product product)? removeItem,
+    TResult Function(Discount discount)? addDiscount,
+    TResult Function()? removeDiscount,
+    TResult Function(int tax)? addTax,
+    TResult Function(int serviceCharge)? addServiceCharge,
+    TResult Function()? removeTax,
+    TResult Function()? removeServiceCharge,
+    TResult Function(int tableNumber, String draftName, int discountAmount)?
+        saveDraftOrder,
+    TResult Function(DraftOrderModel data)? loadDraftOrder,
+    TResult Function(Product product, String note)? addNoteToItem,
+    TResult Function(String note)? addOrderNote,
+    required TResult orElse(),
+  }) {
+    if (addOrderNote != null) {
+      return addOrderNote(note);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Started value) started,
+    required TResult Function(_ClearItems value) clearItems,
+    required TResult Function(_AddItem value) addItem,
+    required TResult Function(_RemoveItem value) removeItem,
+    required TResult Function(_AddDiscount value) addDiscount,
+    required TResult Function(_RemoveDiscount value) removeDiscount,
+    required TResult Function(_AddTax value) addTax,
+    required TResult Function(_AddServiceCharge value) addServiceCharge,
+    required TResult Function(_RemoveTax value) removeTax,
+    required TResult Function(_RemoveServiceCharge value) removeServiceCharge,
+    required TResult Function(_SaveDraftOrder value) saveDraftOrder,
+    required TResult Function(_LoadDraftOrder value) loadDraftOrder,
+    required TResult Function(_AddNoteToItem value) addNoteToItem,
+    required TResult Function(_AddOrderNote value) addOrderNote,
+  }) {
+    return addOrderNote(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Started value)? started,
+    TResult? Function(_ClearItems value)? clearItems,
+    TResult? Function(_AddItem value)? addItem,
+    TResult? Function(_RemoveItem value)? removeItem,
+    TResult? Function(_AddDiscount value)? addDiscount,
+    TResult? Function(_RemoveDiscount value)? removeDiscount,
+    TResult? Function(_AddTax value)? addTax,
+    TResult? Function(_AddServiceCharge value)? addServiceCharge,
+    TResult? Function(_RemoveTax value)? removeTax,
+    TResult? Function(_RemoveServiceCharge value)? removeServiceCharge,
+    TResult? Function(_SaveDraftOrder value)? saveDraftOrder,
+    TResult? Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult? Function(_AddNoteToItem value)? addNoteToItem,
+    TResult? Function(_AddOrderNote value)? addOrderNote,
+  }) {
+    return addOrderNote?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Started value)? started,
+    TResult Function(_ClearItems value)? clearItems,
+    TResult Function(_AddItem value)? addItem,
+    TResult Function(_RemoveItem value)? removeItem,
+    TResult Function(_AddDiscount value)? addDiscount,
+    TResult Function(_RemoveDiscount value)? removeDiscount,
+    TResult Function(_AddTax value)? addTax,
+    TResult Function(_AddServiceCharge value)? addServiceCharge,
+    TResult Function(_RemoveTax value)? removeTax,
+    TResult Function(_RemoveServiceCharge value)? removeServiceCharge,
+    TResult Function(_SaveDraftOrder value)? saveDraftOrder,
+    TResult Function(_LoadDraftOrder value)? loadDraftOrder,
+    TResult Function(_AddNoteToItem value)? addNoteToItem,
+    TResult Function(_AddOrderNote value)? addOrderNote,
+    required TResult orElse(),
+  }) {
+    if (addOrderNote != null) {
+      return addOrderNote(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _AddOrderNote implements CheckoutEvent {
+  const factory _AddOrderNote(final String note) = _$AddOrderNoteImpl;
+
+  String get note;
+
+  /// Create a copy of CheckoutEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AddOrderNoteImplCopyWith<_$AddOrderNoteImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$CheckoutState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
@@ -2461,7 +3059,8 @@ mixin _$CheckoutState {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)
+            String draftName,
+            String orderNote)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(int orderId) savedDraftOrder,
@@ -2480,7 +3079,8 @@ mixin _$CheckoutState {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(int orderId)? savedDraftOrder,
@@ -2499,7 +3099,8 @@ mixin _$CheckoutState {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(int orderId)? savedDraftOrder,
@@ -2609,7 +3210,8 @@ class _$InitialImpl implements _Initial {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)
+            String draftName,
+            String orderNote)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(int orderId) savedDraftOrder,
@@ -2631,7 +3233,8 @@ class _$InitialImpl implements _Initial {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(int orderId)? savedDraftOrder,
@@ -2653,7 +3256,8 @@ class _$InitialImpl implements _Initial {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(int orderId)? savedDraftOrder,
@@ -2762,7 +3366,8 @@ class _$LoadingImpl implements _Loading {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)
+            String draftName,
+            String orderNote)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(int orderId) savedDraftOrder,
@@ -2784,7 +3389,8 @@ class _$LoadingImpl implements _Loading {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(int orderId)? savedDraftOrder,
@@ -2806,7 +3412,8 @@ class _$LoadingImpl implements _Loading {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(int orderId)? savedDraftOrder,
@@ -2878,7 +3485,8 @@ abstract class _$$LoadedImplCopyWith<$Res> {
       int serviceCharge,
       int totalQuantity,
       int totalPrice,
-      String draftName});
+      String draftName,
+      String orderNote});
 }
 
 /// @nodoc
@@ -2903,6 +3511,7 @@ class __$$LoadedImplCopyWithImpl<$Res>
     Object? totalQuantity = null,
     Object? totalPrice = null,
     Object? draftName = null,
+    Object? orderNote = null,
   }) {
     return _then(_$LoadedImpl(
       null == items
@@ -2941,6 +3550,10 @@ class __$$LoadedImplCopyWithImpl<$Res>
           ? _value.draftName
           : draftName // ignore: cast_nullable_to_non_nullable
               as String,
+      null == orderNote
+          ? _value.orderNote
+          : orderNote // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -2957,7 +3570,8 @@ class _$LoadedImpl implements _Loaded {
       this.serviceCharge,
       this.totalQuantity,
       this.totalPrice,
-      this.draftName)
+      this.draftName,
+      this.orderNote)
       : _items = items;
 
   final List<ProductQuantity> _items;
@@ -2984,10 +3598,12 @@ class _$LoadedImpl implements _Loaded {
   final int totalPrice;
   @override
   final String draftName;
+  @override
+  final String orderNote;
 
   @override
   String toString() {
-    return 'CheckoutState.loaded(items: $items, discountModel: $discountModel, discount: $discount, discountAmount: $discountAmount, tax: $tax, serviceCharge: $serviceCharge, totalQuantity: $totalQuantity, totalPrice: $totalPrice, draftName: $draftName)';
+    return 'CheckoutState.loaded(items: $items, discountModel: $discountModel, discount: $discount, discountAmount: $discountAmount, tax: $tax, serviceCharge: $serviceCharge, totalQuantity: $totalQuantity, totalPrice: $totalPrice, draftName: $draftName, orderNote: $orderNote)';
   }
 
   @override
@@ -3010,7 +3626,9 @@ class _$LoadedImpl implements _Loaded {
             (identical(other.totalPrice, totalPrice) ||
                 other.totalPrice == totalPrice) &&
             (identical(other.draftName, draftName) ||
-                other.draftName == draftName));
+                other.draftName == draftName) &&
+            (identical(other.orderNote, orderNote) ||
+                other.orderNote == orderNote));
   }
 
   @override
@@ -3024,7 +3642,8 @@ class _$LoadedImpl implements _Loaded {
       serviceCharge,
       totalQuantity,
       totalPrice,
-      draftName);
+      draftName,
+      orderNote);
 
   /// Create a copy of CheckoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -3048,13 +3667,14 @@ class _$LoadedImpl implements _Loaded {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)
+            String draftName,
+            String orderNote)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(int orderId) savedDraftOrder,
   }) {
     return loaded(items, discountModel, discount, discountAmount, tax,
-        serviceCharge, totalQuantity, totalPrice, draftName);
+        serviceCharge, totalQuantity, totalPrice, draftName, orderNote);
   }
 
   @override
@@ -3071,13 +3691,14 @@ class _$LoadedImpl implements _Loaded {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(int orderId)? savedDraftOrder,
   }) {
     return loaded?.call(items, discountModel, discount, discountAmount, tax,
-        serviceCharge, totalQuantity, totalPrice, draftName);
+        serviceCharge, totalQuantity, totalPrice, draftName, orderNote);
   }
 
   @override
@@ -3094,7 +3715,8 @@ class _$LoadedImpl implements _Loaded {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(int orderId)? savedDraftOrder,
@@ -3102,7 +3724,7 @@ class _$LoadedImpl implements _Loaded {
   }) {
     if (loaded != null) {
       return loaded(items, discountModel, discount, discountAmount, tax,
-          serviceCharge, totalQuantity, totalPrice, draftName);
+          serviceCharge, totalQuantity, totalPrice, draftName, orderNote);
     }
     return orElse();
   }
@@ -3158,7 +3780,8 @@ abstract class _Loaded implements CheckoutState {
       final int serviceCharge,
       final int totalQuantity,
       final int totalPrice,
-      final String draftName) = _$LoadedImpl;
+      final String draftName,
+      final String orderNote) = _$LoadedImpl;
 
   List<ProductQuantity> get items;
   Discount? get discountModel;
@@ -3169,6 +3792,7 @@ abstract class _Loaded implements CheckoutState {
   int get totalQuantity;
   int get totalPrice;
   String get draftName;
+  String get orderNote;
 
   /// Create a copy of CheckoutState
   /// with the given fields replaced by the non-null parameter values.
@@ -3256,7 +3880,8 @@ class _$ErrorImpl implements _Error {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)
+            String draftName,
+            String orderNote)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(int orderId) savedDraftOrder,
@@ -3278,7 +3903,8 @@ class _$ErrorImpl implements _Error {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(int orderId)? savedDraftOrder,
@@ -3300,7 +3926,8 @@ class _$ErrorImpl implements _Error {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(int orderId)? savedDraftOrder,
@@ -3445,7 +4072,8 @@ class _$SavedDraftOrderImpl implements _SavedDraftOrder {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)
+            String draftName,
+            String orderNote)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(int orderId) savedDraftOrder,
@@ -3467,7 +4095,8 @@ class _$SavedDraftOrderImpl implements _SavedDraftOrder {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(int orderId)? savedDraftOrder,
@@ -3489,7 +4118,8 @@ class _$SavedDraftOrderImpl implements _SavedDraftOrder {
             int serviceCharge,
             int totalQuantity,
             int totalPrice,
-            String draftName)?
+            String draftName,
+            String orderNote)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(int orderId)? savedDraftOrder,
