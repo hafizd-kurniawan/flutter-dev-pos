@@ -61,6 +61,7 @@ class MidtransRemoteDatasource {
       // QrisResponseModel expects: { actions: [{ url: ... }], ... }
       
       final paymentUrl = jsonResponse['payment_url'];
+      final qrString = jsonResponse['qr_string'];
       final orderCode = jsonResponse['order_code'];
       
       final mappedJson = {
@@ -75,7 +76,7 @@ class MidtransRemoteDatasource {
           {
             'name': 'generate-qr-code',
             'method': 'GET',
-            'url': paymentUrl ?? ''
+            'url': paymentUrl ?? qrString ?? '' // Fallback to qrString if paymentUrl is null
           }
         ]
       };

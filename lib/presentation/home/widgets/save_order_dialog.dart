@@ -34,6 +34,7 @@ class SaveOrderDialog extends StatefulWidget {
     required this.normalPrice,
     required this.table,
     required this.draftName,
+    this.orderNote, // NEW
   });
   final List<ProductQuantity> data;
   final int totalQty;
@@ -44,6 +45,7 @@ class SaveOrderDialog extends StatefulWidget {
   final int normalPrice;
   final TableModel table;
   final String draftName;
+  final String? orderNote; // NEW
 
   @override
   State<SaveOrderDialog> createState() => _SaveOrderDialogState();
@@ -129,7 +131,9 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                                 widget.table.tableName,
                                 widget.draftName,
                                 'Cashier Bahri',
-                                checkerPrinter.paper.toIntegerFromText);
+                                checkerPrinter.paper.toIntegerFromText,
+                                widget.orderNote ?? '', // NEW
+                                );
                         if (checkerPrinter.type == 'Bluetooth') {
                           await PrintBluetoothThermal.connect(
                               macPrinterAddress: checkerPrinter.address);
@@ -158,6 +162,9 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                           widget.draftName,
                           'Cashier Bahri',
                           kitchenPrinter.paper.toIntegerFromText,
+                          'Dine In', // Default for SaveOrder
+                          widget.table.tableName,
+                          widget.orderNote ?? '', // Pass Global Note
                         );
                         if (kitchenPrinter!.type == 'Bluetooth') {
                           await PrintBluetoothThermal.connect(
@@ -186,6 +193,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                           widget.draftName,
                           'Cashier Bahri',
                           barPrinter.paper.toIntegerFromText,
+                          widget.orderNote ?? '', // NEW
                         );
                         if (barPrinter!.type == 'Bluetooth') {
                           await PrintBluetoothThermal.connect(

@@ -24,6 +24,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<_Order>((event, emit) async {
       emit(const _Loading());
       log("Start 1");
+      log("📝 OrderBloc Received Note: '${event.note}'"); // NEW: Debug log
 
       final subTotal = event.items.fold<int>(
           0,
@@ -57,6 +58,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         orderType: event.orderType, // Added: dine_in or takeaway
         taxPercentage: event.taxPercentage, // NEW
         serviceChargePercentage: event.serviceChargePercentage, // NEW
+        note: event.note, // NEW
         isSync: 0,
         orderItems: event.items,
       );
@@ -125,6 +127,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         orderType: event.orderType,
         taxPercentage: event.taxPercentage,
         serviceChargePercentage: event.serviceChargePercentage,
+        note: event.note, // NEW
         isSync: 1, // Already synced (created on backend)
         orderItems: event.items,
       );

@@ -19,6 +19,7 @@ class OrderEvent with _$OrderEvent {
     String orderType, // Added: 'dine_in' or 'takeaway'
     int taxPercentage, // NEW
     int serviceChargePercentage, // NEW
+    String note, // NEW
   ) = _Order;
 
   const factory OrderEvent.paymentSuccess(
@@ -37,5 +38,6 @@ class OrderEvent with _$OrderEvent {
     String orderType,
     int taxPercentage,
     int serviceChargePercentage,
+    String note, // NEW
   ) = _PaymentSuccess;
 }

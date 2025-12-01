@@ -21,39 +21,61 @@ class OrderMenu extends StatelessWidget {
         Row(
           children: [
             Flexible(
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                  child: data.product.image != null && data.product.image!.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: data.product.image!.contains('http')
-                              ? data.product.image!
-                              : '${Variables.baseUrl}/${data.product.image}',
-                          width: 50.0,
-                          height: 50.0,
-                          fit: BoxFit.cover,
-                          errorWidget: (context, url, error) => Icon(
+              child: InkWell(
+                onTap: () {
+                  // Show dialog to edit note
+                  _showNoteDialog(context);
+                },
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                    child: data.product.image != null && data.product.image!.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: data.product.image!.contains('http')
+                                ? data.product.image!
+                                : '${Variables.baseUrl}/${data.product.image}',
+                            width: 50.0,
+                            height: 50.0,
+                            fit: BoxFit.cover,
+                            errorWidget: (context, url, error) => Icon(
+                              Icons.fastfood,
+                              size: 50,
+                              color: AppColors.primary,
+                            ),
+                          )
+                        : Icon(
                             Icons.fastfood,
                             size: 50,
                             color: AppColors.primary,
                           ),
-                        )
-                      : Icon(
-                          Icons.fastfood,
-                          size: 50,
-                          color: AppColors.primary,
+                  ),
+                  title: Text(data.product.name ?? "-",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      )),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          (data.product.price ?? '0').toIntegerFromText.currencyFormatRp),
+                      if (data.note.isNotEmpty)
+                        Text(
+                          "Note: ${data.note}",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                    ],
+                  ),
                 ),
-                title: Text(data.product.name ?? "-",
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    )),
-                subtitle: Text(
-                    (data.product.price ?? '0').toIntegerFromText.currencyFormatRp),
               ),
             ),
             Row(
@@ -115,6 +137,42 @@ class OrderMenu extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+
+  void _showNoteDialog(BuildContext context) {
+    final noteController = TextEditingController(text: data.note);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Tambah Catatan'),
+          content: TextField(
+            controller: noteController,
+            maxLength: 100, // Limit to 100 chars
+              decoration: const InputDecoration(
+                hintText: 'Contoh: Jangan pedas, Es sedikit',
+                border: OutlineInputBorder(),
+              ),
+            maxLines: 3,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.read<CheckoutBloc>().add(
+                      CheckoutEvent.addNoteToItem(data.product, noteController.text),
+                    );
+                Navigator.pop(context);
+              },
+              child: const Text('Simpan'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

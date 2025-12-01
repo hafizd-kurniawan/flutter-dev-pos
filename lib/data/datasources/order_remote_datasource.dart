@@ -32,6 +32,9 @@ class OrderRemoteDatasource {
       headers: headers,
     );
     
+    log("🚀 DEBUG PAYLOAD: ${jsonEncode(orderMap)}"); // NEW: Log exact payload
+    log("📝 Note in Payload: ${orderMap['notes']}"); // NEW: Log specific note field
+    
     log("📥 Response Status: ${response.statusCode}");
     log("📥 Response Body: ${response.body}");
     

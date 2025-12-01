@@ -175,7 +175,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                   serviceCharge,
                                   totalQuantity,
                                   totalPrice,
-                                  draftName) {
+                                  draftName,
+                                  orderNote) {
                                 if (products.isEmpty) {
                                   return const Center(
                                     child: Text('No Items'),
@@ -218,7 +219,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                             serviceCharge,
                                             totalQuantity,
                                             totalPrice,
-                                            draftName) =>
+                                            draftName,
+                                            orderNote) =>
                                         products.fold(
                                           0,
                                           (previousValue, element) =>
@@ -259,7 +261,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                         serviceCharge,
                                         totalQuantity,
                                         totalPrice,
-                                        draftName) {
+                                        draftName,
+                                        orderNote) {
                                       log("discountAmount: $discountAmount");
                                       return discountAmount;
                                     });
@@ -297,7 +300,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                           serviceCharge,
                                           totalQuantity,
                                           totalPrice,
-                                          draftName) =>
+                                          draftName,
+                                          orderNote) =>
                                       tax,
                                 );
                                 final price = state.maybeWhen(
@@ -310,7 +314,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                           serviceCharge,
                                           totalQuantity,
                                           totalPrice,
-                                          draftName) =>
+                                          draftName,
+                                          orderNote) =>
                                       products.fold(
                                     0,
                                     (previousValue, element) =>
@@ -331,7 +336,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                         serviceCharge,
                                         totalQuantity,
                                         totalPrice,
-                                        draftName) {
+                                        draftName,
+                                        orderNote) {
                                       return discountAmount;
                                     });
 
@@ -369,7 +375,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                           serviceCharge,
                                           totalQuantity,
                                           totalPrice,
-                                          draftName) =>
+                                          draftName,
+                                          orderNote) =>
                                       tax,
                                 );
                                 final price = state.maybeWhen(
@@ -382,7 +389,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                           serviceCharge,
                                           totalQuantity,
                                           totalPrice,
-                                          draftName) =>
+                                          draftName,
+                                          orderNote) =>
                                       products.fold(
                                     0,
                                     (previousValue, element) =>
@@ -403,7 +411,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                         serviceCharge,
                                         totalQuantity,
                                         totalPrice,
-                                        draftName) {
+                                        draftName,
+                                        orderNote) {
                                       return discountAmount;
                                     });
 
@@ -417,7 +426,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                           serviceCharge,
                                           totalQuantity,
                                           totalPrice,
-                                          draftName) =>
+                                          draftName,
+                                          orderNote) =>
                                       serviceCharge,
                                 );
 
@@ -459,7 +469,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                           serviceCharge,
                                           totalQuantity,
                                           totalPrice,
-                                          draftName) =>
+                                          draftName,
+                                          orderNote) =>
                                       products.fold(
                                     0,
                                     (previousValue, element) =>
@@ -480,7 +491,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                         serviceCharge,
                                         totalQuantity,
                                         totalPrice,
-                                        draftName) {
+                                        draftName,
+                                        orderNote) {
                                       return discountAmount;
                                     });
 
@@ -494,7 +506,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                           serviceCharge,
                                           totalQuantity,
                                           totalPrice,
-                                          draftName) =>
+                                          draftName,
+                                          orderNote) =>
                                       serviceCharge,
                                 );
 
@@ -508,7 +521,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                           serviceCharge,
                                           totalQuantity,
                                           totalPrice,
-                                          draftName) =>
+                                          draftName,
+                                          orderNote) =>
                                       tax,
                                 );
 
@@ -589,7 +603,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                         serviceCharge,
                                         totalQuantity,
                                         totalPrice,
-                                        draftName) {
+                                        draftName,
+                                        orderNote) {
                                       customerController.text = draftName;
                                       return TextFormField(
                                         readOnly: true,
@@ -754,7 +769,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                               serviceCharge,
                                               totalQuantity,
                                               totalPrice,
-                                              draftName) {
+                                              draftName,
+                                              orderNote) {
                                             if (discountModel == null) {
                                               return 0;
                                             }
@@ -773,7 +789,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                 serviceCharge,
                                                 totalQuantity,
                                                 totalPrice,
-                                                draftName) =>
+                                                draftName,
+                                                orderNote) =>
                                             products.fold(
                                           0,
                                           (previousValue, element) =>
@@ -794,7 +811,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                 serviceCharge,
                                                 totalQuantity,
                                                 totalPrice,
-                                                draftName) =>
+                                                draftName,
+                                                orderNote) =>
                                             tax,
                                       );
                                       final serviceCharge = state.maybeWhen(
@@ -807,7 +825,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                 serviceCharge,
                                                 totalQuantity,
                                                 totalPrice,
-                                                draftName) =>
+                                                draftName,
+                                                orderNote) =>
                                             serviceCharge,
                                       );
 
@@ -818,6 +837,11 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                       final finalTax = subTotal * (tax / 100);
                                       final finalService = subTotal * (serviceCharge / 100); // NEW: Calculate service
                                       final totalPrice = subTotal + finalTax + finalService; // NEW: Include service
+
+                                      final orderNote = state.maybeWhen(
+                                        orElse: () => '',
+                                        loaded: (_, __, ___, ____, _____, ______, _______, ________, _________, note) => note,
+                                      );
 
                                       List<ProductQuantity> items =
                                           state.maybeWhen(
@@ -830,7 +854,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                 serviceCharge,
                                                 totalQuantity,
                                                 totalPrice,
-                                                draftName) =>
+                                                draftName,
+                                                orderNote) =>
                                             products,
                                       );
                                       final totalQty = items.fold(
@@ -861,6 +886,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                       'dine_in',
                                                       tax, // NEW: taxPercentage
                                                       serviceCharge, // NEW: servicePercentage
+                                                      orderNote, // NEW: Pass Global Note
                                                   )); // Table payment is always dine_in
 
                                               await showDialog(
@@ -882,6 +908,9 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                   draftName:
                                                       customerController.text,
                                                   paymentAmount: totalPriceController.text.toIntegerFromText, // ADDED
+                                                  tableName: widget.table?.name, // NEW: Pass table name
+                                                  orderType: 'dine_in', // NEW: Pass order type
+                                                  orderNote: orderNote, // NEW: Pass Global Note
                                                 ),
                                               );
 
@@ -898,22 +927,22 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                                   discountAmount:
                                                       totalDiscount.toInt(),
                                                   subTotal: subTotal.toInt(),
-                                                  customerName:
-                                                      customerController.text,
-                                                  discount: discount,
-                                                  paymentAmount:
-                                                      totalPriceController.text
-                                                          .toIntegerFromText,
-                                                  paymentMethod: 'Qris',
-                                                  tableNumber:
-                                                      widget.table?.id ?? 0,
+                                                  serviceCharge: finalService.toInt(), // NEW: Pass service amount
+                                                  paymentAmount: totalPriceController.text.toIntegerFromText, // ADDED
+                                                  customerName: customerController.text,
+                                                  discount: discount, // ADDED: Fix missing parameter
+                                                  tableNumber: widget.table?.id ?? 0,
+                                                  status: 'completed',
                                                   paymentStatus: 'paid',
-                                                  serviceCharge: 0,
-                                                  status: 'paid', // Changed: was 'completed', now 'paid' for order tracking
-                                                  orderType: 'dine_in', // Table payment is always dine_in
+                                                  paymentMethod: 'Qris',
+                                                  tableName: widget.table?.name, // NEW: Pass table name
+                                                  orderType: 'dine_in', // NEW: Pass order type
+                                                  orderNote: orderNote, // NEW: Pass Global Note
                                                 ),
                                               );
                                             }
+
+
                                           },
                                           label: 'Bayar',
                                         ),

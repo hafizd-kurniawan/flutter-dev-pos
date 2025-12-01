@@ -19,6 +19,7 @@ class DraftOrderModel {
   final String transactionTime;
   final int tableNumber;
   final String draftName;
+  final String note; // NEW
 
   DraftOrderModel({
     this.id,
@@ -33,6 +34,7 @@ class DraftOrderModel {
     required this.tableNumber,
     required this.draftName,
     required this.transactionTime,
+    this.note = '', // NEW
   });
 
   Map<String, dynamic> toMap() {
@@ -42,6 +44,7 @@ class DraftOrderModel {
       'totalPrice': totalPrice,
       'tableNumber': tableNumber,
       'draftName': draftName,
+      'note': note, // NEW
     };
   }
 
@@ -64,6 +67,7 @@ class DraftOrderModel {
       'table_number': tableNumber,
       'transaction_time': transactionTime,
       'draft_name': draftName,
+      'note': note, // NEW
     };
   }
 
@@ -81,6 +85,7 @@ class DraftOrderModel {
       serviceCharge: map['service_charge']?.toInt() ?? 0,
       subTotal: map['subTotal']?.toInt() ?? 0,
       tax: map['tax']?.toInt() ?? 0,
+      note: map['note'] ?? '', // NEW
     );
   }
 
@@ -100,6 +105,7 @@ class DraftOrderModel {
       serviceCharge: map['service_charge']?.toInt() ?? 0,
       subTotal: map['subTotal']?.toInt() ?? 0,
       tax: map['tax']?.toInt() ?? 0,
+      note: map['note'] ?? '', // NEW
     );
   }
 

@@ -1,0 +1,518 @@
+Analyzing flutter-1...                                          
+
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/core/components/image_picker_widget.dart:81:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/core/components/menu_button.dart:45:40 • deprecated_member_use
+   info • 'Table.fromTextArray' is deprecated and shouldn't be used. Use TableHelper.fromTextArray() instead • lib/core/utils/item_sales_invoice.dart:86:12 • deprecated_member_use
+   info • 'Table.fromTextArray' is deprecated and shouldn't be used. Use TableHelper.fromTextArray() instead • lib/core/utils/transaction_sales_invoice.dart:93:12 • deprecated_member_use
+warning • Unused import: 'dart:math' • lib/data/dataoutputs/print_dataoutputs.dart:1:8 • unused_import
+   info • Unnecessary use of 'toList' in a spread • lib/data/dataoutputs/print_dataoutputs.dart:997:18 • unnecessary_to_list_in_spreads
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart' • lib/data/datasources/auth_remote_datasource.dart:4:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart' • lib/data/datasources/category_remote_datasource.dart:6:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart' • lib/data/datasources/discount_remote_datasource.dart:4:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart' • lib/data/datasources/order_item_remote_datasource.dart:4:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart' • lib/data/datasources/order_remote_datasource.dart:8:8 • unused_import
+warning • The receiver can't be null, so the null-aware operator '?.' is unnecessary • lib/data/datasources/order_remote_datasource.dart:21:33 • invalid_null_aware_operator
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_local_datasource.dart:78:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_local_datasource.dart:79:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_local_datasource.dart:98:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_local_datasource.dart:108:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_remote_datasource.dart:18:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_remote_datasource.dart:22:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_remote_datasource.dart:23:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_remote_datasource.dart:33:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_remote_datasource.dart:34:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_remote_datasource.dart:35:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_remote_datasource.dart:36:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/pos_settings_remote_datasource.dart:49:7 • avoid_print
+warning • Unused import: 'package:intl/intl.dart' • lib/data/datasources/product_local_datasource.dart:10:8 • unused_import
+warning • Unused import: 'auth_local_datasource.dart' • lib/data/datasources/product_remote_datasource.dart:11:8 • unused_import
+   info • Don't invoke 'print' in production code • lib/data/datasources/settings_local_datasource.dart:13:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/settings_local_datasource.dart:17:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/settings_local_datasource.dart:21:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/settings_local_datasource.dart:25:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/settings_local_datasource.dart:37:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/settings_remote_datasource.dart:17:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/data/datasources/settings_remote_datasource.dart:20:9 • avoid_print
+warning • Unused import: 'package:flutter/foundation.dart' • lib/data/models/response/product_response_model.dart:4:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/home/pages/confirm_payment_page.dart' • lib/data/models/response/product_response_model.dart:6:8 • unused_import
+   info • The import of 'package:flutter/services.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' • lib/main.dart:2:8 • unnecessary_import
+warning • Unused import: 'package:flutter_posresto_app/data/dataoutputs/laman_print.dart' • lib/main.dart:3:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/discount_remote_datasource.dart' • lib/main.dart:7:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/table/blocs/generate_table/generate_table_bloc.dart' • lib/main.dart:38:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/table/pages/new_table_management_page.dart' • lib/main.dart:46:8 • unused_import
+warning • Unused import: 'package:hive/hive.dart' • lib/main.dart:60:8 • unused_import
+warning • Unused import: 'package:path_provider/path_provider.dart' • lib/main.dart:61:8 • unused_import
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/auth/bloc/login/login_bloc.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/auth/bloc/logout/logout_bloc.dart:1:8 • depend_on_referenced_packages
+   info • 'color' is deprecated and shouldn't be used. Use colorFilter instead • lib/presentation/auth/login_page.dart:54:17 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:110:19 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:114:19 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/auth/login_page.dart:120:19 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:121:19 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:144:21 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:149:21 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:151:21 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:155:25 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:159:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:175:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:179:25 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:184:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:187:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:190:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:193:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:195:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:200:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:211:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:220:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/auth/login_page.dart:225:21 • avoid_print
+   info • Parameter 'key' could be a super parameter • lib/presentation/dashboard/pages/simple_dashboard_page.dart:8:9 • use_super_parameters
+   info • Parameter 'key' could be a super parameter • lib/presentation/dashboard/widgets/dashboard_summary_widget.dart:12:9 • use_super_parameters
+   info • Unnecessary use of 'toList' in a spread • lib/presentation/dashboard/widgets/dashboard_summary_widget.dart:361:16 • unnecessary_to_list_in_spreads
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/dashboard/widgets/dashboard_summary_widget.dart:410:32 • deprecated_member_use
+   info • Unnecessary use of 'toList' in a spread • lib/presentation/dashboard/widgets/dashboard_summary_widget.dart:446:16 • unnecessary_to_list_in_spreads
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/dashboard/widgets/dashboard_summary_widget.dart:516:28 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/dashboard/widgets/dashboard_summary_widget.dart:528:28 • use_build_context_synchronously
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/history/bloc/history/history_bloc.dart:1:8 • depend_on_referenced_packages
+warning • Unused import: 'package:flutter_posresto_app/core/extensions/int_ext.dart' • lib/presentation/history/pages/history_page.dart:3:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/order_remote_datasource.dart' • lib/presentation/history/pages/history_page.dart:4:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart' • lib/presentation/history/pages/history_page.dart:11:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/presentation/history/pages/history_page.dart:21:9 • use_super_parameters
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/history/pages/history_page.dart:243:30 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/history/pages/history_page.dart:295:32 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/history/pages/history_page.dart:302:28 • use_build_context_synchronously
+   info • 'Share' is deprecated and shouldn't be used. Use SharePlus instead • lib/presentation/history/pages/history_page.dart:351:13 • deprecated_member_use
+   info • 'shareXFiles' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead • lib/presentation/history/pages/history_page.dart:351:19 • deprecated_member_use
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/history/pages/history_page.dart:354:28 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/presentation/history/pages/history_page.dart:580:15 • avoid_print
+   info • Unnecessary braces in a string interpolation • lib/presentation/history/pages/history_page.dart:610:35 • unnecessary_brace_in_string_interps
+warning • Unused import: 'package:flutter_posresto_app/core/extensions/int_ext.dart' • lib/presentation/history/widgets/order_card.dart:2:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/presentation/history/widgets/order_card.dart:12:9 • use_super_parameters
+warning • The declaration '_getButtonText' isn't referenced • lib/presentation/history/widgets/order_card.dart:46:10 • unused_element
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/history/widgets/order_card.dart:102:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/history/widgets/order_card.dart:130:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/history/widgets/order_card.dart:162:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/history/widgets/order_card.dart:165:62 • deprecated_member_use
+  error • Expected to find ']' • lib/presentation/history/widgets/order_card.dart:244:13 • expected_token
+  error • Expected an identifier • lib/presentation/history/widgets/order_card.dart:247:13 • missing_identifier
+  error • Expected to find ')' • lib/presentation/history/widgets/order_card.dart:247:13 • expected_token
+  error • Expected to find ';' • lib/presentation/history/widgets/order_card.dart:566:7 • expected_token
+warning • Dead code • lib/presentation/history/widgets/order_card.dart:566:8 • dead_code
+  error • Expected an identifier • lib/presentation/history/widgets/order_card.dart:566:8 • missing_identifier
+  error • Expected to find ';' • lib/presentation/history/widgets/order_card.dart:566:8 • expected_token
+  error • Unexpected text ';' • lib/presentation/history/widgets/order_card.dart:566:8 • unexpected_token
+  error • Expected an identifier • lib/presentation/history/widgets/order_card.dart:567:5 • missing_identifier
+  error • Unexpected text ';' • lib/presentation/history/widgets/order_card.dart:567:5 • unexpected_token
+   info • Unnecessary empty statement • lib/presentation/history/widgets/order_card.dart:567:6 • empty_statements
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/home/bloc/category/category_bloc.dart:3:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/home/bloc/checkout/checkout_bloc.dart:3:8 • depend_on_referenced_packages
+warning • Unused import: 'package:flutter_posresto_app/presentation/home/models/order_item.dart' • lib/presentation/home/bloc/checkout/checkout_bloc.dart:6:8 • unused_import
+  error • A value of type 'String' can't be assigned to a parameter of type 'int' in a const constructor • lib/presentation/home/bloc/checkout/checkout_bloc.dart:20:68 • const_constructor_param_type_mismatch
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:20:68 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:20:72 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:20:74 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:42:11 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:43:11 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:43:33 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:69:11 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:70:11 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:70:33 • not_enough_positional_arguments
+  error • A value of type 'String' can't be assigned to a parameter of type 'int' in a const constructor • lib/presentation/home/bloc/checkout/checkout_bloc.dart:76:54 • const_constructor_param_type_mismatch
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:76:54 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:76:58 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:76:60 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:93:9 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:94:9 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:94:31 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:110:9 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:111:9 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:111:31 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:126:11 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:127:11 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:127:33 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:143:11 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:144:11 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:144:33 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:161:9 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:162:9 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:162:31 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:178:11 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:179:11 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:179:33 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:193:11 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:194:11 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:194:33 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:243:11 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:244:11 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:244:13 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:268:11 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:269:11 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:269:33 • not_enough_positional_arguments
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:283:11 • argument_type_not_assignable
+  error • The argument type 'String' can't be assigned to the parameter type 'int'.  • lib/presentation/home/bloc/checkout/checkout_bloc.dart:284:11 • argument_type_not_assignable
+  error • 12 positional arguments expected by '_Loaded.new', but 10 found • lib/presentation/home/bloc/checkout/checkout_bloc.dart:284:21 • not_enough_positional_arguments
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3062:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3063:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3084:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3085:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3106:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3107:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3219:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3220:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3244:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3245:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3269:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3270:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3381:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3382:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3406:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3407:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3431:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3432:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3506:11 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3507:11 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3533:13 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3534:13 • duplicate_definition
+  error • All final variables must be initialized, but 'totalPrice' and 'totalQuantity' aren't • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3594:9 • final_not_initialized_constructor
+  error • The field 'totalQuantity' can't be initialized by multiple parameters in the same constructor • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3603:12 • duplicate_field_formal_parameter
+  error • The field 'totalPrice' can't be initialized by multiple parameters in the same constructor • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3604:12 • duplicate_field_formal_parameter
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3632:13 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3634:13 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3712:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3713:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3749:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3750:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3786:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3787:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3864:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3865:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3877:11 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3878:11 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3968:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3969:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3993:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:3994:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:4018:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:4019:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:4166:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:4167:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:4191:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:4192:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:4216:17 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_bloc.freezed.dart:4217:17 • duplicate_definition
+  error • The name 'totalQuantity' is already defined • lib/presentation/home/bloc/checkout/checkout_state.dart:16:11 • duplicate_definition
+  error • The name 'totalPrice' is already defined • lib/presentation/home/bloc/checkout/checkout_state.dart:17:11 • duplicate_definition
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/home/bloc/local_product/local_product_bloc.dart:3:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/home/bloc/online_checker/online_checker_bloc.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/home/bloc/order/order_bloc.dart:3:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/home/bloc/pos_settings/pos_settings_bloc.dart:3:8 • depend_on_referenced_packages
+warning • Unused import: 'dart:async' • lib/presentation/home/bloc/qris/qris_bloc.dart:1:8 • unused_import
+   info • Unnecessary braces in a string interpolation • lib/presentation/home/bloc/qris/qris_bloc.dart:30:24 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/presentation/home/bloc/qris/qris_bloc.dart:41:51 • unnecessary_brace_in_string_interps
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/dialog/dynamic_discount_dialog.dart:99:25 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/home/dialog/dynamic_discount_dialog.dart:110:27 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/presentation/home/dialog/dynamic_discount_dialog.dart:122:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/dialog/dynamic_discount_dialog.dart:123:27 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/dialog/dynamic_discount_dialog.dart:127:27 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/dialog/dynamic_discount_dialog.dart:130:27 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/presentation/home/dialog/dynamic_discount_dialog.dart:140:27 • avoid_print
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/home/dialog/dynamic_discount_dialog.dart:149:50 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/home/dialog/dynamic_discount_dialog.dart:158:29 • use_build_context_synchronously
+   info • Unnecessary use of 'toList' in a spread • lib/presentation/home/dialog/dynamic_discount_dialog.dart:226:24 • unnecessary_to_list_in_spreads
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/dialog/dynamic_service_dialog.dart:98:25 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/home/dialog/dynamic_service_dialog.dart:109:27 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/dialog/dynamic_service_dialog.dart:130:27 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/home/dialog/dynamic_service_dialog.dart:141:50 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/home/dialog/dynamic_service_dialog.dart:150:29 • use_build_context_synchronously
+   info • Unnecessary use of 'toList' in a spread • lib/presentation/home/dialog/dynamic_service_dialog.dart:154:24 • unnecessary_to_list_in_spreads
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/dialog/dynamic_tax_dialog.dart:98:25 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/home/dialog/dynamic_tax_dialog.dart:109:27 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/presentation/home/dialog/dynamic_tax_dialog.dart:130:27 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/dialog/dynamic_tax_dialog.dart:133:27 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/home/dialog/dynamic_tax_dialog.dart:144:50 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/presentation/home/dialog/dynamic_tax_dialog.dart:153:29 • use_build_context_synchronously
+   info • Unnecessary use of 'toList' in a spread • lib/presentation/home/dialog/dynamic_tax_dialog.dart:157:24 • unnecessary_to_list_in_spreads
+warning • Unused import: 'package:flutter_posresto_app/presentation/setting/bloc/sync_order/sync_order_bloc.dart' • lib/presentation/home/dialog/payment_qris_dialog.dart:15:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/presentation/home/dialog/quick_table_select_dialog.dart:13:9 • use_super_parameters
+warning • The left operand can't be null, so the right operand is never executed • lib/presentation/home/dialog/quick_table_select_dialog.dart:130:53 • dead_null_aware_expression
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/dialog/quick_table_select_dialog.dart:163:57 • deprecated_member_use
+warning • The left operand can't be null, so the right operand is never executed • lib/presentation/home/dialog/quick_table_select_dialog.dart:195:57 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • lib/presentation/home/dialog/quick_table_select_dialog.dart:206:97 • dead_null_aware_expression
+warning • Unused import: 'product_model.dart' • lib/presentation/home/models/order_item.dart:3:8 • unused_import
+   info • Don't invoke 'print' in production code • lib/presentation/home/models/order_model.dart:137:5 • avoid_print
+   info • Parameter 'key' could be a super parameter • lib/presentation/home/pages/confirm_payment_page.dart:31:9 • use_super_parameters
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/confirm_payment_page.dart:71:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/confirm_payment_page.dart:114:9 • avoid_print
+  error • The argument type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:290:39 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:331:45 • argument_type_not_assignable
+  error • The argument type 'Text Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:371:43 • argument_type_not_assignable
+   info • Unnecessary use of string interpolation • lib/presentation/home/pages/confirm_payment_page.dart:407:53 • unnecessary_string_interpolations
+  error • The argument type 'Text Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:449:51 • argument_type_not_assignable
+  error • The argument type 'Text Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:529:51 • argument_type_not_assignable
+  error • The argument type 'Text Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:601:43 • argument_type_not_assignable
+   info • Unnecessary braces in a string interpolation • lib/presentation/home/pages/confirm_payment_page.dart:723:63 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/presentation/home/pages/confirm_payment_page.dart:732:64 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/presentation/home/pages/confirm_payment_page.dart:1004:60 • unnecessary_brace_in_string_interps
+  error • The argument type 'Discount? Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Null Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:1034:49 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:1048:49 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:1069:49 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:1083:49 • argument_type_not_assignable
+  error • The argument type 'List<ProductQuantity> Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'List<ProductQuantity> Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/confirm_payment_page.dart:1112:49 • argument_type_not_assignable
+warning • Unused import: 'dart:developer' • lib/presentation/home/pages/dashboard_page.dart:3:8 • unused_import
+warning • Unused import: 'package:google_fonts/google_fonts.dart' • lib/presentation/home/pages/dashboard_page.dart:9:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/core/components/spaces.dart' • lib/presentation/home/pages/dashboard_page.dart:11:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/sales/pages/sales_page.dart' • lib/presentation/home/pages/dashboard_page.dart:17:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/table/pages/new_table_management_page.dart' • lib/presentation/home/pages/dashboard_page.dart:21:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/table/pages/table_page.dart' • lib/presentation/home/pages/dashboard_page.dart:22:8 • unused_import
+warning • Unused import: '../widgets/nav_item.dart' • lib/presentation/home/pages/dashboard_page.dart:29:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/presentation/home/pages/dashboard_page.dart:40:9 • use_super_parameters
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/dashboard_page.dart:72:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/dashboard_page.dart:85:13 • avoid_print
+warning • The value of the local variable 'subscription' isn't used • lib/presentation/home/pages/dashboard_page.dart:108:50 • unused_local_variable
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/pages/dashboard_page.dart:114:9 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/pages/dashboard_page.dart:119:9 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/pages/dashboard_page.dart:126:9 • use_build_context_synchronously
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:151:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:167:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:210:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:296:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:311:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:314:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:324:66 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:374:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:377:57 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/dashboard_page.dart:387:70 • deprecated_member_use
+warning • Unused import: 'package:flutter_posresto_app/presentation/home/pages/dashboard_page.dart' • lib/presentation/home/pages/home_page.dart:22:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/table/pages/table_management_api_page.dart' • lib/presentation/home/pages/home_page.dart:23:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/presentation/home/pages/home_page.dart:43:9 • use_super_parameters
+warning • The declaration '_getCartFontSize' isn't referenced • lib/presentation/home/pages/home_page.dart:105:10 • unused_element
+warning • The declaration '_shouldWrapCartButtons' isn't referenced • lib/presentation/home/pages/home_page.dart:110:8 • unused_element
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:118:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:123:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:127:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:131:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:135:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:142:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:155:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:163:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:171:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:177:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:181:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:184:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:188:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:194:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:198:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:199:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:203:15 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:209:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:210:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:211:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:220:15 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:222:15 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:224:15 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:227:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:237:15 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:239:15 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:241:15 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:244:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:248:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:253:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:254:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:275:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:285:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:292:7 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/pages/home_page.dart:305:19 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/pages/home_page.dart:309:11 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:311:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:316:7 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/pages/home_page.dart:317:7 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:319:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:322:7 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/pages/home_page.dart:323:7 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:325:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:348:7 • avoid_print
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'String Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/home_page.dart:524:41 • argument_type_not_assignable
+  error • The argument type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/home_page.dart:593:41 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/home_page.dart:712:57 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/home_page.dart:757:57 • argument_type_not_assignable
+  error • The argument type 'Text Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/home_page.dart:795:45 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/home_page.dart:843:45 • argument_type_not_assignable
+  error • The argument type 'Button Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/pages/home_page.dart:882:41 • argument_type_not_assignable
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:948:57 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:954:57 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:1016:11 • avoid_print
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/home_page.dart:1033:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/home_page.dart:1034:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/home_page.dart:1041:66 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/home_page.dart:1042:66 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/home_page.dart:1050:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/home_page.dart:1051:64 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/home_page.dart:1062:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/home_page.dart:1063:37 • deprecated_member_use
+warning • The '!' will have no effect because the receiver can't be null • lib/presentation/home/pages/home_page.dart:1091:59 • unnecessary_non_null_assertion
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/pages/home_page.dart:1183:44 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:1199:17 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/pages/home_page.dart:1202:13 • avoid_print
+warning • The declaration '_IsEmpty' isn't referenced • lib/presentation/home/pages/home_page.dart:1301:7 • unused_element
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/collapsed_nav_item.dart:44:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/collapsed_nav_item.dart:46:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/collapsed_nav_item.dart:50:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/enhanced_nav_item.dart:46:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/enhanced_nav_item.dart:48:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/enhanced_nav_item.dart:52:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/nav_item.dart:33:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/nav_user_info_card.dart:60:29 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/nav_user_info_card.dart:63:31 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/nav_user_info_card.dart:78:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/nav_user_info_card.dart:113:35 • deprecated_member_use
+  error • The argument type 'Null Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Null Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/widgets/product_card.dart:35:19 • argument_type_not_assignable
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/product_card.dart:128:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/product_card.dart:178:71 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/home/widgets/product_card.dart:178:101 • deprecated_member_use
+  error • The argument type 'Align Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/home/widgets/product_card.dart:215:27 • argument_type_not_assignable
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart' • lib/presentation/home/widgets/save_order_dialog.dart:7:8 • unused_import
+warning • Unused import: 'package:intl/intl.dart' • lib/presentation/home/widgets/save_order_dialog.dart:9:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/core/extensions/int_ext.dart' • lib/presentation/home/widgets/save_order_dialog.dart:13:8 • unused_import
+warning • Unused import: '../bloc/order/order_bloc.dart' • lib/presentation/home/widgets/save_order_dialog.dart:23:8 • unused_import
+   info • Don't invoke 'print' in production code • lib/presentation/home/widgets/save_order_dialog.dart:145:29 • avoid_print
+warning • The '!' will have no effect because the receiver can't be null • lib/presentation/home/widgets/save_order_dialog.dart:162:43 • unnecessary_non_null_assertion
+warning • The value of the local variable 'printing' isn't used • lib/presentation/home/widgets/save_order_dialog.dart:171:44 • unused_local_variable
+warning • The '!' will have no effect because the receiver can't be null • lib/presentation/home/widgets/save_order_dialog.dart:190:39 • unnecessary_non_null_assertion
+warning • The value of the local variable 'printing' isn't used • lib/presentation/home/widgets/save_order_dialog.dart:200:44 • unused_local_variable
+warning • Unused import: 'package:flutter_posresto_app/data/dataoutputs/laman_print.dart' • lib/presentation/home/widgets/success_payment_dialog.dart:14:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/presentation/home/widgets/success_payment_dialog.dart:35:9 • use_super_parameters
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/widgets/success_payment_dialog.dart:87:32 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/widgets/success_payment_dialog.dart:247:23 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/widgets/success_payment_dialog.dart:268:35 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/widgets/success_payment_dialog.dart:272:27 • use_build_context_synchronously
+warning • The '!' will have no effect because the receiver can't be null • lib/presentation/home/widgets/success_payment_dialog.dart:359:47 • unnecessary_non_null_assertion
+warning • The value of the local variable 'printing' isn't used • lib/presentation/home/widgets/success_payment_dialog.dart:367:48 • unused_local_variable
+warning • The '!' will have no effect because the receiver can't be null • lib/presentation/home/widgets/success_payment_dialog.dart:387:47 • unnecessary_non_null_assertion
+warning • The value of the local variable 'printing' isn't used • lib/presentation/home/widgets/success_payment_dialog.dart:395:48 • unused_local_variable
+warning • The '!' will have no effect because the receiver can't be null • lib/presentation/home/widgets/success_payment_dialog.dart:415:43 • unnecessary_non_null_assertion
+warning • The value of the local variable 'printing' isn't used • lib/presentation/home/widgets/success_payment_dialog.dart:423:48 • unused_local_variable
+warning • The receiver can't be null, so the null-aware operator '?.' is unnecessary • lib/presentation/home/widgets/success_payment_dialog.dart:453:53 • invalid_null_aware_operator
+   info • Don't invoke 'print' in production code • lib/presentation/home/widgets/success_payment_dialog.dart:478:25 • avoid_print
+   info • 'Share' is deprecated and shouldn't be used. Use SharePlus instead • lib/presentation/home/widgets/success_payment_dialog.dart:483:31 • deprecated_member_use
+   info • 'shareXFiles' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead • lib/presentation/home/widgets/success_payment_dialog.dart:483:37 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/presentation/home/widgets/success_payment_dialog.dart:485:25 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/home/widgets/success_payment_dialog.dart:486:25 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/home/widgets/success_payment_dialog.dart:487:46 • use_build_context_synchronously
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/report/blocs/item_sales_report/item_sales_report_bloc.dart:1:8 • depend_on_referenced_packages
+warning • Unused import: 'package:permission_handler/permission_handler.dart' • lib/presentation/report/widgets/item_sales_report_widget.dart:12:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/report/widgets/report_menu.dart:32:44 • deprecated_member_use
+warning • Unused import: 'package:permission_handler/permission_handler.dart' • lib/presentation/report/widgets/summary_report_widget.dart:12:8 • unused_import
+warning • Unused import: 'package:permission_handler/permission_handler.dart' • lib/presentation/report/widgets/transaction_report_widget.dart:13:8 • unused_import
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/sales/blocs/day_sales/day_sales_bloc.dart:2:8 • depend_on_referenced_packages
+   info • Unnecessary use of string interpolation • lib/presentation/sales/pages/sales_page.dart:43:17 • unnecessary_string_interpolations
+warning • Unused import: 'dart:async' • lib/presentation/setting/bloc/create_printer/create_printer_bloc.dart:1:8 • unused_import
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/create_printer/create_printer_bloc.dart:3:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/get_categories/get_categories_bloc.dart:2:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/get_printer_bar/get_printer_bar_bloc.dart:2:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/get_printer_checker/get_printer_checker_bloc.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/get_printer_kitchen/get_printer_kitchen_bloc.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/get_printer_receipt/get_printer_receipt_bloc.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/settings/settings_bloc.dart:1:12 • depend_on_referenced_packages
+   info • Don't invoke 'print' in production code • lib/presentation/setting/bloc/settings/settings_bloc.dart:22:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/setting/bloc/settings/settings_bloc.dart:26:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/setting/bloc/settings/settings_bloc.dart:31:13 • avoid_print
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/sync_order/sync_order_bloc.dart:3:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/sync_product/sync_product_bloc.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/setting/bloc/update_printer/update_printer_bloc.dart:1:8 • depend_on_referenced_packages
+   info • Parameter 'key' could be a super parameter • lib/presentation/setting/pages/about_page.dart:6:9 • use_super_parameters
+warning • The value of the field '_info' isn't used • lib/presentation/setting/pages/manage_printer_page.dart:41:10 • unused_field
+warning • The value of the field '_msj' isn't used • lib/presentation/setting/pages/manage_printer_page.dart:42:10 • unused_field
+warning • The value of the field '_options' isn't used • lib/presentation/setting/pages/manage_printer_page.dart:45:22 • unused_field
+warning • The value of the field '_progress' isn't used • lib/presentation/setting/pages/manage_printer_page.dart:54:8 • unused_field
+warning • The value of the field '_msjprogress' isn't used • lib/presentation/setting/pages/manage_printer_page.dart:55:10 • unused_field
+   info • Don't invoke 'print' in production code • lib/presentation/setting/pages/manage_printer_page.dart:73:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/setting/pages/manage_printer_page.dart:85:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/setting/pages/manage_printer_page.dart:138:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/setting/pages/manage_printer_page.dart:150:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/setting/pages/manage_printer_page.dart:159:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/setting/pages/manage_printer_page.dart:207:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/setting/pages/manage_printer_page.dart:216:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/presentation/setting/pages/manage_printer_page.dart:235:7 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/setting/pages/manage_printer_page.dart:266:38 • use_build_context_synchronously
+   info • Parameter 'key' could be a super parameter • lib/presentation/setting/pages/notifications_settings_page.dart:6:9 • use_super_parameters
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/setting/pages/notifications_settings_page.dart:274:42 • deprecated_member_use
+warning • Unused import: 'package:flutter_posresto_app/presentation/setting/pages/manage_printer_page.dart' • lib/presentation/setting/pages/printer_configuration_page.dart:3:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/setting/pages/sync_data_page.dart' • lib/presentation/setting/pages/printer_configuration_page.dart:4:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/setting/widgets/bar_printer_page.dart' • lib/presentation/setting/pages/printer_configuration_page.dart:5:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/setting/widgets/checker_printer_page.dart' • lib/presentation/setting/pages/printer_configuration_page.dart:6:8 • unused_import
+warning • Unused import: '../../../core/assets/assets.gen.dart' • lib/presentation/setting/pages/printer_configuration_page.dart:10:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/setting/pages/manage_printer_page.dart' • lib/presentation/setting/pages/settings_page.dart:2:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart' • lib/presentation/setting/pages/sync_data_page.dart:4:8 • unused_import
+warning • The value of the local variable 'result' isn't used • lib/presentation/setting/widgets/dialog_search_printer.dart:31:16 • unused_local_variable
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/table/blocs/change_position_table/change_position_table_bloc.dart:3:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/table/blocs/create_table/create_table_bloc.dart:3:8 • depend_on_referenced_packages
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/table/blocs/generate_table/generate_table_bloc.dart:1:8 • depend_on_referenced_packages
+   info • The import of 'package:flutter/material.dart' is unnecessary because all of the used elements are also provided by the import of 'package:freezed_annotation/freezed_annotation.dart' • lib/presentation/table/blocs/generate_table/generate_table_bloc.dart:2:8 • unnecessary_import
+warning • Unused import: 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart' • lib/presentation/table/blocs/generate_table/generate_table_bloc.dart:3:8 • unused_import
+warning • The value of the field '_categories' isn't used • lib/presentation/table/blocs/get_table/get_table_bloc.dart:14:28 • unused_field
+warning • The value of the local variable 'currentState' isn't used • lib/presentation/table/blocs/get_table/get_table_bloc.dart:115:11 • unused_local_variable
+warning • Unused import: 'dart:async' • lib/presentation/table/blocs/update_table/update_table_bloc.dart:1:8 • unused_import
+   info • The imported package 'bloc' isn't a dependency of the importing package • lib/presentation/table/blocs/update_table/update_table_bloc.dart:3:8 • depend_on_referenced_packages
+warning • Unused import: 'dart:developer' • lib/presentation/table/pages/new_table_management_page.dart:1:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/data/models/response/table_model.dart' • lib/presentation/table/pages/new_table_management_page.dart:8:8 • unused_import
+warning • Unused import: 'package:flutter_riverpod/flutter_riverpod.dart' • lib/presentation/table/pages/new_table_management_page.dart:13:8 • unused_import
+warning • Unused import: 'package:hive/hive.dart' • lib/presentation/table/pages/new_table_management_page.dart:14:8 • unused_import
+warning • Unused import: 'package:path_provider/path_provider.dart' • lib/presentation/table/pages/new_table_management_page.dart:15:8 • unused_import
+warning • Unused import: '../../../core/assets/assets.gen.dart' • lib/presentation/table/pages/payment_table_page.dart:22:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/presentation/table/pages/payment_table_page.dart:30:9 • use_super_parameters
+  error • The argument type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:170:39 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:213:45 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:254:45 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:292:43 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:305:43 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:326:45 • argument_type_not_assignable
+warning • The value of the local variable 'tax' isn't used • lib/presentation/table/pages/payment_table_page.dart:362:39 • unused_local_variable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:364:43 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:377:43 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:398:45 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:412:43 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:454:43 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:475:45 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:489:43 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:503:43 • argument_type_not_assignable
+  error • The argument type 'TextFormField Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'Widget Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:584:45 • argument_type_not_assignable
+  error • A value of type 'int' can't be assigned to a variable of type 'String' • lib/presentation/table/pages/payment_table_page.dart:593:65 • invalid_assignment
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:749:51 • argument_type_not_assignable
+warning • The '!' will have no effect because the receiver can't be null • lib/presentation/table/pages/payment_table_page.dart:761:65 • unnecessary_non_null_assertion
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:768:49 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:789:49 • argument_type_not_assignable
+  error • The argument type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'int Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:802:49 • argument_type_not_assignable
+  error • The argument type 'List<ProductQuantity> Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int)' can't be assigned to the parameter type 'List<ProductQuantity> Function(List<ProductQuantity>, Discount?, int, int, int, int, int, int, int, int, String, String)?'.  • lib/presentation/table/pages/payment_table_page.dart:825:49 • argument_type_not_assignable
+   info • Parameter 'key' could be a super parameter • lib/presentation/table/pages/table_management_api_page.dart:14:9 • use_super_parameters
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:97:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:180:72 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:185:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:239:86 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:251:49 • deprecated_member_use
+   info • Unnecessary use of 'toList' in a spread • lib/presentation/table/pages/table_management_api_page.dart:266:20 • unnecessary_to_list_in_spreads
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:332:49 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:341:46 • deprecated_member_use
+warning • Unnecessary type check; the result is always 'true' • lib/presentation/table/pages/table_management_api_page.dart:403:13 • unnecessary_type_check
+warning • The receiver can't be null, so the null-aware operator '?.' is unnecessary • lib/presentation/table/pages/table_management_api_page.dart:444:41 • invalid_null_aware_operator
+   info • Don't invoke 'print' in production code • lib/presentation/table/pages/table_management_api_page.dart:535:25 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/table/pages/table_management_api_page.dart:538:39 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/presentation/table/pages/table_management_api_page.dart:543:25 • use_build_context_synchronously
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:597:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:638:57 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/pages/table_management_api_page.dart:645:38 • deprecated_member_use
+warning • Unused import: 'package:flutter_posresto_app/core/extensions/int_ext.dart' • lib/presentation/table/widgets/card_table_widget.dart:9:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/home/bloc/status_table/status_table_bloc.dart' • lib/presentation/table/widgets/card_table_widget.dart:14:8 • unused_import
+warning • Unused import: 'package:flutter_posresto_app/presentation/table/blocs/get_table/get_table_bloc.dart' • lib/presentation/table/widgets/card_table_widget.dart:16:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/presentation/table/widgets/change_table_status_sheet.dart:10:9 • use_super_parameters
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/widgets/change_table_status_sheet.dart:57:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/widgets/change_table_status_sheet.dart:117:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/widgets/change_table_status_sheet.dart:177:59 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/widgets/change_table_status_sheet.dart:220:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/widgets/change_table_status_sheet.dart:325:42 • deprecated_member_use
+warning • Unused import: 'package:flutter_posresto_app/core/constants/colors.dart' • lib/presentation/table/widgets/table_info_card.dart:2:8 • unused_import
+   info • Parameter 'key' could be a super parameter • lib/presentation/table/widgets/table_info_card.dart:10:9 • use_super_parameters
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/widgets/table_info_card.dart:35:34 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/widgets/table_info_card.dart:36:51 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/presentation/table/widgets/table_info_card.dart:264:46 • deprecated_member_use
+warning • Unused import: 'package:flutter_posresto_app/presentation/table/blocs/create_table/create_table_bloc.dart' • lib/presentation/table/widgets/table_widget.dart:16:8 • unused_import
+   info • Unnecessary use of string interpolation • lib/presentation/table/widgets/table_widget.dart:257:21 • unnecessary_string_interpolations
+

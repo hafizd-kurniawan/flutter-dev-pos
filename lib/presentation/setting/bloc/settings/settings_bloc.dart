@@ -17,8 +17,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<_FetchSettings>((event, emit) async {
       emit(const _Loading());
       final result = await remoteDatasource.getSettings();
-      result.fold(
-        (l) {
+      await result.fold(
+        (l) async {
           print('❌ Error Fetching Settings: $l'); // DEBUG LOG
           emit(_Error(l));
         },
@@ -26,9 +26,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
           print('✅ Settings Fetched Successfully. Saving to local...'); // DEBUG LOG
           // Flatten settings for easier local storage
           final flattenedSettings = <String, String>{};
-          r.data.settings.forEach((key, item) {
-            flattenedSettings[key] = item.value;
-            print('   - $key: ${item.value}'); // DEBUG LOG
+          r.data.forEach((key, value) {
+            flattenedSettings[key] = value.toString();
+            print('   - $key: $value'); // DEBUG LOG
           });
           
           await localDatasource.saveSettings(flattenedSettings);

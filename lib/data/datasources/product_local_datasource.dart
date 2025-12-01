@@ -75,7 +75,8 @@ class ProductLocalDatasource {
         customer_name TEXT,
         status TEXT,
         payment_status TEXT,
-        is_sync INTEGER DEFAULT 0
+        is_sync INTEGER DEFAULT 0,
+        note TEXT
       )
     ''');
 
@@ -114,7 +115,8 @@ class ProductLocalDatasource {
         total INTEGER,
         transaction_time TEXT,
         table_number INTEGER,
-        draft_name TEXT
+        draft_name TEXT,
+        note TEXT
       )
     ''');
 
@@ -143,7 +145,31 @@ class ProductLocalDatasource {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = dbPath + filePath;
-    return await openDatabase(path, version: 1, onCreate: _createDb);
+    return await openDatabase(
+      path,
+      version: 2, // Increment version
+      onCreate: _createDb,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          log("🔄 Migrating DB to version 2: Adding note columns...");
+          // Add note column to orders table if it doesn't exist
+          try {
+            await db.execute("ALTER TABLE $tableOrder ADD COLUMN note TEXT");
+            log("✅ Added note column to $tableOrder");
+          } catch (e) {
+            log("⚠️ Error adding note to $tableOrder (might already exist): $e");
+          }
+
+          // Add note column to draft_orders table if it doesn't exist
+          try {
+            await db.execute("ALTER TABLE draft_orders ADD COLUMN note TEXT");
+            log("✅ Added note column to draft_orders");
+          } catch (e) {
+            log("⚠️ Error adding note to draft_orders (might already exist): $e");
+          }
+        }
+      },
+    );
   }
 
   Future<Database> get database async {

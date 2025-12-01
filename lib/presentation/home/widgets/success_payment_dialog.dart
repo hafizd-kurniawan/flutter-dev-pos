@@ -47,6 +47,7 @@ class SuccessPaymentDialog extends StatefulWidget {
     this.isTablePaymentPage = false,
     this.tableName, // NEW: Table name for dine-in
     this.orderType, // NEW: 'dine_in' or 'takeaway'
+    this.orderNote, // NEW: Global Order Note
     this.onPaymentSuccess, // NEW: Callback for success
   }) : super(key: key);
   final List<ProductQuantity> data;
@@ -62,6 +63,7 @@ class SuccessPaymentDialog extends StatefulWidget {
   final bool? isTablePaymentPage;
   final String? tableName; // NEW: Table name (e.g., "Meja 5")
   final String? orderType; // NEW: Order type (dine_in/takeaway)
+  final String? orderNote; // NEW: Global Order Note
   final VoidCallback? onPaymentSuccess; // NEW: Callback
   @override
   State<SuccessPaymentDialog> createState() => _SuccessPaymentDialogState();
@@ -355,6 +357,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                               servicePercentage,
                               widget.orderType ?? 'Dine In', // NEW
                               widget.tableName ?? '', // NEW
+                              widget.orderNote ?? '', // NEW: Global Order Note
                             );
                             if (receiptPrinter!.type == 'Bluetooth') {
                               await PrintBluetoothThermal.writeBytes(
@@ -383,6 +386,9 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                               widget.draftName,
                               'Cashier Bahri',
                               kitchenPrinter.paper.toIntegerFromText,
+                              widget.orderType ?? 'Dine In', // Default for now, or pass from widget
+                              widget.tableName ?? '', // Table name if available
+                              widget.orderNote ?? '', // Pass Global Note
                             );
                             if (kitchenPrinter!.type == 'Bluetooth') {
                               await PrintBluetoothThermal.writeBytes(
@@ -407,10 +413,11 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                             final printValue =
                                 await PrintDataoutputs.instance.printBar(
                               widget.data,
-                              '',
+                              widget.tableName ?? '',
                               widget.draftName,
                               'Cashier Bahri',
                               barPrinter.paper.toIntegerFromText,
+                              widget.orderNote ?? '', // NEW
                             );
                             if (barPrinter!.type == 'Bluetooth') {
                               await PrintBluetoothThermal.writeBytes(
@@ -473,6 +480,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                           widget.tableName ?? '', // NEW
                           taxPercentage,
                           servicePercentage,
+                          widget.orderNote ?? '', // NEW
                         );
                         
                         print('PDF generated at: ${xFile.path}');

@@ -30,4 +30,10 @@ class CheckoutEvent with _$CheckoutEvent {
   //load draft order
   const factory CheckoutEvent.loadDraftOrder(DraftOrderModel data) =
       _LoadDraftOrder;
+
+  //add note to item
+  const factory CheckoutEvent.addNoteToItem(Product product, String note) = _AddNoteToItem;
+
+  //add global order note
+  const factory CheckoutEvent.addOrderNote(String note) = _AddOrderNote;
 }

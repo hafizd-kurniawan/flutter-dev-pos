@@ -514,6 +514,37 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
+                          const SpaceHeight(12.0),
+                          
+                          // Global Order Note Input
+                          BlocBuilder<CheckoutBloc, CheckoutState>(
+                            builder: (context, state) {
+                              final currentNote = state.maybeWhen(
+                                orElse: () => '',
+                                loaded: (_, __, ___, ____, _____, ______, _______, ________, _________, note) => note,
+                              );
+                              
+                              return TextField(
+                                controller: TextEditingController(text: currentNote)
+                                  ..selection = TextSelection.fromPosition(
+                                      TextPosition(offset: currentNote.length)),
+                                maxLength: 100, // Limit to 100 chars
+                                keyboardType: TextInputType.text,
+                                scrollPadding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context).viewInsets.bottom + 20),
+                                decoration: const InputDecoration(
+                                  labelText: 'Catatan Pesanan (Opsional)',
+                                  hintText: 'Contoh: Meja pojok, Bungkus dipisah',
+                                  border: OutlineInputBorder(),
+                                  prefixIcon: Icon(Icons.note),
+                                  contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                ),
+                                onChanged: (value) {
+                                  context.read<CheckoutBloc>().add(CheckoutEvent.addOrderNote(value));
+                                },
+                              );
+                            },
+                          ),
                           const SpaceHeight(16.0),
                           
                           // Cart Header
@@ -571,7 +602,8 @@ class _HomePageState extends State<HomePage> {
                                     serviceCharge,
                                     totalQuantity,
                                     totalPrice,
-                                    draftName) {
+                                    draftName,
+                                    orderNote) {
                                   if (products.isEmpty) {
                                     return const Center(
                                       child: Text('No Items'),
@@ -682,7 +714,7 @@ class _HomePageState extends State<HomePage> {
                                             builder: (context, state) {
                                               final tax = state.maybeWhen(
                                                 orElse: () => 0,
-                                                loaded: (_, __, ___, ____, tax, _____, ______, _______, ________) {
+                                                loaded: (_, __, ___, ____, tax, _____, ______, _______, ________, _________) {
                                                   return tax;
                                                 },
                                               );
@@ -727,7 +759,7 @@ class _HomePageState extends State<HomePage> {
                                             builder: (context, state) {
                                               final serviceCharge = state.maybeWhen(
                                                 orElse: () => 0,
-                                                loaded: (_, __, ___, ____, _____, serviceCharge, ______, _______, ________) {
+                                                loaded: (_, __, ___, ____, _____, serviceCharge, ______, _______, ________, _________) {
                                                   return serviceCharge;
                                                 },
                                               );
@@ -766,7 +798,7 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     loaded: (products, discountModel, discount, discountAmount,
-                                        tax, serviceCharge, totalQuantity, totalPrice, draftName) {
+                                        tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
                                       if (discountModel == null) {
                                         return const Text(
                                           '-',
@@ -814,7 +846,7 @@ class _HomePageState extends State<HomePage> {
                                   final price = state.maybeWhen(
                                     orElse: () => 0,
                                     loaded: (products, discountModel, discount, discountAmount,
-                                        tax, serviceCharge, totalQuantity, totalPrice, draftName) {
+                                        tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
                                       if (products.isEmpty) return 0;
                                       return products
                                           .map((e) => (e.product.price ?? '0').toIntegerFromText * e.quantity)
@@ -853,7 +885,7 @@ class _HomePageState extends State<HomePage> {
                                   label: 'Lanjutkan Pembayaran',
                                 ),
                                 loaded: (products, discountModel, discount, discountAmount,
-                                    tax, serviceCharge, totalQuantity, totalPrice, draftName) {
+                                    tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
                                   if (products.isEmpty) {
                                     return Button.filled(
                                       onPressed: () {},
