@@ -45,6 +45,7 @@ import 'package:flutter_posresto_app/presentation/setting/bloc/sync_product/sync
 import 'package:flutter_posresto_app/presentation/table/blocs/update_table/update_table_bloc.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/new_table_management_page.dart';
 import 'package:flutter_posresto_app/presentation/history/bloc/history/history_bloc.dart';
+import 'package:flutter_posresto_app/presentation/home/bloc/notification/notification_bloc.dart'; // NEW
 import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW
 import 'package:flutter_posresto_app/data/datasources/settings_remote_datasource.dart'; // NEW
 import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
@@ -198,6 +199,9 @@ class _MyAppState extends State<MyApp> {
             SettingsRemoteDatasource(),
             SettingsLocalDatasource(),
           )..add(const SettingsEvent.fetchSettings()), // Fetch on startup
+        ),
+        BlocProvider(
+          create: (context) => NotificationBloc(OrderRemoteDatasource()),
         ),
       ],
       child: MaterialApp(

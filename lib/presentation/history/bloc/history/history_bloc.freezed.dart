@@ -19,27 +19,27 @@ mixin _$HistoryEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) =>
@@ -137,9 +137,9 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
     return started();
@@ -149,9 +149,9 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
     return started?.call();
@@ -161,9 +161,9 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {
@@ -223,6 +223,8 @@ abstract class _$$FetchPaidOrdersImplCopyWith<$Res> {
   factory _$$FetchPaidOrdersImplCopyWith(_$FetchPaidOrdersImpl value,
           $Res Function(_$FetchPaidOrdersImpl) then) =
       __$$FetchPaidOrdersImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool? isRefresh});
 }
 
 /// @nodoc
@@ -235,63 +237,90 @@ class __$$FetchPaidOrdersImplCopyWithImpl<$Res>
 
   /// Create a copy of HistoryEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isRefresh = freezed,
+  }) {
+    return _then(_$FetchPaidOrdersImpl(
+      isRefresh: freezed == isRefresh
+          ? _value.isRefresh
+          : isRefresh // ignore: cast_nullable_to_non_nullable
+              as bool?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$FetchPaidOrdersImpl implements _FetchPaidOrders {
-  const _$FetchPaidOrdersImpl();
+  const _$FetchPaidOrdersImpl({this.isRefresh});
+
+  @override
+  final bool? isRefresh;
 
   @override
   String toString() {
-    return 'HistoryEvent.fetchPaidOrders()';
+    return 'HistoryEvent.fetchPaidOrders(isRefresh: $isRefresh)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$FetchPaidOrdersImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$FetchPaidOrdersImpl &&
+            (identical(other.isRefresh, isRefresh) ||
+                other.isRefresh == isRefresh));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, isRefresh);
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FetchPaidOrdersImplCopyWith<_$FetchPaidOrdersImpl> get copyWith =>
+      __$$FetchPaidOrdersImplCopyWithImpl<_$FetchPaidOrdersImpl>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
-    return fetchPaidOrders();
+    return fetchPaidOrders(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
-    return fetchPaidOrders?.call();
+    return fetchPaidOrders?.call(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {
     if (fetchPaidOrders != null) {
-      return fetchPaidOrders();
+      return fetchPaidOrders(isRefresh);
     }
     return orElse();
   }
@@ -338,7 +367,16 @@ class _$FetchPaidOrdersImpl implements _FetchPaidOrders {
 }
 
 abstract class _FetchPaidOrders implements HistoryEvent {
-  const factory _FetchPaidOrders() = _$FetchPaidOrdersImpl;
+  const factory _FetchPaidOrders({final bool? isRefresh}) =
+      _$FetchPaidOrdersImpl;
+
+  bool? get isRefresh;
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FetchPaidOrdersImplCopyWith<_$FetchPaidOrdersImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -346,6 +384,8 @@ abstract class _$$FetchCookingOrdersImplCopyWith<$Res> {
   factory _$$FetchCookingOrdersImplCopyWith(_$FetchCookingOrdersImpl value,
           $Res Function(_$FetchCookingOrdersImpl) then) =
       __$$FetchCookingOrdersImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool? isRefresh});
 }
 
 /// @nodoc
@@ -358,63 +398,90 @@ class __$$FetchCookingOrdersImplCopyWithImpl<$Res>
 
   /// Create a copy of HistoryEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isRefresh = freezed,
+  }) {
+    return _then(_$FetchCookingOrdersImpl(
+      isRefresh: freezed == isRefresh
+          ? _value.isRefresh
+          : isRefresh // ignore: cast_nullable_to_non_nullable
+              as bool?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$FetchCookingOrdersImpl implements _FetchCookingOrders {
-  const _$FetchCookingOrdersImpl();
+  const _$FetchCookingOrdersImpl({this.isRefresh});
+
+  @override
+  final bool? isRefresh;
 
   @override
   String toString() {
-    return 'HistoryEvent.fetchCookingOrders()';
+    return 'HistoryEvent.fetchCookingOrders(isRefresh: $isRefresh)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$FetchCookingOrdersImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$FetchCookingOrdersImpl &&
+            (identical(other.isRefresh, isRefresh) ||
+                other.isRefresh == isRefresh));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, isRefresh);
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FetchCookingOrdersImplCopyWith<_$FetchCookingOrdersImpl> get copyWith =>
+      __$$FetchCookingOrdersImplCopyWithImpl<_$FetchCookingOrdersImpl>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
-    return fetchCookingOrders();
+    return fetchCookingOrders(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
-    return fetchCookingOrders?.call();
+    return fetchCookingOrders?.call(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {
     if (fetchCookingOrders != null) {
-      return fetchCookingOrders();
+      return fetchCookingOrders(isRefresh);
     }
     return orElse();
   }
@@ -461,7 +528,16 @@ class _$FetchCookingOrdersImpl implements _FetchCookingOrders {
 }
 
 abstract class _FetchCookingOrders implements HistoryEvent {
-  const factory _FetchCookingOrders() = _$FetchCookingOrdersImpl;
+  const factory _FetchCookingOrders({final bool? isRefresh}) =
+      _$FetchCookingOrdersImpl;
+
+  bool? get isRefresh;
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FetchCookingOrdersImplCopyWith<_$FetchCookingOrdersImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -469,6 +545,8 @@ abstract class _$$FetchCompletedOrdersImplCopyWith<$Res> {
   factory _$$FetchCompletedOrdersImplCopyWith(_$FetchCompletedOrdersImpl value,
           $Res Function(_$FetchCompletedOrdersImpl) then) =
       __$$FetchCompletedOrdersImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool? isRefresh});
 }
 
 /// @nodoc
@@ -481,64 +559,91 @@ class __$$FetchCompletedOrdersImplCopyWithImpl<$Res>
 
   /// Create a copy of HistoryEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isRefresh = freezed,
+  }) {
+    return _then(_$FetchCompletedOrdersImpl(
+      isRefresh: freezed == isRefresh
+          ? _value.isRefresh
+          : isRefresh // ignore: cast_nullable_to_non_nullable
+              as bool?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$FetchCompletedOrdersImpl implements _FetchCompletedOrders {
-  const _$FetchCompletedOrdersImpl();
+  const _$FetchCompletedOrdersImpl({this.isRefresh});
+
+  @override
+  final bool? isRefresh;
 
   @override
   String toString() {
-    return 'HistoryEvent.fetchCompletedOrders()';
+    return 'HistoryEvent.fetchCompletedOrders(isRefresh: $isRefresh)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FetchCompletedOrdersImpl);
+            other is _$FetchCompletedOrdersImpl &&
+            (identical(other.isRefresh, isRefresh) ||
+                other.isRefresh == isRefresh));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, isRefresh);
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FetchCompletedOrdersImplCopyWith<_$FetchCompletedOrdersImpl>
+      get copyWith =>
+          __$$FetchCompletedOrdersImplCopyWithImpl<_$FetchCompletedOrdersImpl>(
+              this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
-    return fetchCompletedOrders();
+    return fetchCompletedOrders(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
-    return fetchCompletedOrders?.call();
+    return fetchCompletedOrders?.call(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {
     if (fetchCompletedOrders != null) {
-      return fetchCompletedOrders();
+      return fetchCompletedOrders(isRefresh);
     }
     return orElse();
   }
@@ -585,7 +690,16 @@ class _$FetchCompletedOrdersImpl implements _FetchCompletedOrders {
 }
 
 abstract class _FetchCompletedOrders implements HistoryEvent {
-  const factory _FetchCompletedOrders() = _$FetchCompletedOrdersImpl;
+  const factory _FetchCompletedOrders({final bool? isRefresh}) =
+      _$FetchCompletedOrdersImpl;
+
+  bool? get isRefresh;
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FetchCompletedOrdersImplCopyWith<_$FetchCompletedOrdersImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -666,9 +780,9 @@ class _$UpdateOrderStatusImpl implements _UpdateOrderStatus {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
     return updateOrderStatus(orderId, status);
@@ -678,9 +792,9 @@ class _$UpdateOrderStatusImpl implements _UpdateOrderStatus {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
     return updateOrderStatus?.call(orderId, status);
@@ -690,9 +804,9 @@ class _$UpdateOrderStatusImpl implements _UpdateOrderStatus {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {

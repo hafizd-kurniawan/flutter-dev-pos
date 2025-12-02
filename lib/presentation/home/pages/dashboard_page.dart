@@ -23,6 +23,7 @@ import 'package:flutter_posresto_app/presentation/table/pages/table_page.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/table_management_api_page.dart';
 import 'package:flutter_posresto_app/presentation/history/pages/history_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW IMPORT
+import 'package:flutter_posresto_app/presentation/home/bloc/notification/notification_bloc.dart'; // NEW IMPORT
 
 import '../../../core/assets/assets.gen.dart';
 import '../../auth/bloc/logout/logout_bloc.dart';
@@ -48,7 +49,7 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   TableModel? _selectedTable; // Shared table state
   bool _isSidebarExpanded = false; // Sidebar collapse/expand state
@@ -100,8 +101,13 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this); // Add observer
+    
     // Initialize Notification Service
     NotificationService().init();
+    
+    // Start polling for new orders
+    context.read<NotificationBloc>().add(const NotificationEvent.startPolling());
     
     _selectedIndex = widget.index!;
     _selectedTable = widget.table;
@@ -129,6 +135,28 @@ class _DashboardPageState extends State<DashboardPage> {
             .add(const OnlineCheckerEvent.check(false));
       }
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Remove observer
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // App is visible/active -> Start Polling
+      print('📱 App Resumed: Starting Polling');
+      context.read<NotificationBloc>().add(const NotificationEvent.startPolling());
+      
+      // Also refresh settings or other critical data if needed
+      // context.read<SettingsBloc>().add(const SettingsEvent.fetchSettings());
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      // App is background/inactive -> Stop Polling
+      print('zzz App Paused: Stopping Polling');
+      context.read<NotificationBloc>().add(const NotificationEvent.stopPolling());
+    }
   }
 
   @override
@@ -229,12 +257,16 @@ class _DashboardPageState extends State<DashboardPage> {
                       isActive: _selectedIndex == 1,
                       onTap: () => _onItemTapped(1),
                     ),
-                    EnhancedNavItem(
-                      iconPath: Assets.icons.history.path,
-                      label: 'History',
-                      isActive: _selectedIndex == 2,
-                      onTap: () => _onItemTapped(2),
-                      badgeCount: 0,
+                    BlocBuilder<NotificationBloc, NotificationState>(
+                      builder: (context, state) {
+                        return EnhancedNavItem(
+                          iconPath: Assets.icons.history.path,
+                          label: 'History',
+                          isActive: _selectedIndex == 2,
+                          onTap: () => _onItemTapped(2),
+                          badgeCount: state.orderCount,
+                        );
+                      },
                     ),
                     EnhancedNavItem(
                       iconPath: Assets.icons.dashboard.path,
@@ -265,11 +297,15 @@ class _DashboardPageState extends State<DashboardPage> {
                       isActive: _selectedIndex == 1,
                       onTap: () => _onItemTapped(1),
                     ),
-                    CollapsedNavItem(
-                      iconPath: Assets.icons.history.path,
-                      isActive: _selectedIndex == 2,
-                      onTap: () => _onItemTapped(2),
-                      badgeCount: 0,
+                    BlocBuilder<NotificationBloc, NotificationState>(
+                      builder: (context, state) {
+                        return CollapsedNavItem(
+                          iconPath: Assets.icons.history.path,
+                          isActive: _selectedIndex == 2,
+                          onTap: () => _onItemTapped(2),
+                          badgeCount: state.orderCount,
+                        );
+                      },
                     ),
                     CollapsedNavItem(
                       iconPath: Assets.icons.dashboard.path,

@@ -57,7 +57,14 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
   }
 
   Future<void> _refreshOrders() async {
-    _onTabChanged();
+    final index = _tabController.index;
+    if (index == 0) {
+      context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
+    } else if (index == 1) {
+      context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
+    } else if (index == 2) {
+      context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders(isRefresh: true));
+    }
   }
   
   // Show date picker dialog
@@ -459,7 +466,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                       : const Icon(Icons.refresh_rounded, size: 28),
                   tooltip: 'Refresh Orders',
                   onPressed: isLoading ? null : () {
-                    _onTabChanged();
+                    _refreshOrders();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('🔄 Memuat data terbaru...'),
@@ -561,8 +568,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
               // Paid Orders Tab - with pull-to-refresh
               RefreshIndicator(
                 onRefresh: () async {
-                  context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders());
-                  await Future.delayed(const Duration(seconds: 1));
+                  await _refreshOrders();
                 },
                 child: _buildOrdersList(context, state, 'paid'),
               ),
@@ -570,8 +576,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
               // Cooking Orders Tab - with pull-to-refresh
               RefreshIndicator(
                 onRefresh: () async {
-                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders());
-                  await Future.delayed(const Duration(seconds: 1));
+                  await _refreshOrders();
                 },
                 child: _buildOrdersList(context, state, 'cooking'),
               ),
@@ -579,8 +584,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
               // Completed Orders Tab - with pull-to-refresh
               RefreshIndicator(
                 onRefresh: () async {
-                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders());
-                  await Future.delayed(const Duration(seconds: 1));
+                  await _refreshOrders();
                 },
                 child: _buildOrdersList(context, state, 'complete'),
               ),

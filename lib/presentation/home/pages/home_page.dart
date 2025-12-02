@@ -124,17 +124,35 @@ class _HomePageState extends State<HomePage> {
     _orderType = widget.isTable ? 'dine_in' : 'takeaway';
     print('🏠 Init: orderType=$_orderType, table=${_selectedTable?.name}');
     
-    // Fetch categories from API
-    context.read<CategoryBloc>().add(const CategoryEvent.getCategories());
-    print('📂 CategoryBloc event triggered');
+    // Fetch categories from API if not loaded
+    final categoryState = context.read<CategoryBloc>().state;
+    categoryState.maybeWhen(
+      loaded: (_) => print('📂 Categories already loaded, skipping fetch'),
+      orElse: () {
+        context.read<CategoryBloc>().add(const CategoryEvent.getCategories());
+        print('📂 CategoryBloc event triggered');
+      },
+    );
     
-    // Fetch products from local storage
-    context.read<LocalProductBloc>().add(const LocalProductEvent.getLocalProduct());
-    print('📦 LocalProductBloc event triggered');
+    // Fetch products from local storage if not loaded
+    final productState = context.read<LocalProductBloc>().state;
+    productState.maybeWhen(
+      loaded: (_) => print('📦 Products already loaded, skipping fetch'),
+      orElse: () {
+        context.read<LocalProductBloc>().add(const LocalProductEvent.getLocalProduct());
+        print('📦 LocalProductBloc event triggered');
+      },
+    );
     
-    // Fetch POS settings (discounts, taxes, services)
-    context.read<PosSettingsBloc>().add(const PosSettingsEvent.getSettings());
-    print('🔧 PosSettingsBloc event triggered');
+    // Fetch POS settings (discounts, taxes, services) if not loaded
+    final settingsState = context.read<PosSettingsBloc>().state;
+    settingsState.maybeWhen(
+      loaded: (_) => print('🔧 Settings already loaded, skipping fetch'),
+      orElse: () {
+        context.read<PosSettingsBloc>().add(const PosSettingsEvent.getSettings());
+        print('🔧 PosSettingsBloc event triggered');
+      },
+    );
     
     // Setup search listener with debounce
     searchController.addListener(_onSearchChanged);
@@ -956,6 +974,10 @@ class _HomePageState extends State<HomePage> {
                                                         _selectedTable = null;
                                                         print('✅ HomePage: Table selection reset after payment (via callback)');
                                                       });
+                                                      
+                                                      // Refresh products and stock
+                                                      print('🔄 Refreshing data after payment...');
+                                                      _refreshAllData();
                                                       
                                                       // Also reset DashboardPage state
                                                       if (widget.onPaymentSuccess != null) {

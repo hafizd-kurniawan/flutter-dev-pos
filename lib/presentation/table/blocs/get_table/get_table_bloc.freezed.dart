@@ -19,9 +19,9 @@ mixin _$GetTableEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() getTables,
+    required TResult Function(bool? isRefresh) getTables,
     required TResult Function() getAvailableTables,
-    required TResult Function() getCategories,
+    required TResult Function(bool? isRefresh) getCategories,
     required TResult Function(int? categoryId) filterByCategory,
     required TResult Function(Set<String> statuses) filterByStatus,
     required TResult Function(int tableId, String status, String? customerName,
@@ -32,9 +32,9 @@ mixin _$GetTableEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? getTables,
+    TResult? Function(bool? isRefresh)? getTables,
     TResult? Function()? getAvailableTables,
-    TResult? Function()? getCategories,
+    TResult? Function(bool? isRefresh)? getCategories,
     TResult? Function(int? categoryId)? filterByCategory,
     TResult? Function(Set<String> statuses)? filterByStatus,
     TResult? Function(int tableId, String status, String? customerName,
@@ -45,9 +45,9 @@ mixin _$GetTableEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? getTables,
+    TResult Function(bool? isRefresh)? getTables,
     TResult Function()? getAvailableTables,
-    TResult Function()? getCategories,
+    TResult Function(bool? isRefresh)? getCategories,
     TResult Function(int? categoryId)? filterByCategory,
     TResult Function(Set<String> statuses)? filterByStatus,
     TResult Function(int tableId, String status, String? customerName,
@@ -155,9 +155,9 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() getTables,
+    required TResult Function(bool? isRefresh) getTables,
     required TResult Function() getAvailableTables,
-    required TResult Function() getCategories,
+    required TResult Function(bool? isRefresh) getCategories,
     required TResult Function(int? categoryId) filterByCategory,
     required TResult Function(Set<String> statuses) filterByStatus,
     required TResult Function(int tableId, String status, String? customerName,
@@ -171,9 +171,9 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? getTables,
+    TResult? Function(bool? isRefresh)? getTables,
     TResult? Function()? getAvailableTables,
-    TResult? Function()? getCategories,
+    TResult? Function(bool? isRefresh)? getCategories,
     TResult? Function(int? categoryId)? filterByCategory,
     TResult? Function(Set<String> statuses)? filterByStatus,
     TResult? Function(int tableId, String status, String? customerName,
@@ -187,9 +187,9 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? getTables,
+    TResult Function(bool? isRefresh)? getTables,
     TResult Function()? getAvailableTables,
-    TResult Function()? getCategories,
+    TResult Function(bool? isRefresh)? getCategories,
     TResult Function(int? categoryId)? filterByCategory,
     TResult Function(Set<String> statuses)? filterByStatus,
     TResult Function(int tableId, String status, String? customerName,
@@ -259,6 +259,8 @@ abstract class _$$GetTablesImplCopyWith<$Res> {
   factory _$$GetTablesImplCopyWith(
           _$GetTablesImpl value, $Res Function(_$GetTablesImpl) then) =
       __$$GetTablesImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool? isRefresh});
 }
 
 /// @nodoc
@@ -271,66 +273,92 @@ class __$$GetTablesImplCopyWithImpl<$Res>
 
   /// Create a copy of GetTableEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isRefresh = freezed,
+  }) {
+    return _then(_$GetTablesImpl(
+      isRefresh: freezed == isRefresh
+          ? _value.isRefresh
+          : isRefresh // ignore: cast_nullable_to_non_nullable
+              as bool?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$GetTablesImpl implements _GetTables {
-  const _$GetTablesImpl();
+  const _$GetTablesImpl({this.isRefresh});
+
+  @override
+  final bool? isRefresh;
 
   @override
   String toString() {
-    return 'GetTableEvent.getTables()';
+    return 'GetTableEvent.getTables(isRefresh: $isRefresh)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$GetTablesImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$GetTablesImpl &&
+            (identical(other.isRefresh, isRefresh) ||
+                other.isRefresh == isRefresh));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, isRefresh);
+
+  /// Create a copy of GetTableEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GetTablesImplCopyWith<_$GetTablesImpl> get copyWith =>
+      __$$GetTablesImplCopyWithImpl<_$GetTablesImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() getTables,
+    required TResult Function(bool? isRefresh) getTables,
     required TResult Function() getAvailableTables,
-    required TResult Function() getCategories,
+    required TResult Function(bool? isRefresh) getCategories,
     required TResult Function(int? categoryId) filterByCategory,
     required TResult Function(Set<String> statuses) filterByStatus,
     required TResult Function(int tableId, String status, String? customerName,
             String? customerPhone, int? partySize)
         updateTableStatus,
   }) {
-    return getTables();
+    return getTables(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? getTables,
+    TResult? Function(bool? isRefresh)? getTables,
     TResult? Function()? getAvailableTables,
-    TResult? Function()? getCategories,
+    TResult? Function(bool? isRefresh)? getCategories,
     TResult? Function(int? categoryId)? filterByCategory,
     TResult? Function(Set<String> statuses)? filterByStatus,
     TResult? Function(int tableId, String status, String? customerName,
             String? customerPhone, int? partySize)?
         updateTableStatus,
   }) {
-    return getTables?.call();
+    return getTables?.call(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? getTables,
+    TResult Function(bool? isRefresh)? getTables,
     TResult Function()? getAvailableTables,
-    TResult Function()? getCategories,
+    TResult Function(bool? isRefresh)? getCategories,
     TResult Function(int? categoryId)? filterByCategory,
     TResult Function(Set<String> statuses)? filterByStatus,
     TResult Function(int tableId, String status, String? customerName,
@@ -339,7 +367,7 @@ class _$GetTablesImpl implements _GetTables {
     required TResult orElse(),
   }) {
     if (getTables != null) {
-      return getTables();
+      return getTables(isRefresh);
     }
     return orElse();
   }
@@ -392,7 +420,15 @@ class _$GetTablesImpl implements _GetTables {
 }
 
 abstract class _GetTables implements GetTableEvent {
-  const factory _GetTables() = _$GetTablesImpl;
+  const factory _GetTables({final bool? isRefresh}) = _$GetTablesImpl;
+
+  bool? get isRefresh;
+
+  /// Create a copy of GetTableEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GetTablesImplCopyWith<_$GetTablesImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -437,9 +473,9 @@ class _$GetAvailableTablesImpl implements _GetAvailableTables {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() getTables,
+    required TResult Function(bool? isRefresh) getTables,
     required TResult Function() getAvailableTables,
-    required TResult Function() getCategories,
+    required TResult Function(bool? isRefresh) getCategories,
     required TResult Function(int? categoryId) filterByCategory,
     required TResult Function(Set<String> statuses) filterByStatus,
     required TResult Function(int tableId, String status, String? customerName,
@@ -453,9 +489,9 @@ class _$GetAvailableTablesImpl implements _GetAvailableTables {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? getTables,
+    TResult? Function(bool? isRefresh)? getTables,
     TResult? Function()? getAvailableTables,
-    TResult? Function()? getCategories,
+    TResult? Function(bool? isRefresh)? getCategories,
     TResult? Function(int? categoryId)? filterByCategory,
     TResult? Function(Set<String> statuses)? filterByStatus,
     TResult? Function(int tableId, String status, String? customerName,
@@ -469,9 +505,9 @@ class _$GetAvailableTablesImpl implements _GetAvailableTables {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? getTables,
+    TResult Function(bool? isRefresh)? getTables,
     TResult Function()? getAvailableTables,
-    TResult Function()? getCategories,
+    TResult Function(bool? isRefresh)? getCategories,
     TResult Function(int? categoryId)? filterByCategory,
     TResult Function(Set<String> statuses)? filterByStatus,
     TResult Function(int tableId, String status, String? customerName,
@@ -541,6 +577,8 @@ abstract class _$$GetCategoriesImplCopyWith<$Res> {
   factory _$$GetCategoriesImplCopyWith(
           _$GetCategoriesImpl value, $Res Function(_$GetCategoriesImpl) then) =
       __$$GetCategoriesImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool? isRefresh});
 }
 
 /// @nodoc
@@ -553,66 +591,92 @@ class __$$GetCategoriesImplCopyWithImpl<$Res>
 
   /// Create a copy of GetTableEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isRefresh = freezed,
+  }) {
+    return _then(_$GetCategoriesImpl(
+      isRefresh: freezed == isRefresh
+          ? _value.isRefresh
+          : isRefresh // ignore: cast_nullable_to_non_nullable
+              as bool?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$GetCategoriesImpl implements _GetCategories {
-  const _$GetCategoriesImpl();
+  const _$GetCategoriesImpl({this.isRefresh});
+
+  @override
+  final bool? isRefresh;
 
   @override
   String toString() {
-    return 'GetTableEvent.getCategories()';
+    return 'GetTableEvent.getCategories(isRefresh: $isRefresh)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$GetCategoriesImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$GetCategoriesImpl &&
+            (identical(other.isRefresh, isRefresh) ||
+                other.isRefresh == isRefresh));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, isRefresh);
+
+  /// Create a copy of GetTableEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GetCategoriesImplCopyWith<_$GetCategoriesImpl> get copyWith =>
+      __$$GetCategoriesImplCopyWithImpl<_$GetCategoriesImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() getTables,
+    required TResult Function(bool? isRefresh) getTables,
     required TResult Function() getAvailableTables,
-    required TResult Function() getCategories,
+    required TResult Function(bool? isRefresh) getCategories,
     required TResult Function(int? categoryId) filterByCategory,
     required TResult Function(Set<String> statuses) filterByStatus,
     required TResult Function(int tableId, String status, String? customerName,
             String? customerPhone, int? partySize)
         updateTableStatus,
   }) {
-    return getCategories();
+    return getCategories(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? getTables,
+    TResult? Function(bool? isRefresh)? getTables,
     TResult? Function()? getAvailableTables,
-    TResult? Function()? getCategories,
+    TResult? Function(bool? isRefresh)? getCategories,
     TResult? Function(int? categoryId)? filterByCategory,
     TResult? Function(Set<String> statuses)? filterByStatus,
     TResult? Function(int tableId, String status, String? customerName,
             String? customerPhone, int? partySize)?
         updateTableStatus,
   }) {
-    return getCategories?.call();
+    return getCategories?.call(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? getTables,
+    TResult Function(bool? isRefresh)? getTables,
     TResult Function()? getAvailableTables,
-    TResult Function()? getCategories,
+    TResult Function(bool? isRefresh)? getCategories,
     TResult Function(int? categoryId)? filterByCategory,
     TResult Function(Set<String> statuses)? filterByStatus,
     TResult Function(int tableId, String status, String? customerName,
@@ -621,7 +685,7 @@ class _$GetCategoriesImpl implements _GetCategories {
     required TResult orElse(),
   }) {
     if (getCategories != null) {
-      return getCategories();
+      return getCategories(isRefresh);
     }
     return orElse();
   }
@@ -674,7 +738,15 @@ class _$GetCategoriesImpl implements _GetCategories {
 }
 
 abstract class _GetCategories implements GetTableEvent {
-  const factory _GetCategories() = _$GetCategoriesImpl;
+  const factory _GetCategories({final bool? isRefresh}) = _$GetCategoriesImpl;
+
+  bool? get isRefresh;
+
+  /// Create a copy of GetTableEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GetCategoriesImplCopyWith<_$GetCategoriesImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -748,9 +820,9 @@ class _$FilterByCategoryImpl implements _FilterByCategory {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() getTables,
+    required TResult Function(bool? isRefresh) getTables,
     required TResult Function() getAvailableTables,
-    required TResult Function() getCategories,
+    required TResult Function(bool? isRefresh) getCategories,
     required TResult Function(int? categoryId) filterByCategory,
     required TResult Function(Set<String> statuses) filterByStatus,
     required TResult Function(int tableId, String status, String? customerName,
@@ -764,9 +836,9 @@ class _$FilterByCategoryImpl implements _FilterByCategory {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? getTables,
+    TResult? Function(bool? isRefresh)? getTables,
     TResult? Function()? getAvailableTables,
-    TResult? Function()? getCategories,
+    TResult? Function(bool? isRefresh)? getCategories,
     TResult? Function(int? categoryId)? filterByCategory,
     TResult? Function(Set<String> statuses)? filterByStatus,
     TResult? Function(int tableId, String status, String? customerName,
@@ -780,9 +852,9 @@ class _$FilterByCategoryImpl implements _FilterByCategory {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? getTables,
+    TResult Function(bool? isRefresh)? getTables,
     TResult Function()? getAvailableTables,
-    TResult Function()? getCategories,
+    TResult Function(bool? isRefresh)? getCategories,
     TResult Function(int? categoryId)? filterByCategory,
     TResult Function(Set<String> statuses)? filterByStatus,
     TResult Function(int tableId, String status, String? customerName,
@@ -932,9 +1004,9 @@ class _$FilterByStatusImpl implements _FilterByStatus {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() getTables,
+    required TResult Function(bool? isRefresh) getTables,
     required TResult Function() getAvailableTables,
-    required TResult Function() getCategories,
+    required TResult Function(bool? isRefresh) getCategories,
     required TResult Function(int? categoryId) filterByCategory,
     required TResult Function(Set<String> statuses) filterByStatus,
     required TResult Function(int tableId, String status, String? customerName,
@@ -948,9 +1020,9 @@ class _$FilterByStatusImpl implements _FilterByStatus {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? getTables,
+    TResult? Function(bool? isRefresh)? getTables,
     TResult? Function()? getAvailableTables,
-    TResult? Function()? getCategories,
+    TResult? Function(bool? isRefresh)? getCategories,
     TResult? Function(int? categoryId)? filterByCategory,
     TResult? Function(Set<String> statuses)? filterByStatus,
     TResult? Function(int tableId, String status, String? customerName,
@@ -964,9 +1036,9 @@ class _$FilterByStatusImpl implements _FilterByStatus {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? getTables,
+    TResult Function(bool? isRefresh)? getTables,
     TResult Function()? getAvailableTables,
-    TResult Function()? getCategories,
+    TResult Function(bool? isRefresh)? getCategories,
     TResult Function(int? categoryId)? filterByCategory,
     TResult Function(Set<String> statuses)? filterByStatus,
     TResult Function(int tableId, String status, String? customerName,
@@ -1156,9 +1228,9 @@ class _$UpdateTableStatusImpl implements _UpdateTableStatus {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() getTables,
+    required TResult Function(bool? isRefresh) getTables,
     required TResult Function() getAvailableTables,
-    required TResult Function() getCategories,
+    required TResult Function(bool? isRefresh) getCategories,
     required TResult Function(int? categoryId) filterByCategory,
     required TResult Function(Set<String> statuses) filterByStatus,
     required TResult Function(int tableId, String status, String? customerName,
@@ -1173,9 +1245,9 @@ class _$UpdateTableStatusImpl implements _UpdateTableStatus {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? getTables,
+    TResult? Function(bool? isRefresh)? getTables,
     TResult? Function()? getAvailableTables,
-    TResult? Function()? getCategories,
+    TResult? Function(bool? isRefresh)? getCategories,
     TResult? Function(int? categoryId)? filterByCategory,
     TResult? Function(Set<String> statuses)? filterByStatus,
     TResult? Function(int tableId, String status, String? customerName,
@@ -1190,9 +1262,9 @@ class _$UpdateTableStatusImpl implements _UpdateTableStatus {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? getTables,
+    TResult Function(bool? isRefresh)? getTables,
     TResult Function()? getAvailableTables,
-    TResult Function()? getCategories,
+    TResult Function(bool? isRefresh)? getCategories,
     TResult Function(int? categoryId)? filterByCategory,
     TResult Function(Set<String> statuses)? filterByStatus,
     TResult Function(int tableId, String status, String? customerName,

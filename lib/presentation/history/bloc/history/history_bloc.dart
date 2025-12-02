@@ -11,31 +11,65 @@ part 'history_bloc.freezed.dart';
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final OrderRemoteDatasource orderRemoteDatasource;
 
+  List<OrderResponseModel> _paidOrders = [];
+  List<OrderResponseModel> _cookingOrders = [];
+  List<OrderResponseModel> _completedOrders = [];
+
   HistoryBloc(this.orderRemoteDatasource) : super(const _Initial()) {
     on<_FetchPaidOrders>((event, emit) async {
+      final isRefresh = event.isRefresh ?? false;
+      
+      if (!isRefresh && _paidOrders.isNotEmpty) {
+        emit(_Loaded(_paidOrders));
+        return;
+      }
+      
       emit(const _Loading());
       final result = await orderRemoteDatasource.getPaidOrders();
       result.fold(
         (error) => emit(_Error(error)),
-        (orders) => emit(_Loaded(orders)),
+        (orders) {
+          _paidOrders = orders;
+          emit(_Loaded(orders));
+        },
       );
     });
 
     on<_FetchCookingOrders>((event, emit) async {
+      final isRefresh = event.isRefresh ?? false;
+      
+      if (!isRefresh && _cookingOrders.isNotEmpty) {
+        emit(_Loaded(_cookingOrders));
+        return;
+      }
+      
       emit(const _Loading());
       final result = await orderRemoteDatasource.getCookingOrders();
       result.fold(
         (error) => emit(_Error(error)),
-        (orders) => emit(_Loaded(orders)),
+        (orders) {
+          _cookingOrders = orders;
+          emit(_Loaded(orders));
+        },
       );
     });
 
     on<_FetchCompletedOrders>((event, emit) async {
+      final isRefresh = event.isRefresh ?? false;
+      
+      if (!isRefresh && _completedOrders.isNotEmpty) {
+        emit(_Loaded(_completedOrders));
+        return;
+      }
+      
       emit(const _Loading());
       final result = await orderRemoteDatasource.getCompletedOrders();
       result.fold(
         (error) => emit(_Error(error)),
-        (orders) => emit(_Loaded(orders)),
+        (orders) {
+          _completedOrders = orders;
+          emit(_Loaded(orders));
+        },
       );
     });
 

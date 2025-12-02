@@ -26,10 +26,15 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
     _GetTables event,
     Emitter<GetTableState> emit,
   ) async {
-    // Only show loading on initial load
-    if (_allTables.isEmpty) {
-      emit(const _Loading());
+    final isRefresh = event.isRefresh ?? false;
+    
+    // If not refreshing and we have data, return cached data immediately
+    if (!isRefresh && _allTables.isNotEmpty) {
+      emit(_Success(List.from(_allTables)));
+      return;
     }
+
+    emit(const _Loading());
     
     final result = await _datasource.getTables();
     
@@ -63,6 +68,14 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
     _GetCategories event,
     Emitter<GetTableState> emit,
   ) async {
+    final isRefresh = event.isRefresh ?? false;
+    
+    // If not refreshing and we have data, return cached data
+    if (!isRefresh && _categories.isNotEmpty) {
+      emit(_CategoriesLoaded(_categories));
+      return;
+    }
+    
     final result = await _datasource.getCategories();
     
     result.fold(

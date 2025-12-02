@@ -63,9 +63,9 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
     _autoRefreshTimer?.cancel();
   }
 
-  void _loadData() {
-    context.read<GetTableBloc>().add(const GetTableEvent.getTables());
-    context.read<GetTableBloc>().add(const GetTableEvent.getCategories());
+  void _loadData({bool isRefresh = false}) {
+    context.read<GetTableBloc>().add(GetTableEvent.getTables(isRefresh: isRefresh));
+    context.read<GetTableBloc>().add(GetTableEvent.getCategories(isRefresh: isRefresh));
   }
 
   @override
@@ -83,7 +83,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          _loadData();
+          _loadData(isRefresh: true);
           await Future.delayed(const Duration(seconds: 1));
         },
         child: Column(
@@ -651,7 +651,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: _loadData,
+          onTap: () => _loadData(isRefresh: true),
           borderRadius: BorderRadius.circular(12),
           child: const Icon(
             Icons.refresh_rounded,
