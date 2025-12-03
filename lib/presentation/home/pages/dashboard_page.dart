@@ -24,6 +24,7 @@ import 'package:flutter_posresto_app/presentation/table/pages/table_management_a
 import 'package:flutter_posresto_app/presentation/history/pages/history_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW IMPORT
 import 'package:flutter_posresto_app/presentation/home/bloc/notification/notification_bloc.dart'; // NEW IMPORT
+import 'package:flutter_posresto_app/presentation/history/bloc/history/history_bloc.dart'; // NEW IMPORT
 
 import '../../../core/assets/assets.gen.dart';
 import '../../auth/bloc/logout/logout_bloc.dart';
@@ -577,9 +578,27 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
             ),
             Expanded(
               flex: 10,
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: _getPages(),
+              child: BlocListener<NotificationBloc, NotificationState>(
+                listenWhen: (previous, current) => previous.orderCount != current.orderCount,
+                listener: (context, state) {
+                  // Trigger History Refresh when order count changes
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders(isRefresh: true));
+                  
+                  // Optional: Show snackbar or toast
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('🔔 New Order Received! History Updated.'),
+                      backgroundColor: AppColors.primary,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+                child: IndexedStack(
+                  index: _selectedIndex,
+                  children: _getPages(),
+                ),
               ),
             ),
           ],

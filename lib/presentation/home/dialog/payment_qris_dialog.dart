@@ -82,13 +82,25 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
           widget.items,
           widget.customerName,
           widget.tableNumber,
+          widget.orderType,
+          widget.discountAmount,
+          widget.tax,
+          widget.serviceCharge,
+          widget.orderNote ?? '',
         ));
     super.initState();
   }
 
   @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
+
       scrollable: true,
       contentPadding: const EdgeInsets.all(0),
       backgroundColor: AppColors.primary,
@@ -126,6 +138,10 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                       state.maybeWhen(orElse: () {
                         return;
                       }, qrisResponse: (data) {
+                        // Update orderId with the real one from backend (JG-xxxx or ID)
+                        // FIX: Use orderId instead of transactionId (which is null)
+                        orderId = data.orderId ?? orderId;
+                        
                         const onSec = Duration(seconds: 5);
                         timer = Timer.periodic(onSec, (timer) {
                           context
@@ -135,45 +151,54 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                               ));
                         });
                       }, success: (message) async {
-                        context.read<OrderBloc>().add(OrderEvent.paymentSuccess(
-                            widget.items,
-                            widget.discount,
-                            widget.discountAmount,
-                            widget.tax,
-                            widget.serviceCharge,
-                            widget.paymentAmount,
-                            widget.customerName,
-                            widget.tableNumber,
-                            'paid', // Changed: was 'completed', now 'paid' for order tracking
-                            'paid',
-                            'Qris',
-                            widget.price,
-                            widget.orderType,
-                            widget.subTotal > 0 ? ((widget.tax / widget.subTotal) * 100).round() : 0, // NEW: taxPercentage
-                            widget.subTotal > 0 ? ((widget.serviceCharge / widget.subTotal) * 100).round() : 0, // NEW: servicePercentage
-                            widget.orderNote ?? '', // NEW: Pass Global Note
-                        )); // Pass order type
-                        await showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) => SuccessPaymentDialog(
-                            isTablePaymentPage: widget.isTablePaymentPage,
-                            data: widget.items,
-                            totalQty: widget.totalQty,
-                            totalPrice: widget.price,
-                            totalTax: widget.tax,
-                            totalDiscount: widget.discountAmount,
-                            subTotal: widget.subTotal,
-                            normalPrice: widget.price,
-                            totalService: widget.serviceCharge,
-                            draftName: widget.customerName,
-                            paymentAmount: widget.paymentAmount, // Pass payment amount
-                            tableName: widget.tableName, // NEW: Pass table name
-                            orderType: widget.orderType, // NEW: Pass order type
-                            orderNote: widget.orderNote, // NEW: Pass Global Note
-                            onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
-                          ),
-                        );
+                        log("QRIS DIALOG: Success state received! Message: $message");
+                        try {
+                            context.read<OrderBloc>().add(OrderEvent.paymentSuccess(
+                                widget.items,
+                                widget.discount,
+                                widget.discountAmount,
+                                widget.tax,
+                                widget.serviceCharge,
+                                widget.paymentAmount,
+                                widget.customerName,
+                                widget.tableNumber,
+                                'paid',
+                                'paid',
+                                'Qris',
+                                widget.price,
+                                widget.orderType,
+                                widget.subTotal > 0 ? ((widget.tax / widget.subTotal) * 100).round() : 0,
+                                widget.subTotal > 0 ? ((widget.serviceCharge / widget.subTotal) * 100).round() : 0,
+                                widget.orderNote ?? '',
+                            ));
+                            
+                            log("QRIS DIALOG: Showing SuccessPaymentDialog...");
+                            await showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => SuccessPaymentDialog(
+                                isTablePaymentPage: widget.isTablePaymentPage,
+                                data: widget.items,
+                                totalQty: widget.totalQty,
+                                totalPrice: widget.price,
+                                totalTax: widget.tax,
+                                totalDiscount: widget.discountAmount,
+                                subTotal: widget.subTotal,
+                                normalPrice: widget.price,
+                                totalService: widget.serviceCharge,
+                                draftName: widget.customerName,
+                                paymentAmount: widget.paymentAmount,
+                                tableName: widget.tableName,
+                                orderType: widget.orderType,
+                                orderNote: widget.orderNote,
+                                paymentMethod: 'QRIS', // NEW: Pass QRIS as payment method
+                                onPaymentSuccess: widget.onPaymentSuccess,
+                              ),
+                            );
+                            log("QRIS DIALOG: SuccessPaymentDialog closed.");
+                        } catch (e) {
+                            log("QRIS DIALOG: ERROR showing success dialog: $e");
+                        }
                       });
                     },
                     child: BlocBuilder<QrisBloc, QrisState>(
@@ -183,51 +208,100 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                           orElse: () {
                             return const SizedBox();
                           },
-                          qrisResponse: (data) {
-                            log("URL: ${data.actions!.first.url!}");
-                            final url = data.actions!.first.url!;
-                            // Check if it's a URL (http/https) or a raw QR string
-                            final isUrl = url.startsWith('http');
-                            
-                            return WidgetsToImage(
-                              controller: controller,
-                              child: Container(
-                                width: 340.0,
-                                // height: 256.0,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  color: Colors.white,
-                                ),
+                          success: (message) {
+                            return Container(
+                              width: 340.0,
+                              height: 256.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                color: Colors.white,
+                              ),
+                              child: const Center(
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Center(
-                                      child: !isUrl 
-                                      ? QrImageView(
+                                    Icon(Icons.check_circle, color: Colors.green, size: 64),
+                                    SizedBox(height: 16),
+                                    Text("Pembayaran Berhasil!", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          error: (message) {
+                            return Container(
+                              width: 340.0,
+                              height: 256.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                color: Colors.white,
+                              ),
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    message,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          qrisResponse: (data) {
+                            log("QRIS DIALOG: State is qrisResponse");
+                            log("QRIS DIALOG: URL/Data: ${data.actions?.first.url}");
+                            final url = data.actions?.first.url ?? '';
+                            log("QRIS DIALOG: Rendering QR for: $url");
+
+                            if (url.isEmpty) {
+                                log("QRIS DIALOG: URL is empty!");
+                                return const Center(child: Text("Error: QR Data is Empty", style: TextStyle(color: Colors.red)));
+                            }
+                            
+                            return SizedBox(
+                              width: 340.0,
+                              height: 350.0,
+                              child: WidgetsToImage(
+                                controller: controller,
+                                child: Container(
+                                  width: 340.0,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    color: Colors.white,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Center(
+                                        child: QrImageView(
                                           data: url,
                                           version: QrVersions.auto,
                                           size: 200.0,
-                                        )
-                                      : Image.network(
-                                        url,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return const SizedBox(
-                                            height: 200,
-                                            child: Center(child: Text('Failed to load QR Image')),
-                                          );
-                                        },
+                                          backgroundColor: Colors.white,
+                                          errorStateBuilder: (cxt, err) {
+                                            log("QRIS DIALOG: QR Rendering Error: $err");
+                                            return const Center(
+                                              child: Text(
+                                                "Uh oh! Something went wrong...",
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                    // const SpaceHeight(5.0),
-                                    Text(
-                                      NumberFormat.currency(
-                                        locale: 'id',
-                                        symbol: 'Rp ',
-                                      ).format(widget.price),
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
+                                      // const SpaceHeight(5.0),
+                                      Text(
+                                        NumberFormat.currency(
+                                          locale: 'id',
+                                          symbol: 'Rp ',
+                                        ).format(widget.price),
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -241,9 +315,9 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                                 color: Colors.white,
                               ),
                               child: const Center(
-                                child: CircularProgressIndicator(
-                                  color: AppColors.white,
-                                ),
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.primary,
+                                  ),
                               ),
                             );
                           },

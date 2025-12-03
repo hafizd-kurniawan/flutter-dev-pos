@@ -11,26 +11,23 @@ part 'history_bloc.freezed.dart';
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final OrderRemoteDatasource orderRemoteDatasource;
 
-  List<OrderResponseModel> _paidOrders = [];
-  List<OrderResponseModel> _cookingOrders = [];
-  List<OrderResponseModel> _completedOrders = [];
-
-  HistoryBloc(this.orderRemoteDatasource) : super(const _Initial()) {
+  HistoryBloc(this.orderRemoteDatasource) : super(HistoryState.initial()) {
     on<_FetchPaidOrders>((event, emit) async {
       final isRefresh = event.isRefresh ?? false;
       
-      if (!isRefresh && _paidOrders.isNotEmpty) {
-        emit(_Loaded(_paidOrders));
+      if (!isRefresh && state.paidOrders.isNotEmpty) {
         return;
       }
       
-      emit(const _Loading());
+      // Reset isStatusUpdated to prevent infinite loop
+      emit(state.copyWith(isLoading: true, errorMessage: null, isStatusUpdated: false));
       final result = await orderRemoteDatasource.getPaidOrders();
       result.fold(
-        (error) => emit(_Error(error)),
+        (error) => emit(state.copyWith(isLoading: false, errorMessage: error)),
         (orders) {
-          _paidOrders = orders;
-          emit(_Loaded(orders));
+          // Sort Ascending (Oldest -> Newest)
+          orders.sort((a, b) => a.id.compareTo(b.id));
+          emit(state.copyWith(isLoading: false, paidOrders: orders));
         },
       );
     });
@@ -38,18 +35,19 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     on<_FetchCookingOrders>((event, emit) async {
       final isRefresh = event.isRefresh ?? false;
       
-      if (!isRefresh && _cookingOrders.isNotEmpty) {
-        emit(_Loaded(_cookingOrders));
+      if (!isRefresh && state.cookingOrders.isNotEmpty) {
         return;
       }
       
-      emit(const _Loading());
+      // Reset isStatusUpdated to prevent infinite loop
+      emit(state.copyWith(isLoading: true, errorMessage: null, isStatusUpdated: false));
       final result = await orderRemoteDatasource.getCookingOrders();
       result.fold(
-        (error) => emit(_Error(error)),
+        (error) => emit(state.copyWith(isLoading: false, errorMessage: error)),
         (orders) {
-          _cookingOrders = orders;
-          emit(_Loaded(orders));
+          // Sort Ascending (Oldest -> Newest)
+          orders.sort((a, b) => a.id.compareTo(b.id));
+          emit(state.copyWith(isLoading: false, cookingOrders: orders));
         },
       );
     });
@@ -57,30 +55,41 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     on<_FetchCompletedOrders>((event, emit) async {
       final isRefresh = event.isRefresh ?? false;
       
-      if (!isRefresh && _completedOrders.isNotEmpty) {
-        emit(_Loaded(_completedOrders));
+      if (!isRefresh && state.completedOrders.isNotEmpty) {
         return;
       }
       
-      emit(const _Loading());
+      // Reset isStatusUpdated to prevent infinite loop
+      emit(state.copyWith(isLoading: true, errorMessage: null, isStatusUpdated: false));
       final result = await orderRemoteDatasource.getCompletedOrders();
       result.fold(
-        (error) => emit(_Error(error)),
+        (error) => emit(state.copyWith(isLoading: false, errorMessage: error)),
         (orders) {
-          _completedOrders = orders;
-          emit(_Loaded(orders));
+          // Sort Ascending (Oldest -> Newest)
+          orders.sort((a, b) => a.id.compareTo(b.id));
+          emit(state.copyWith(isLoading: false, completedOrders: orders));
         },
       );
     });
 
     on<_UpdateOrderStatus>((event, emit) async {
+      emit(state.copyWith(isLoading: true, errorMessage: null, isStatusUpdated: false));
+      
       final result = await orderRemoteDatasource.updateOrderStatus(
         event.orderId,
         event.status,
       );
+      
       result.fold(
-        (error) => emit(_Error(error)),
-        (success) => emit(const _StatusUpdated()),
+        (error) => emit(state.copyWith(isLoading: false, errorMessage: error)),
+        (success) {
+           emit(state.copyWith(isLoading: false, isStatusUpdated: true));
+           // Reset status updated flag after a short delay or let UI handle it
+           // Ideally, we should trigger fetch events here, but Bloc cannot add events to itself easily inside handler 
+           // without using `add`. But we can just re-fetch manually or let UI do it.
+           // BETTER APPROACH: We can't await `add` here.
+           // The UI will listen to `isStatusUpdated` and trigger refresh.
+        },
       );
     });
   }

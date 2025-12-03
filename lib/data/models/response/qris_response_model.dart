@@ -41,7 +41,7 @@ class QrisResponseModel {
         statusCode: json["status_code"],
         statusMessage: json["status_message"],
         transactionId: json["transaction_id"],
-        orderId: json["order_id"],
+        orderId: json["order_id"]?.toString(),
         merchantId: json["merchant_id"],
         grossAmount: json["gross_amount"],
         currency: json["currency"],

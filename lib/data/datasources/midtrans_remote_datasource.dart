@@ -23,9 +23,15 @@ class MidtransRemoteDatasource {
       List<ProductQuantity> items,
       String customerName,
       int tableNumber,
+      String orderType,
+      int discount,
+      int tax,
+      int serviceCharge,
+      String notes,
   ) async {
     final authData = await AuthLocalDataSource().getAuthData();
     final tenantId = authData.tenant?.id;
+    final cashierName = authData.user?.name ?? 'Cashier'; // Get Cashier Name
     final headers = await ApiHelper.getHeaders(); // Use ApiHelper for Auth headers
 
     final body = jsonEncode({
@@ -37,8 +43,15 @@ class MidtransRemoteDatasource {
         'qty': e.quantity,
         'price': e.product.price,
         'name': e.product.name,
+        'note': e.note, // Send Item Note
       }).toList(),
       'payment_method': 'qris',
+      'order_type': orderType,
+      'discount_amount': discount,
+      'tax_amount': tax,
+      'service_charge_amount': serviceCharge,
+      'notes': notes,
+      'cashier_name': cashierName,
     });
 
     log("📤 Sending QRIS Request to Backend...");
@@ -76,7 +89,7 @@ class MidtransRemoteDatasource {
           {
             'name': 'generate-qr-code',
             'method': 'GET',
-            'url': paymentUrl ?? qrString ?? '' // Fallback to qrString if paymentUrl is null
+            'url': qrString ?? paymentUrl ?? '' // Prioritize qrString over paymentUrl
           }
         ]
       };
@@ -95,17 +108,25 @@ class MidtransRemoteDatasource {
       'Authorization': generateBasicAuthHeader(serverKey),
     };
 
-    final response = await http.get(
-      Uri.parse('https://api.midtrans.com/v2/$orderId/status'),
-      // Uri.parse('https://api.sandbox.midtrans.com/v2/$orderId/status'),
-      headers: headers,
-    );
-    log("StatusCode: ${response.statusCode}");
-    log("Body: ${response.body}");
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return QrisStatusResponseModel.fromJson(response.body);
-    } else {
-      throw Exception('Failed to check payment status');
+    try {
+      // Call Laravel API instead of Midtrans directly
+      // This handles both Real and Mock orders securely
+      final response = await http.get(
+        Uri.parse('${Variables.baseUrl}/api/order/$orderId/status'),
+        headers: headers,
+      );
+
+      log("StatusCode: ${response.statusCode}");
+      log("Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return QrisStatusResponseModel.fromMap(data);
+      } else {
+        throw Exception('Failed to check payment status');
+      }
+    } catch (e) {
+      throw Exception('Error checking payment status: $e');
     }
   }
 }

@@ -10,6 +10,11 @@ class QrisEvent with _$QrisEvent {
     List<ProductQuantity> items,
     String customerName,
     int tableNumber,
+    String orderType,
+    int discount,
+    int tax,
+    int serviceCharge,
+    String notes,
   ) = _GenerateQRCode;
 
   //checkPaymentStatus
