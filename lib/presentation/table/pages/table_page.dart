@@ -60,7 +60,7 @@ class _TablePageState extends State<TablePage> {
                 loading: () {
                   return const CircularProgressIndicator();
                 },
-                success: (tables) {
+                success: (tables, categories) {
                   if (tables.isEmpty) {
                     return const Center(
                       child: Text('No table available'),

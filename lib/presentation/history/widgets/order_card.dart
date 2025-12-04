@@ -537,26 +537,30 @@ class OrderCard extends StatelessWidget {
 
                 // Status Update Button (Compact)
                 if (order.status != 'complete') 
-                  ElevatedButton.icon(
-                    onPressed: onStatusUpdate,
-                    icon: Icon(
-                      order.status == 'paid'
-                          ? Icons.restaurant
-                          : Icons.check_circle,
-                      size: 18,
-                    ),
-                    label: Text(
-                      _getButtonText(),
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _getStatusColor(),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Flexible(
+                    child: ElevatedButton.icon(
+                      onPressed: onStatusUpdate,
+                      icon: Icon(
+                        order.status == 'paid'
+                            ? Icons.restaurant
+                            : Icons.check_circle,
+                        size: 18,
                       ),
-                      elevation: 0,
+                      label: Text(
+                        _getButtonText(),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _getStatusColor(),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                      ),
                     ),
                   ),
               ],

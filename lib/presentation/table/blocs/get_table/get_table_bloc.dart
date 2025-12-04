@@ -30,7 +30,7 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
     
     // If not refreshing and we have data, return cached data immediately
     if (!isRefresh && _allTables.isNotEmpty) {
-      emit(_Success(List.from(_allTables)));
+      emit(_Success(tables: List.from(_allTables), categories: _categories));
       return;
     }
 
@@ -42,7 +42,7 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
       (error) => emit(_Error(error)),
       (tables) {
         _allTables = tables;
-        emit(_Success(List.from(tables)));
+        emit(_Success(tables: List.from(tables), categories: _categories));
       },
     );
   }
@@ -59,7 +59,7 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
       (error) => emit(_Error(error)),
       (tables) {
         _allTables = tables;
-        emit(_Success(tables));
+        emit(_Success(tables: tables, categories: _categories));
       },
     );
   }
@@ -72,7 +72,7 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
     
     // If not refreshing and we have data, return cached data
     if (!isRefresh && _categories.isNotEmpty) {
-      emit(_CategoriesLoaded(_categories));
+      emit(_Success(tables: _allTables, categories: _categories));
       return;
     }
     
@@ -82,7 +82,7 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
       (error) => emit(_Error(error)),
       (categories) {
         _categories = categories;
-        emit(_CategoriesLoaded(categories));
+        emit(_Success(tables: _allTables, categories: categories));
       },
     );
   }
@@ -93,7 +93,7 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
   ) async {
     if (event.categoryId == null) {
       // Show all tables
-      emit(_Success(_allTables));
+      emit(_Success(tables: _allTables, categories: _categories));
     } else {
       emit(const _Loading());
       
@@ -101,7 +101,7 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
       
       result.fold(
         (error) => emit(_Error(error)),
-        (tables) => emit(_Success(tables)),
+        (tables) => emit(_Success(tables: tables, categories: _categories)),
       );
     }
   }
@@ -111,12 +111,12 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
     Emitter<GetTableState> emit,
   ) async {
     if (event.statuses.isEmpty || event.statuses.contains('all')) {
-      emit(_Success(_allTables));
+      emit(_Success(tables: _allTables, categories: _categories));
     } else {
       final filtered = _allTables
           .where((table) => event.statuses.contains(table.status))
           .toList();
-      emit(_Success(filtered));
+      emit(_Success(tables: filtered, categories: _categories));
     }
   }
 
@@ -145,7 +145,7 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
         }
         
         // Emit new list directly (no loading state)
-        emit(_Success(List.from(_allTables)));
+        emit(_Success(tables: List.from(_allTables), categories: _categories));
       },
     );
   }

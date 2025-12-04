@@ -17,9 +17,16 @@ import 'package:flutter_posresto_app/core/extensions/string_ext.dart'; // NEW: I
 import 'package:flutter_posresto_app/data/models/response/product_response_model.dart'; // NEW: Import Product Model
 import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
 import 'package:flutter_posresto_app/presentation/home/bloc/notification/notification_bloc.dart'; // NEW IMPORT
+import 'package:flutter_posresto_app/core/constants/colors.dart';
+import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({Key? key}) : super(key: key);
+  final VoidCallback? onToggleSidebar;
+  
+  const HistoryPage({
+    Key? key,
+    this.onToggleSidebar,
+  }) : super(key: key);
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -410,85 +417,42 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('History Orders', style: TextStyle(fontWeight: FontWeight.bold)),
-        elevation: 0,
-        centerTitle: true,
-        actions: [
-
-          // Date Filter Button
-          IconButton(
-            icon: Stack(
-              children: [
-                const Icon(Icons.filter_list_rounded, size: 26),
-                if (_isFilterActive)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                        color: Colors.orange,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 8,
-                        minHeight: 8,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            tooltip: _isFilterActive 
-                ? 'Filter Active: ${_startDate!.day}/${_startDate!.month} - ${_endDate!.day}/${_endDate!.month}'
-                : 'Filter by Date',
-            onPressed: _showDateFilterDialog,
-          ),
-          // Refresh Button - Modern Design
-          BlocBuilder<HistoryBloc, HistoryState>(
-            builder: (context, state) {
-              final isLoading = state.isLoading;
+      body: Stack(
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isTight = constraints.maxWidth < 600;
+              final margin = isTight ? 16.0 : 24.0;
               
               return Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: IconButton(
-                  icon: isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Icon(Icons.refresh_rounded, size: 28),
-                  tooltip: 'Refresh Orders',
-                  onPressed: isLoading ? null : () {
-                    _refreshOrders();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('🔄 Memuat data terbaru...'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  },
+                padding: EdgeInsets.only(top: 100.0, left: margin, right: margin),
+                child: Column(
+              children: [
+                // Tab Bar
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    onTap: (_) => _onTabChanged(),
+                    indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: AppColors.primary,
+                    ),
+                    labelColor: Colors.white,
+                    unselectedLabelColor: Colors.grey[600],
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    tabs: const [
+                      Tab(text: 'Paid', icon: Icon(Icons.payment, size: 20)),
+                      Tab(text: 'Cooking', icon: Icon(Icons.restaurant, size: 20)),
+                      Tab(text: 'Completed', icon: Icon(Icons.check_circle, size: 20)),
+                    ],
+                  ),
                 ),
-              );
-            },
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (_) => _onTabChanged(),
-          tabs: const [
-            Tab(text: 'Paid', icon: Icon(Icons.payment)),
-            Tab(text: 'Cooking', icon: Icon(Icons.restaurant)),
-            Tab(text: 'Completed', icon: Icon(Icons.check_circle)),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
+                const SizedBox(height: 8),
           // Date Filter Indicator Banner
           if (_isFilterActive)
             Container(
@@ -593,6 +557,96 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                   ],
                 );
               },
+            ),
+          ),
+              ],
+            ),
+          );
+        },
+      ),
+          
+          // Floating Header
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: FloatingHeader(
+              title: 'History Orders',
+              onToggleSidebar: widget.onToggleSidebar ?? () {},
+              isSidebarVisible: true,
+              actions: [
+                // Date Filter Button
+                IconButton(
+                  icon: Stack(
+                    children: [
+                      const Icon(Icons.filter_list_rounded, size: 20),
+                      if (_isFilterActive)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              color: Colors.orange,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 6,
+                              minHeight: 6,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  tooltip: _isFilterActive 
+                      ? 'Filter Active'
+                      : 'Filter by Date',
+                  onPressed: _showDateFilterDialog,
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(8),
+                  ),
+                  color: AppColors.primary,
+                ),
+                
+                const SizedBox(width: 8),
+                
+                // Refresh Button
+                BlocBuilder<HistoryBloc, HistoryState>(
+                  builder: (context, state) {
+                    final isLoading = state.isLoading;
+                    return IconButton(
+                      icon: isLoading
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                              ),
+                            )
+                          : const Icon(Icons.refresh_rounded, size: 20),
+                      tooltip: 'Refresh Orders',
+                      onPressed: isLoading ? null : () {
+                        _refreshOrders();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('🔄 Memuat data terbaru...'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      style: IconButton.styleFrom(
+                        backgroundColor: AppColors.primary.withOpacity(0.1),
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(8),
+                      ),
+                      color: AppColors.primary,
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ],

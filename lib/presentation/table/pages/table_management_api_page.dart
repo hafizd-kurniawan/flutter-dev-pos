@@ -7,13 +7,17 @@ import 'package:flutter_posresto_app/data/models/response/table_category_model.d
 import 'package:flutter_posresto_app/presentation/table/blocs/get_table/get_table_bloc.dart';
 import 'package:flutter_posresto_app/presentation/table/widgets/change_table_status_sheet.dart';
 import 'package:flutter_posresto_app/presentation/table/widgets/table_info_card.dart';
+import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
+import 'package:flutter_posresto_app/presentation/home/widgets/custom_tab_selector.dart';
 
 class TableManagementApiPage extends StatefulWidget {
   final Function(TableModel)? onTableSelected;
+  final VoidCallback? onToggleSidebar;
   
   const TableManagementApiPage({
     Key? key,
     this.onTableSelected,
+    this.onToggleSidebar,
   }) : super(key: key);
 
   @override
@@ -72,85 +76,118 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Table Management',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.primary,
-        elevation: 0,
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _loadData(isRefresh: true);
-          await Future.delayed(const Duration(seconds: 1));
-        },
-        child: Column(
+      body: SafeArea(
+        child: Stack(
           children: [
-            // Filters Section - Professional Design
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isTight = constraints.maxWidth < 600;
+                // Reduce margin to 0 for mobile to maximize card width
+                final margin = isTight ? 0.0 : 24.0;
+                final filterPadding = isTight ? 8.0 : 16.0;
+                
+                return Padding(
+                  padding: EdgeInsets.only(top: 100.0, left: margin, right: margin),
+                  child: Column(
                 children: [
-                  // Row 1: Search + Refresh
+                  // Filters Section
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                    child: Row(
+                    padding: EdgeInsets.symmetric(horizontal: filterPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: _buildSearchBar(),
-                        ),
-                        const SizedBox(width: 12),
-                        _buildRefreshButton(),
+                        // Category Tabs
+                        _buildCategoryFilter(),
+                        const SizedBox(height: 16),
+                        
+                        // Status Filters
+                        _buildStatusFilters(),
                       ],
                     ),
                   ),
                   
-                  // Row 2: Category + Status Filters
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Category Filter
-                        SizedBox(
-                          width: 200,
-                          child: _buildCategoryFilter(),
+                  const SizedBox(height: 16),
+                  
+                  // Tables Grid
+                  Expanded(
+                    child: _buildTablesGrid(),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+            
+            // Floating Header
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: FloatingHeader(
+                title: 'Table Management',
+                onToggleSidebar: widget.onToggleSidebar ?? () {},
+                isSidebarVisible: true,
+                actions: [
+                  // Search Bar
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final screenWidth = MediaQuery.of(context).size.width;
+                      final isSmall = screenWidth < 400;
+                      final isMobile = screenWidth < 600;
+                      return SizedBox(
+                        width: isSmall ? 100 : (isMobile ? 140 : 250), // Responsive width
+                        height: 36,
+                        child: TextField(
+                      controller: _searchController,
+                      style: const TextStyle(fontSize: 12),
+                      decoration: InputDecoration(
+                        hintText: 'Search tables...',
+                        hintStyle: TextStyle(fontSize: 13, color: Colors.grey[500]),
+                        prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[500], size: 18),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: Icon(Icons.close, color: Colors.grey[600], size: 16),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  setState(() => _searchQuery = '');
+                                },
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                splashRadius: 16,
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          borderSide: BorderSide.none,
                         ),
-                        const SizedBox(width: 16),
-                        // Vertical Divider
-                        Container(
-                          height: 40,
-                          width: 1,
-                          color: Colors.grey[300],
-                        ),
-                        const SizedBox(width: 16),
-                        // Status Filters
-                        Expanded(
-                          child: _buildStatusFilters(),
-                        ),
-                      ],
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                      ),
+                      onChanged: (value) {
+                        setState(() => _searchQuery = value.toLowerCase());
+                      },
+                    ),
+                  );
+                },
+              ),
+                  
+                  const SizedBox(width: 4),
+                  
+                  // Refresh Button
+                  IconButton(
+                    onPressed: () => _loadData(isRefresh: true),
+                    icon: const Icon(Icons.refresh_rounded, size: 20),
+                    color: AppColors.primary,
+                    tooltip: 'Refresh Data',
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.primary.withOpacity(0.1),
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(8),
                     ),
                   ),
                 ],
               ),
-            ),
-            
-            const Divider(height: 1),
-            
-            // Tables Grid
-            Expanded(
-              child: _buildTablesGrid(),
             ),
           ],
         ),
@@ -162,7 +199,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
     return BlocListener<GetTableBloc, GetTableState>(
       listener: (context, state) {
         state.maybeWhen(
-          categoriesLoaded: (categories) {
+          success: (tables, categories) {
             setState(() {
               _categories = categories;
             });
@@ -170,111 +207,25 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
           orElse: () {},
         );
       },
-      child: Container(
-            height: 48,
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: _selectedCategoryId != null ? AppColors.primary.withOpacity(0.3) : Colors.grey[300]!,
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 4,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: DropdownButton<int?>(
-              value: _selectedCategoryId,
-              isExpanded: true,
-              underline: const SizedBox(),
-              icon: Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: _selectedCategoryId != null ? AppColors.primary : Colors.grey[600],
-                size: 24,
-              ),
-              hint: Row(
-                children: [
-                  Icon(
-                    Icons.category_rounded,
-                    size: 18,
-                    color: Colors.grey[600],
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'All Categories',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[800],
-                fontWeight: FontWeight.w500,
-              ),
-              items: [
-                DropdownMenuItem<int?>(
-                  value: null,
-                  child: Row(
-                    children: [
-                      Icon(Icons.category_rounded, size: 18, color: Colors.grey[600]),
-                      const SizedBox(width: 10),
-                      const Text('All Categories'),
-                    ],
-                  ),
-                ),
-                ..._categories.map((category) {
-                  return DropdownMenuItem<int?>(
-                    value: category.id,
-                    child: Row(
-                      children: [
-                        Icon(Icons.label_rounded, size: 16, color: AppColors.primary.withOpacity(0.7)),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            category.name,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            '${category.available}/${category.total}',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.green[700],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _selectedCategoryId = value;
-                });
-                context.read<GetTableBloc>().add(
-                  GetTableEvent.filterByCategory(value),
-                );
-              },
-            ),
-          ),
+      child: CustomTabSelector(
+        items: ['All Categories', ..._categories.map((e) => e.name)],
+        badges: [null, ..._categories.map((e) => e.available)],
+        selectedIndex: _selectedCategoryId == null 
+            ? 0 
+            : _categories.indexWhere((c) => c.id == _selectedCategoryId) + 1,
+        onTap: (index) {
+          final isAll = index == 0;
+          final category = isAll ? null : _categories[index - 1];
+          
+          setState(() {
+            _selectedCategoryId = isAll ? null : category?.id;
+          });
+          
+          context.read<GetTableBloc>().add(
+            GetTableEvent.filterByCategory(_selectedCategoryId),
+          );
+        },
+      ),
     );
   }
 
@@ -324,26 +275,27 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                       GetTableEvent.filterByStatus(_selectedStatuses),
                     );
                   },
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
+                  borderRadius: BorderRadius.circular(30), // Rounded pills
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
                     height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ? color.withOpacity(0.15) : Colors.white,
-                      borderRadius: BorderRadius.circular(10),
+                      color: isSelected ? color.withOpacity(0.1) : Colors.white,
+                      borderRadius: BorderRadius.circular(30),
                       border: Border.all(
                         color: isSelected ? color : Colors.grey[300]!,
-                        width: isSelected ? 2 : 1.5,
+                        width: 1,
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
                                 color: color.withOpacity(0.2),
-                                blurRadius: 8,
+                                blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
                             ]
-                          : [],
+                          : null,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -353,7 +305,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                           size: 16,
                           color: isSelected ? color : Colors.grey[600],
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 8),
                         Text(
                           status['label'] as String,
                           style: TextStyle(
@@ -378,7 +330,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
       listener: (context, state) {
         // Update cache silently WITHOUT setState - no flicker!
         state.maybeWhen(
-          success: (tables) {
+          success: (tables, categories) {
             _cachedTables = tables;
             // Force a single rebuild after cache update
             if (mounted) {
@@ -483,7 +435,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                 padding: const EdgeInsets.all(12),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: _getCrossAxisCount(context),
-                  childAspectRatio: 0.9,
+                  childAspectRatio: 0.8, // Taller cards to prevent overflow
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),

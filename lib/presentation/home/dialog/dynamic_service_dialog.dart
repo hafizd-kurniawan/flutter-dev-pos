@@ -34,26 +34,29 @@ class _DynamicServiceDialogState extends State<DynamicServiceDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Stack(
-        alignment: Alignment.center,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
+      titlePadding: const EdgeInsets.all(24),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+      actionsPadding: const EdgeInsets.all(24),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text(
-            'PILIH LAYANAN',
+            'Pilih Layanan',
             style: TextStyle(
-              color: AppColors.primary,
-              fontSize: 28,
-              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconButton(
-              onPressed: () => context.pop(),
-              icon: const Icon(
-                Icons.cancel,
-                color: AppColors.primary,
-                size: 30.0,
-              ),
+          IconButton(
+            onPressed: () => context.pop(),
+            icon: const Icon(Icons.close, color: Colors.grey),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.grey[100],
+              padding: const EdgeInsets.all(8),
             ),
           ),
         ],
@@ -61,103 +64,169 @@ class _DynamicServiceDialogState extends State<DynamicServiceDialog> {
       content: BlocBuilder<PosSettingsBloc, PosSettingsState>(
         builder: (context, state) {
           return state.maybeWhen(
-            orElse: () => const Center(
-              child: CircularProgressIndicator(),
+            orElse: () => const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
             ),
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
+            loading: () => const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
             ),
-            error: (message) => Center(
-              child: Text('Error: $message'),
+            error: (message) => SizedBox(
+              height: 100,
+              child: Center(child: Text('Error: $message')),
             ),
             loaded: (settings) {
               final services = settings.services;
 
               if (services.isEmpty) {
-                return const Text('Tidak ada layanan tersedia');
+                return const SizedBox(
+                  height: 100,
+                  child: Center(child: Text('Tidak ada layanan tersedia')),
+                );
               }
 
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Option: No service
-                    RadioListTile<int?>(
-                      title: const Text('Tidak ada layanan'),
-                      subtitle: const Text('Tidak menggunakan biaya layanan'),
-                      value: null,
-                      groupValue: _selectedServiceId,
-                      activeColor: AppColors.primary,
-                      contentPadding: EdgeInsets.zero,
-                      onChanged: (value) async {
-                        // Save selection
-                        await _localDatasource.saveSelectedService(null);
-
-                        // Remove service from checkout
-                        context.read<CheckoutBloc>().add(
-                              const CheckoutEvent.addServiceCharge(0),
-                            );
-
-                        // Update UI
-                        setState(() {
-                          _selectedServiceId = null;
-                        });
-
-                        // Close dialog
-                        if (mounted) {
+              return SizedBox(
+                width: 400,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Option: No service
+                      _buildServiceOption(
+                        context,
+                        id: null,
+                        name: 'Tanpa Layanan',
+                        description: 'Tidak menggunakan biaya layanan',
+                        isSelected: _selectedServiceId == null,
+                        onTap: () async {
+                          await _localDatasource.saveSelectedService(null);
+                          if (!context.mounted) return;
+                          context.read<CheckoutBloc>().add(const CheckoutEvent.addServiceCharge(0));
+                          setState(() => _selectedServiceId = null);
                           context.pop();
-                        }
-                      },
-                    ),
-
-                    const Divider(),
-
-                    // Available services
-                    ...services.map((service) {
-                      return RadioListTile<int>(
-                        title: Text(service.name),
-                        subtitle: Text(service.displayText),
-                        value: service.id,
-                        groupValue: _selectedServiceId,
-                        activeColor: AppColors.primary,
-                        contentPadding: EdgeInsets.zero,
-                        onChanged: (value) async {
-                          // Save selection
-                          await _localDatasource.saveSelectedService(value);
-
-                          // Apply service to checkout
-                          context.read<CheckoutBloc>().add(
-                                CheckoutEvent.addServiceCharge(service.value.toInt()),
-                              );
-
-                          // Update UI
-                          setState(() {
-                            _selectedServiceId = value;
-                          });
-
-                          // Show success message
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('✅ Layanan ${service.name} diterapkan'),
-                                backgroundColor: Colors.green,
-                                duration: const Duration(seconds: 1),
-                              ),
-                            );
-
-                            // Close dialog
-                            context.pop();
-                          }
                         },
-                      );
-                    }).toList(),
-                  ],
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      // Available services
+                      ...services.map((service) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildServiceOption(
+                            context,
+                            id: service.id,
+                            name: service.name,
+                            description: service.displayText,
+                            isSelected: _selectedServiceId == service.id,
+                            onTap: () async {
+                              await _localDatasource.saveSelectedService(service.id);
+                              if (!context.mounted) return;
+                              
+                              context.read<CheckoutBloc>().add(
+                                    CheckoutEvent.addServiceCharge(service.value.toInt()),
+                                  );
+                              
+                              setState(() => _selectedServiceId = service.id);
+                              
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('✅ Layanan ${service.name} diterapkan'),
+                                  backgroundColor: Colors.green,
+                                  duration: const Duration(seconds: 1),
+                                ),
+                              );
+                              context.pop();
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  ),
                 ),
               );
             },
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildServiceOption(
+    BuildContext context, {
+    required int? id,
+    required String name,
+    required String description,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary.withOpacity(0.05) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : Colors.grey[200]!,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: [
+            if (!isSelected)
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.grey[100],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                id == null ? Icons.money_off : Icons.room_service,
+                color: isSelected ? AppColors.primary : Colors.grey[600],
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? AppColors.primary : AppColors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle,
+                color: AppColors.primary,
+                size: 24,
+              ),
+          ],
+        ),
       ),
     );
   }
