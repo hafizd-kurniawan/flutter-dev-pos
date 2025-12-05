@@ -5,6 +5,7 @@ import 'package:flutter_posresto_app/data/datasources/order_remote_datasource.da
 import 'package:flutter_posresto_app/data/models/response/order_response_model.dart';
 import 'package:flutter_posresto_app/presentation/history/bloc/history/history_bloc.dart';
 import 'package:flutter_posresto_app/data/dataoutputs/print_dataoutputs.dart';
+import 'package:google_fonts/google_fonts.dart'; // NEW
 import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 import 'package:flutter_posresto_app/presentation/history/widgets/order_card.dart';
@@ -197,91 +198,228 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
     if (order.status == 'paid') {
       newStatus = 'cooking';
     } else if (order.status == 'cooking') {
-      newStatus = 'complete'; // Changed from 'completed' to 'complete'
+      newStatus = 'complete';
     } else {
       return; // Already complete
     }
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Update Order Status'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              order.status == 'paid'
-                  ? 'Start cooking order ${order.code}?'
-                  : 'Mark order ${order.code} as completed?',
-            ),
-            if (order.note != null && order.note!.isNotEmpty) ...[
-              const SizedBox(height: 16),
+      builder: (dialogContext) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
               Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.yellow[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.yellow.shade300),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Catatan Pesanan:',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange[800],
-                      ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Update Status',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      order.note!,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.orange[900],
-                        fontStyle: FontStyle.italic,
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    icon: const Icon(Icons.close, color: Colors.grey),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.grey[100],
+                      padding: const EdgeInsets.all(8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    order.status == 'paid'
+                        ? 'Mulai memasak pesanan ini?'
+                        : 'Tandai pesanan selesai?',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Order Info Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.receipt_long, color: Colors.blue),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                order.code,
+                                style: GoogleFonts.quicksand(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                order.customerName ?? 'Guest',
+                                style: GoogleFonts.quicksand(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  if (order.note != null && order.note!.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.yellow[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.yellow.shade300),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.note, size: 16, color: Colors.orange[800]),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Catatan Pesanan:',
+                                style: GoogleFonts.quicksand(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange[800],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            order.note!,
+                            style: GoogleFonts.quicksand(
+                              fontSize: 14,
+                              color: Colors.orange[900],
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                ),
+                ],
               ),
-            ],
+            ),
+            
+            // Actions
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(dialogContext),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Batal',
+                        style: GoogleFonts.quicksand(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(dialogContext);
+                        context.read<HistoryBloc>().add(
+                              HistoryEvent.updateOrderStatus(
+                                orderId: order.id,
+                                status: newStatus,
+                              ),
+                            );
+                        
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Updating order status to $newStatus...'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                        
+                        Future.delayed(const Duration(seconds: 1), () {
+                          _onTabChanged();
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Konfirmasi',
+                        style: GoogleFonts.quicksand(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<HistoryBloc>().add(
-                    HistoryEvent.updateOrderStatus(
-                      orderId: order.id,
-                      status: newStatus,
-                    ),
-                  );
-              
-              // Show snackbar
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Updating order status to $newStatus...'),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-              
-              // Refresh after short delay
-              Future.delayed(const Duration(seconds: 1), () {
-                _onTabChanged();
-              });
-            },
-            child: const Text('Confirm'),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -417,6 +555,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F5FF), // App Background
       body: Stack(
         children: [
           LayoutBuilder(
@@ -430,21 +569,32 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
               children: [
                 // Tab Bar
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 0.0), // Removed margin
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(25.0),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: TabBar(
                     controller: _tabController,
                     onTap: (_) => _onTabChanged(),
                     indicator: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
+                      borderRadius: BorderRadius.circular(16.0),
                       color: AppColors.primary,
                     ),
                     labelColor: Colors.white,
                     unselectedLabelColor: Colors.grey[600],
                     indicatorSize: TabBarIndicatorSize.tab,
+                    labelStyle: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
+                    unselectedLabelStyle: GoogleFonts.quicksand(fontWeight: FontWeight.w600),
+                    dividerColor: Colors.transparent, // Remove divider
+                    padding: const EdgeInsets.all(6), // Add padding for pill effect
                     tabs: const [
                       Tab(text: 'Paid', icon: Icon(Icons.payment, size: 20)),
                       Tab(text: 'Cooking', icon: Icon(Icons.restaurant, size: 20)),
@@ -452,7 +602,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
           // Date Filter Indicator Banner
           if (_isFilterActive)
             Container(

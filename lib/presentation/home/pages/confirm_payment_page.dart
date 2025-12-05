@@ -3,6 +3,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'package:flutter_posresto_app/core/constants/variables.dart'; // NEW: Import Variables
 
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
@@ -14,6 +17,7 @@ import 'package:flutter_posresto_app/presentation/home/bloc/pos_settings/pos_set
 import 'package:flutter_posresto_app/presentation/home/bloc/status_table/status_table_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/dialog/payment_qris_dialog.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
+import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/save_order_dialog.dart';
 
 import '../../../core/components/buttons.dart';
@@ -53,8 +57,11 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
   int uangPas3 = 0;
   // int discountAmountValue = 0;
   int totalPriceFinal = 0;
-  // int taxFinal = 0;
-  // int serviceChargeFinal = 0;
+  int taxFinal = 0;
+  int serviceChargeFinal = 0;
+  int subTotalFinal = 0;
+  List<ProductQuantity> itemsFinal = [];
+  String orderNoteFinal = '';
 
   @override
   void initState() {
@@ -176,1097 +183,755 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      // REMOVED Hero widget to prevent validation conflicts
-      child: Scaffold(
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              final isLarge = constraints.maxWidth > 800;
-              return Flex(
-                direction: isLarge ? Axis.horizontal : Axis.vertical,
-                children: [
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F5FF), // App Background
+      body: Stack(
+        children: [
+          // 1. Main Content
+          Padding(
+            padding: const EdgeInsets.only(top: 100.0, left: 24, right: 24, bottom: 24),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isLarge = constraints.maxWidth > 900;
+                
+                if (isLarge) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // LEFT: Order Summary
+                      Expanded(
+                        flex: 3,
+                        child: _buildOrderSummaryCard(),
+                      ),
+                      const SizedBox(width: 24),
+                      // RIGHT: Payment Details
+                      Expanded(
+                        flex: 2,
+                        child: _buildPaymentDetailsCard(),
+                      ),
+                    ],
+                  );
+                } else {
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildOrderSummaryCard(),
+                        const SizedBox(height: 24),
+                        _buildPaymentDetailsCard(),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+
+          // 2. Floating Header
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: FloatingHeader(
+              title: 'Confirm Payment',
+              onToggleSidebar: () => Navigator.pop(context),
+              isSidebarVisible: false, // Back button mode
+              useBackIcon: true, // NEW: Force back icon
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderSummaryCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Order Summary',
+            style: GoogleFonts.quicksand(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            widget.isTable
+                ? 'Table ${widget.table?.tableName}'
+                : 'Order #${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
+            style: GoogleFonts.quicksand(
+              fontSize: 14,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Divider(),
+          const SizedBox(height: 16),
+          
+          // Header Row
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Text(
+                  'Item',
+                  style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  'Qty',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+              ),
               Expanded(
                 flex: 2,
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
+                child: Text(
+                  'Price',
+                  textAlign: TextAlign.right,
+                  style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          
+          // Items List
+          BlocBuilder<CheckoutBloc, CheckoutState>(
+            builder: (context, state) {
+              return state.maybeWhen(
+                orElse: () => const Center(child: Text('No Items')),
+                loaded: (products, discountModel, discount, discountAmount, tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: products.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final item = products[index];
+                      return Row(
+                        children: [
+                          // NEW: Product Image
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: item.product.image != null && item.product.image!.isNotEmpty
+                                  ? Image.network(
+                                      item.product.image!.toImageUrl,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          Container(color: Colors.grey[200], child: const Icon(Icons.image_not_supported, size: 20)),
+                                    )
+                                  : Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 20)),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          
+                          Expanded(
+                            flex: 3,
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Konfirmasi',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  item.product.name ?? '',
+                                  style: GoogleFonts.quicksand(fontWeight: FontWeight.w600),
                                 ),
-                                Text(
-                                  widget.isTable
-                                      ? 'Orders Table ${widget.table?.tableName}'
-                                      : 'Orders #1',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                                if (item.product.category != null)
+                                  Text(
+                                    item.product.category?.name ?? 'Category',
+                                    style: GoogleFonts.quicksand(fontSize: 10, color: Colors.grey),
                                   ),
-                                ),
                               ],
                             ),
-                            GestureDetector(
-                              onTap: () {},
-                              child: Container(
-                                padding: const EdgeInsets.all(16.0),
-                                height: 60.0,
-                                width: 60.0,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.primary,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8.0)),
-                                ),
-                                child: const Icon(
-                                  Icons.add,
-                                  color: AppColors.white,
-                                ),
-                              ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              'x${item.quantity}',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.quicksand(fontWeight: FontWeight.w500),
                             ),
-                          ],
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              (item.product.price!.toIntegerFromText * item.quantity).currencyFormatRp,
+                              textAlign: TextAlign.right,
+                              style: GoogleFonts.quicksand(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
+          
+          const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 16),
+          
+          // Totals
+          BlocBuilder<CheckoutBloc, CheckoutState>(
+            builder: (context, state) {
+              return state.maybeWhen(
+                orElse: () => const SizedBox.shrink(),
+                loaded: (products, discountModel, discount, discountAmount, tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
+                  final subTotal = products.fold(0, (prev, el) => prev + (el.product.price!.toIntegerFromText * el.quantity));
+                  final discAmt = _calculateDiscountAmount(discountModel, subTotal);
+                  final afterDisc = subTotal - discAmt;
+                  final taxAmt = _calculateTaxAmount(afterDisc, tax);
+                  final servAmt = _calculateServiceCharge(afterDisc, serviceCharge);
+                  
+                  return Column(
+                    children: [
+                      _buildTotalRow('Subtotal', subTotal.currencyFormatRp),
+                      const SizedBox(height: 8),
+                      
+                      // DISCOUNT
+                      if (discountModel != null) ...[
+                         _buildTotalRow(
+                          'Discount', 
+                          discountModel.type == 'percentage' 
+                              ? '(${discountModel.value}%) -${discAmt.currencyFormatRp}'
+                              : '-${discAmt.currencyFormatRp}',
+                          isDiscount: true,
                         ),
-                        const SpaceHeight(8.0),
-                        const Divider(),
-                        const SpaceHeight(24.0),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Item',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 160,
-                            ),
-                            SizedBox(
-                              width: 50.0,
-                              child: Text(
-                                'Qty',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              child: Text(
-                                'Price',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SpaceHeight(8),
-                        const Divider(),
-                        const SpaceHeight(8),
-                        BlocBuilder<CheckoutBloc, CheckoutState>(
-                          builder: (context, state) {
-                            return state.maybeWhen(
-                              orElse: () => const Center(
-                                child: Text('No Items'),
-                              ),
-                              loaded: (products,
-                                  discountModel,
-                                  discount,
-                                  discountAmount,
-                                  tax,
-                                  serviceCharge,
-                                  totalQuantity,
-                                  totalPrice,
-                                  draftName,
-                                  orderNote) {
-                                if (products.isEmpty) {
-                                  return const Center(
-                                    child: Text('No Items'),
-                                  );
-                                }
-                                return ListView.separated(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, index) =>
-                                      OrderMenu(data: products[index]),
-                                  separatorBuilder: (context, index) =>
-                                      const SpaceHeight(12.0),
-                                  itemCount: products.length,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        const SpaceHeight(8.0),
-                        const Divider(),
-                        const SpaceHeight(4.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Sub total',
-                              style: TextStyle(color: AppColors.grey),
-                            ),
-                            BlocBuilder<CheckoutBloc, CheckoutState>(
-                              builder: (context, state) {
-                                final price = state.maybeWhen(
-                                    orElse: () => 0,
-                                    loaded: (products,
-                                            discountModel,
-                                            discount,
-                                            discountAmount,
-                                            tax,
-                                            serviceCharge,
-                                            totalQuantity,
-                                            totalPrice,
-                                            draftName,
-                                            orderNote) =>
-                                        products.fold(
-                                          0,
-                                          (previousValue, element) =>
-                                              previousValue +
-                                              (element.product.price!
-                                                      .toIntegerFromText *
-                                                  element.quantity),
-                                        ));
-                                return Text(
-                                  price.currencyFormatRp,
-                                  style: const TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        const SpaceHeight(4.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Diskon',
-                              style: TextStyle(color: AppColors.grey),
-                            ),
-                            BlocBuilder<CheckoutBloc, CheckoutState>(
-                              builder: (context, state) {
-                                return state.maybeWhen(
-                                  orElse: () => const Text('-'),
-                                  loaded: (products,
-                                      discountModel,
-                                      discount,
-                                      discountAmount,
-                                      tax,
-                                      serviceCharge,
-                                      totalQuantity,
-                                      totalPrice,
-                                      draftName,
-                                      orderNote) {
-                                    if (discountModel == null) {
-                                      return const Text('-');
-                                    }
-
-                                    final discountValue = discountModel.value!
-                                        .replaceAll('.00', '')
-                                        .toIntegerFromText;
-
-                                    final subTotal = products.fold(
-                                      0,
-                                      (previousValue, element) =>
-                                          previousValue +
-                                          (element.product.price!
-                                                  .toIntegerFromText *
-                                              element.quantity),
-                                    );
-
-                                    // Calculate based on type
-                                    final int finalDiscount;
-                                    final String displayText;
-                                    
-                                    if (discountModel.type == 'percentage') {
-                                      finalDiscount = (discountValue / 100 * subTotal).toInt();
-                                      displayText = '$discountValue % (${finalDiscount.currencyFormatRp})';
-                                    } else {
-                                      // Fixed type
-                                      finalDiscount = discountValue;
-                                      displayText = '${finalDiscount.currencyFormatRp}';
-                                    }
-
-                                    // Update discountAmount for service calculation
-                                    this.discountAmount = finalDiscount;
-
-                                    return Text(
-                                      displayText,
-                                      style: const TextStyle(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        const SpaceHeight(4.0),
-                        // Tax Row - Only show if enabled in PosSettings
-                        BlocBuilder<PosSettingsBloc, PosSettingsState>(
-                          builder: (context, settingsState) {
-                            return settingsState.maybeWhen(
-                              orElse: () => const SizedBox.shrink(),
-                              loaded: (settings) {
-                                // Hide if taxes disabled
-                                if (settings.taxes.isEmpty) {
-                                  return const SizedBox.shrink();
-                                }
-
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      'Pajak',
-                                      style: TextStyle(color: AppColors.grey),
-                                    ),
-                                    BlocBuilder<CheckoutBloc, CheckoutState>(
-                                      builder: (context, state) {
-                                        return state.maybeWhen(
-                                          orElse: () => const Text('0 %'),
-                                          loaded: (products,
-                                              discountModel,
-                                              discount,
-                                              discountAmount,
-                                              tax,
-                                              serviceCharge,
-                                              totalQuantity,
-                                              totalPrice,
-                                              draftName,
-                                              orderNote) {
-                                            if (tax == 0) {
-                                              return const Text('0 %');
-                                            }
-
-                                            final subTotal = products.fold(
-                                              0,
-                                              (previousValue, element) =>
-                                                  previousValue +
-                                                  (element.product.price!
-                                                          .toIntegerFromText *
-                                                      element.quantity),
-                                            );
-
-                                            // Calculate discount amount
-                                            final int discountAmountValue;
-                                            if (discountModel != null) {
-                                              final discountValue = discountModel.value!
-                                                  .replaceAll('.00', '')
-                                                  .toIntegerFromText;
-                                              if (discountModel.type == 'percentage') {
-                                                discountAmountValue = (discountValue / 100 * subTotal).toInt();
-                                              } else {
-                                                discountAmountValue = discountValue;
-                                              }
-                                            } else {
-                                              discountAmountValue = 0;
-                                            }
-
-                                            final afterDiscount = subTotal - discountAmountValue;
-                                            final finalTax = (afterDiscount * tax / 100).toInt();
-
-                                            return Text(
-                                              '$tax % (${finalTax.currencyFormatRp})',
-                                              style: const TextStyle(
-                                                color: AppColors.primary,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        const SpaceHeight(4.0),
-                        // Service Charge Row - Only show if enabled in PosSettings
-                        BlocBuilder<PosSettingsBloc, PosSettingsState>(
-                          builder: (context, settingsState) {
-                            return settingsState.maybeWhen(
-                              orElse: () => const SizedBox.shrink(),
-                              loaded: (settings) {
-                                // Hide if services disabled
-                                if (settings.services.isEmpty) {
-                                  return const SizedBox.shrink();
-                                }
-
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      'Biaya Layanan',
-                                      style: TextStyle(color: AppColors.grey),
-                                    ),
-                                    BlocBuilder<CheckoutBloc, CheckoutState>(
-                                      builder: (context, state) {
-                                        return state.maybeWhen(
-                                          orElse: () => const Text('0 %'),
-                                          loaded: (products,
-                                              discountModel,
-                                              discount,
-                                              discountAmount,
-                                              tax,
-                                              serviceCharge,
-                                              totalQuantity,
-                                              totalPrice,
-                                              draftName,
-                                              orderNote) {
-                                            if (serviceCharge == 0) {
-                                              return const Text('0 %');
-                                            }
-
-                                            final subTotal = products.fold(
-                                              0,
-                                              (previousValue, element) =>
-                                                  previousValue +
-                                                  (element.product.price!
-                                                          .toIntegerFromText *
-                                                      element.quantity),
-                                            );
-
-                                            // Calculate discount amount
-                                            final int discountAmountValue;
-                                            if (discountModel != null) {
-                                              final discountValue = discountModel.value!
-                                                  .replaceAll('.00', '')
-                                                  .toIntegerFromText;
-                                              if (discountModel.type == 'percentage') {
-                                                discountAmountValue = (discountValue / 100 * subTotal).toInt();
-                                              } else {
-                                                discountAmountValue = discountValue;
-                                              }
-                                            } else {
-                                              discountAmountValue = 0;
-                                            }
-
-                                            final afterDiscount = subTotal - discountAmountValue;
-                                            final nominalServiceCharge = (serviceCharge / 100 * afterDiscount).toInt();
-
-                                            return Text(
-                                              '$serviceCharge % (${nominalServiceCharge.currencyFormatRp})',
-                                              style: const TextStyle(
-                                                color: AppColors.primary,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        const SpaceHeight(10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Total',
-                              style: TextStyle(
-                                  color: AppColors.grey,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
-                            ),
-                            BlocBuilder<CheckoutBloc, CheckoutState>(
-                              builder: (context, state) {
-                                return state.maybeWhen(
-                                  orElse: () => const Text('Rp 0'),
-                                  loaded: (products,
-                                      discountModel,
-                                      discount,
-                                      discountAmount,
-                                      tax,
-                                      serviceCharge,
-                                      totalQuantity,
-                                      totalPrice,
-                                      draftName,
-                                      orderNote) {
-                                    // Calculate subtotal
-                                    final subTotal = products.fold(
-                                      0,
-                                      (previousValue, element) =>
-                                          previousValue +
-                                          (element.product.price!
-                                                  .toIntegerFromText *
-                                              element.quantity),
-                                    );
-
-                                    // Calculate discount amount (percentage or fixed)
-                                    final int discountAmountValue;
-                                    if (discountModel != null) {
-                                      final discountValue = discountModel.value!
-                                          .replaceAll('.00', '')
-                                          .toIntegerFromText;
-                                      if (discountModel.type == 'percentage') {
-                                        discountAmountValue = (discountValue / 100 * subTotal).toInt();
-                                      } else {
-                                        // Fixed discount
-                                        discountAmountValue = discountValue;
-                                      }
-                                    } else {
-                                      discountAmountValue = 0;
-                                    }
-
-                                    // After discount
-                                    final afterDiscount = subTotal - discountAmountValue;
-
-                                    // Calculate tax
-                                    final finalTax = (afterDiscount * tax / 100).toInt();
-
-                                    // Calculate service charge
-                                    final service = (serviceCharge / 100 * afterDiscount).toInt();
-
-                                    // Final total
-                                    final total = afterDiscount + finalTax + service;
-
-                                    // Update state variables
-                                    priceValue = total;
-                                    totalPriceController.text = total.currencyFormatRpV2;
-                                    uangPas = total;
-                                    uangPas2 = uangPas ~/ 50000 * 50000 + 50000;
-                                    uangPas3 = uangPas ~/ 50000 * 50000 + 100000;
-                                    totalPriceFinal = total;
-
-                                    return Text(
-                                      total.currencyFormatRp,
-                                      style: const TextStyle(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
+                        const SizedBox(height: 8),
                       ],
+
+                      // TAX
+                      if (tax > 0) ...[
+                        _buildTotalRow('Tax', '($tax%) ${taxAmt.currencyFormatRp}'),
+                        const SizedBox(height: 8),
+                      ],
+
+                      // SERVICE
+                      if (serviceCharge > 0) ...[
+                        _buildTotalRow('Service', '($serviceCharge%) ${servAmt.currencyFormatRp}'),
+                        const SizedBox(height: 8),
+                      ],
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+          
+          const SizedBox(height: 16),
+          const Divider(),
+          const SizedBox(height: 16),
+          
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total',
+                style: GoogleFonts.quicksand(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+              BlocBuilder<CheckoutBloc, CheckoutState>(
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    orElse: () => Text('Rp 0', style: GoogleFonts.quicksand(fontSize: 18, fontWeight: FontWeight.bold)),
+                    loaded: (products, discountModel, discount, discountAmount, tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
+                      final subTotal = products.fold(0, (prev, el) => prev + (el.product.price!.toIntegerFromText * el.quantity));
+                      final discAmt = _calculateDiscountAmount(discountModel, subTotal);
+                      final afterDisc = subTotal - discAmt;
+                      final taxAmt = _calculateTaxAmount(afterDisc, tax);
+                      final servAmt = _calculateServiceCharge(afterDisc, serviceCharge);
+                      final total = afterDisc + taxAmt + servAmt;
+                      
+                      // Update state vars for payment
+                      priceValue = total;
+                      totalPriceFinal = total;
+                      
+                      // NEW: Calculate Quick Amounts (Uang Pas, etc.)
+                      // Use WidgetsBinding to update state after build to avoid error
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted && uangPas != total) {
+                           setState(() {
+                             uangPas = total;
+                             // Calculate next logical amounts (e.g. 20k, 50k, 100k)
+                             // Simple logic: Round up to nearest 10k, 50k, 100k
+                             
+                             int amount = total;
+                             // Suggestion 2: Next 10k or 50k
+                             if (amount < 50000) {
+                               uangPas2 = 50000;
+                               uangPas3 = 100000;
+                             } else if (amount < 100000) {
+                               uangPas2 = 100000;
+                               uangPas3 = 150000; // or 200k
+                             } else {
+                               // Round up to nearest 50k
+                               int remainder = amount % 50000;
+                               if (remainder == 0) {
+                                 uangPas2 = amount + 50000;
+                               } else {
+                                 uangPas2 = amount + (50000 - remainder);
+                               }
+                               uangPas3 = uangPas2 + 50000;
+                             }
+                           });
+                        }
+                      });
+                      
+                      return Text(
+                        total.currencyFormatRp,
+                        style: GoogleFonts.quicksand(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTotalRow(String label, String value, {bool isDiscount = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.quicksand(color: Colors.grey[600]),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.quicksand(
+            fontWeight: FontWeight.w600,
+            color: isDiscount ? Colors.green : Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPaymentDetailsCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Payment Details',
+            style: GoogleFonts.quicksand(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          
+          Text(
+            'Customer Name',
+            style: GoogleFonts.quicksand(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: widget.orderType == 'dine_in' ? Colors.grey[100] : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[300]!),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextFormField(
+              controller: customerController,
+              enabled: widget.orderType == 'takeaway',
+              style: GoogleFonts.quicksand(fontWeight: FontWeight.w600),
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: 'Enter customer name',
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+          
+          Text(
+            'Payment Method',
+            style: GoogleFonts.quicksand(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => isCash = true),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: isCash ? AppColors.primary : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isCash ? AppColors.primary : Colors.grey[300]!,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Cash',
+                      style: GoogleFonts.quicksand(
+                        color: isCash ? Colors.white : Colors.black87,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
+              const SizedBox(width: 16),
               Expanded(
-                flex: 3,
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ListView(
-                    children: [
-                      SingleChildScrollView(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (widget.isTable != true) ...[
-                              const Text(
-                                'Pembayaran',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SpaceHeight(16.0),
-                            ],
-                            // Removed "Bayar Nanti" toggle, default to Pay Now behavior
-                            
-                            const SpaceHeight(8.0),
-                            // Removed !isPayNow logic (Table selection)
-                            
-                            const Text(
-                              'Customer',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SpaceHeight(12.0),
-                            TextFormField(
-                              controller: customerController,
-                              enabled: widget.orderType == 'takeaway', // DISABLE for dine-in
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                hintText: widget.orderType == 'dine_in' 
-                                    ? 'Nama Customer (dari meja)' 
-                                    : 'Nama Customer',
-                                filled: widget.orderType == 'dine_in',
-                                fillColor: widget.orderType == 'dine_in' 
-                                    ? Colors.grey[200] 
-                                    : null,
-                              ),
-                              style: TextStyle(
-                                color: widget.orderType == 'dine_in' 
-                                    ? Colors.grey[600] 
-                                    : Colors.black,
-                              ),
-                              textCapitalization: TextCapitalization.words,
-                            ),
-                            const SpaceHeight(8.0),
-                            const Divider(),
-                            const SpaceHeight(8.0),
-                            const Text(
-                              'Metode Bayar',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SpaceHeight(12.0),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: isCash
-                                      ? Button.filled(
-                                          height: 50.0,
-                                          onPressed: () {
-                                            isCash = true;
-                                            setState(() {});
-                                          },
-                                          label: 'Cash',
-                                        )
-                                      : Button.outlined(
-                                          height: 50.0,
-                                          onPressed: () {
-                                            isCash = true;
-                                            setState(() {});
-                                          },
-                                          label: 'Cash',
-                                        ),
-                                ),
-                                const SpaceWidth(12.0),
-                                Expanded(
-                                  child: isCash
-                                      ? Button.outlined(
-                                          height: 50.0,
-                                          onPressed: () {
-                                            isCash = false;
-                                            setState(() {});
-                                          },
-                                          label: 'QRIS',
-                                        )
-                                      : Button.filled(
-                                          height: 50.0,
-                                          onPressed: () {
-                                            isCash = false;
-                                            setState(() {});
-                                          },
-                                          label: 'QRIS',
-                                        ),
-                                ),
-                              ],
-                            ),
-                            const SpaceHeight(8.0),
-                            const Divider(),
-                            const SpaceHeight(8.0),
-                            const Text(
-                              'Total Bayar',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SpaceHeight(12.0),
-                            BlocBuilder<CheckoutBloc, CheckoutState>(
-                              builder: (context, state) {
-                                return TextFormField(
-                                  controller: totalPriceController,
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(8.0),
-                                    ),
-                                    hintText: 'Total harga',
-                                  ),
-                                  onChanged: (value) {
-                                    priceValue = value.toIntegerFromText;
-                                    final int newValue =
-                                        value.toIntegerFromText;
-                                    totalPriceController.text =
-                                        newValue.currencyFormatRp;
-                                    totalPriceController.selection =
-                                        TextSelection.fromPosition(
-                                            TextPosition(
-                                                offset: totalPriceController
-                                                    .text.length));
-                                  },
-                                );
-                              },
-                            ),
-                            const SpaceHeight(20.0),
-                            BlocBuilder<CheckoutBloc, CheckoutState>(
-                              builder: (context, state) {
-                                return SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: [
-                                      Button.filled(
-                                        width: 140.0,
-                                        height: 45.0,
-                                        onPressed: () {
-                                          totalPriceController.text = uangPas
-                                              .toString()
-                                              .currencyFormatRpV2;
-                                          priceValue = uangPas;
-                                        },
-                                        label: 'Uang Pas',
-                                        fontSize: 14,
-                                      ),
-                                      const SpaceWidth(12.0),
-                                      Button.outlined(
-                                        width: 140.0,
-                                        height: 45.0,
-                                        onPressed: () {
-                                          totalPriceController.text = uangPas2
-                                              .toString()
-                                              .currencyFormatRpV2;
-                                          priceValue = uangPas2;
-                                        },
-                                        label: uangPas2
-                                            .toString()
-                                            .currencyFormatRpV2,
-                                        fontSize: 14,
-                                      ),
-                                      const SpaceWidth(12.0),
-                                      Button.outlined(
-                                        width: 140.0,
-                                        height: 45.0,
-                                        onPressed: () {
-                                          totalPriceController.text = uangPas3
-                                              .toString()
-                                              .currencyFormatRpV2;
-                                          priceValue = uangPas3;
-                                        },
-                                        label: uangPas3
-                                            .toString()
-                                            .currencyFormatRpV2,
-                                        fontSize: 14,
-                                      ),
-                                      const SpaceWidth(12.0),
-                                      // Additional Suggestions
-                                      Button.outlined(
-                                        width: 140.0,
-                                        height: 45.0,
-                                        onPressed: () {
-                                          priceValue = 20000;
-                                          totalPriceController.text = priceValue.toString().currencyFormatRpV2;
-                                        },
-                                        label: 'Rp 20.000',
-                                        fontSize: 14,
-                                      ),
-                                      const SpaceWidth(12.0),
-                                      Button.outlined(
-                                        width: 140.0,
-                                        height: 45.0,
-                                        onPressed: () {
-                                          priceValue = 50000;
-                                          totalPriceController.text = priceValue.toString().currencyFormatRpV2;
-                                        },
-                                        label: 'Rp 50.000',
-                                        fontSize: 14,
-                                      ),
-                                      const SpaceWidth(12.0),
-                                      Button.outlined(
-                                        width: 140.0,
-                                        height: 45.0,
-                                        onPressed: () {
-                                          priceValue = 100000;
-                                          totalPriceController.text = priceValue.toString().currencyFormatRpV2;
-                                        },
-                                        label: 'Rp 100.000',
-                                        fontSize: 14,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
+                child: GestureDetector(
+                  onTap: () => setState(() => isCash = false),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: !isCash ? AppColors.primary : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: !isCash ? AppColors.primary : Colors.grey[300]!,
                       ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: ColoredBox(
-                          color: AppColors.white,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24.0, vertical: 16.0),
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Button.outlined(
-                                    onPressed: () => context.pop(),
-                                    label: 'Kembali',
-                                  ),
-                                ),
-                                const SpaceWidth(8.0),
-                                BlocListener<CheckoutBloc, CheckoutState>(
-                                  listener: (context, state) {
-                                    state.maybeWhen(
-                                        orElse: () {},
-                                        savedDraftOrder: (orderDraftId) {
-                                          log("PRICEVALUE: ${priceValue}");
-
-                                          final newTabel = TableModel(
-                                              id: widget.isTable
-                                                  ? widget.table!.id
-                                                  : selectTable?.id,
-                                              name: widget.isTable
-                                                  ? widget.table!.tableName
-                                                  : selectTable?.tableName ??
-                                                      '0',
-                                              status: 'occupied',
-                                              capacity: widget.isTable
-                                                  ? widget.table!.capacity
-                                                  : selectTable?.capacity ?? 4,
-                                              paymentAmount: priceValue.toDouble(),
-                                              orderId: orderDraftId);
-                                          log('new tabel: ${newTabel.toMap()}');
-                                          context
-                                              .read<StatusTableBloc>()
-                                              .add(StatusTableEvent.statusTabel(
-                                                newTabel,
-                                              ));
-                                        });
-                                  },
-                                  child:
-                                      BlocBuilder<CheckoutBloc, CheckoutState>(
-                                    builder: (context, state) {
-                                      // Extract state data
-                                      final discountModel = state.maybeWhen(
-                                        orElse: () => null,
-                                        loaded: (products,
-                                                discountModel,
-                                                discount,
-                                                discountAmount,
-                                                tax,
-                                                serviceCharge,
-                                                totalQuantity,
-                                                totalPrice,
-                                                draftName,
-                                                orderNote) =>
-                                            discountModel,
-                                      );
-
-                                      final subtotal = state.maybeWhen(
-                                        orElse: () => 0,
-                                        loaded: (products,
-                                                discountModel,
-                                                discount,
-                                                discountAmount,
-                                                tax,
-                                                serviceCharge,
-                                                totalQuantity,
-                                                totalPrice,
-                                                draftName,
-                                                orderNote) =>
-                                            products.fold(
-                                          0,
-                                          (previousValue, element) =>
-                                              previousValue +
-                                              (element.product.price!
-                                                      .toIntegerFromText *
-                                                  element.quantity),
-                                        ),
-                                      );
-
-                                      final taxPercentage = state.maybeWhen(
-                                        orElse: () => 0,
-                                        loaded: (products,
-                                                discountModel,
-                                                discount,
-                                                discountAmount,
-                                                tax,
-                                                serviceCharge,
-                                                totalQuantity,
-                                                totalPrice,
-                                                draftName,
-                                                orderNote) =>
-                                            tax,
-                                      );
-
-                                      final servicePercentage = state.maybeWhen(
-                                        orElse: () => 0,
-                                        loaded: (products,
-                                                discountModel,
-                                                discount,
-                                                discountAmount,
-                                                tax,
-                                                serviceCharge,
-                                                totalQuantity,
-                                                totalPrice,
-                                                draftName,
-                                                orderNote) =>
-                                            serviceCharge,
-                                      );
-
-                                      // Use helper method for consistent calculation
-                                      final calculated = _calculateFinalTotal(
-                                        subtotal: subtotal,
-                                        discountModel: discountModel,
-                                        taxPercentage: taxPercentage,
-                                        servicePercentage: servicePercentage,
-                                      );
-                                      
-                                      final totalDiscount = calculated['discountAmount']!;
-                                      final afterDiscount = calculated['afterDiscount']!;
-                                      final finalTax = calculated['taxAmount']!;
-                                      final totalServiceCharge = calculated['serviceAmount']!;
-                                      final finalTotal = calculated['total']!;
-
-                                      final orderNote = state.maybeWhen(
-                                        orElse: () => '',
-                                        loaded: (_, __, ___, ____, _____, ______, _______, ________, _________, note) => note,
-                                      );
-
-                                      List<ProductQuantity> items =
-                                          state.maybeWhen(
-                                        orElse: () => [],
-                                        loaded: (products,
-                                                discountModel,
-                                                discount,
-                                                discountAmount,
-                                                tax,
-                                                serviceCharge,
-                                                totalQuantity,
-                                                totalPrice,
-                                                draftName,
-                                                orderNote) =>
-                                            products,
-                                      );
-                                      final totalQty = items.fold(
-                                        0,
-                                        (previousValue, element) =>
-                                            previousValue + element.quantity,
-                                      );
-
-                                      return Flexible(
-                                        child: Button.filled(
-                                          onPressed: () async {
-                                            // ... (validations) ...
-                                            
-                                            // ... (payment logic) ...
-
-
-                                            // VALIDATION: Customer name wajib diisi!
-                                            final customerName = customerController.text.trim();
-                                            if (customerName.isEmpty) {
-                                              // Use mounted check to prevent Hero widget conflict
-                                              if (!context.mounted) return;
-                                              
-                                              ScaffoldMessenger.of(context).clearSnackBars();
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    widget.orderType == 'takeaway'
-                                                        ? '⚠️ Nama customer wajib diisi untuk Takeaway!'
-                                                        : '⚠️ Nama customer wajib diisi!'
-                                                  ),
-                                                  backgroundColor: Colors.red,
-                                                  duration: const Duration(seconds: 3),
-                                                  action: SnackBarAction(
-                                                    label: 'OK',
-                                                    textColor: Colors.white,
-                                                    onPressed: () {
-                                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                                    },
-                                                  ),
-                                                ),
-                                              );
-                                              return; // STOP execution
-                                            }
-                                            
-                                            // EXTRA VALIDATION for Takeaway: Name must be at least 3 characters
-                                            if (widget.orderType == 'takeaway' && customerName.length < 3) {
-                                              if (!context.mounted) return;
-                                              
-                                              ScaffoldMessenger.of(context).clearSnackBars();
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: const Text('⚠️ Nama customer minimal 3 karakter!'),
-                                                  backgroundColor: Colors.red,
-                                                  duration: const Duration(seconds: 3),
-                                                  action: SnackBarAction(
-                                                    label: 'OK',
-                                                    textColor: Colors.white,
-                                                    onPressed: () {
-                                                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                                    },
-                                                  ),
-                                                ),
-                                              );
-                                              return; // STOP execution
-                                            }
-                                            
-                                            // FIX: Always Pay Now
-                                            // BAYAR SEKARANG (Cash/QRIS)
-                                            if (isCash) {
-                                              final paymentAmountValue = totalPriceController
-                                                  .text
-                                                  .toIntegerFromText;
-                                              
-                                              log("💰 PAYMENT DETAILS:");
-                                              log("   Subtotal: $subtotal");
-                                              log("   Discount: $totalDiscount");
-                                              log("   After Discount: $afterDiscount");
-                                              log("   Tax: $finalTax");
-                                              log("   Service: $totalServiceCharge");
-                                              log("   TOTAL: $finalTotal");
-                                              log("   Payment Amount: $paymentAmountValue");
-                                              log("   Kembalian: ${paymentAmountValue - finalTotal}");
-                                              
-                                              // Trigger order save
-                                              final tableNumber = (widget.orderType == 'dine_in' && widget.table != null) 
-                                                  ? widget.table!.id! 
-                                                  : 0;
-                                              
-                                              context.read<OrderBloc>().add(
-                                                  OrderEvent.order(
-                                                      items,
-                                                      totalDiscount, // Use calculated discount
-                                                      totalDiscount,
-                                                      finalTax,
-                                                      totalServiceCharge, // FIX: Use calculated service charge
-                                                      paymentAmountValue,
-                                                      customerController.text,
-                                                      tableNumber, // Use actual table ID for dine_in, 0 for takeaway
-                                                      'paid', // Changed: was 'completed', now 'paid' for order tracking
-                                                      'paid',
-                                                      'Cash',
-                                                      finalTotal,
-                                                      widget.orderType,
-                                                      taxPercentage, // NEW
-                                                      servicePercentage, // NEW
-                                                      orderNote, // NEW
-                                                  )); // Pass order type
-                                              
-                                              log("⏳ Waiting for OrderBloc to emit loaded state...");
-                                              
-                                              // Wait for OrderBloc to complete and emit _Loaded state
-                                              await context.read<OrderBloc>().stream.firstWhere(
-                                                (state) => state.maybeWhen(
-                                                  orElse: () => false,
-                                                  loaded: (model, orderId) => true,
-                                                ),
-                                              );
-                                              
-                                              log("✅ OrderBloc loaded! Opening success dialog...");
-                                              
-                                              // Now show dialog with loaded state
-                                              if (context.mounted) {
-                                                await showDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (context) =>
-                                                      SuccessPaymentDialog(
-                                                    data: items,
-                                                    totalQty: totalQty,
-                                                    totalPrice: totalPriceFinal,
-                                                    totalTax: finalTax,
-                                                    totalDiscount: totalDiscount,
-                                                    subTotal: afterDiscount,
-                                                    normalPrice: subtotal,
-                                                    totalService: totalServiceCharge,
-                                                    draftName:
-                                                        customerController.text,
-                                                    paymentAmount: paymentAmountValue, // Pass actual payment
-                                                    tableName: widget.table?.name, // NEW: Pass table name
-                                                    orderType: widget.orderType, // NEW: Pass order type
-                                                    orderNote: orderNote, // NEW: Pass Global Note
-                                                    onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
-                                                  ),
-                                                );
-                                              }
-                                            } else {
-                                              final tableNumber = (widget.orderType == 'dine_in' && widget.table != null) 
-                                                  ? widget.table!.id! 
-                                                  : 0;
-                                                  
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    PaymentQrisDialog(
-                                                  price: totalPriceFinal,
-                                                  items: items,
-                                                  totalQty: totalQty,
-                                                  tax: finalTax,
-                                                  discountAmount: totalDiscount,
-                                                  subTotal: afterDiscount,
-                                                  customerName:
-                                                      customerController.text,
-                                                  discount: totalDiscount,
-                                                  paymentAmount:
-                                                      totalPriceController
-                                                          .text
-                                                          .toIntegerFromText,
-                                                  paymentMethod: 'Qris',
-                                                  tableNumber: tableNumber,
-                                                  paymentStatus: 'paid',
-                                                  serviceCharge: totalServiceCharge,
-                                                  status: 'paid', // Changed: was 'completed', now 'paid' for order tracking
-                                                  orderType: widget.orderType,
-                                                  tableName: widget.table?.name, // NEW: Pass table name
-                                                  orderNote: orderNote, // NEW: Pass Global Note
-                                                  onPaymentSuccess: widget.onPaymentSuccess, // NEW: Pass callback
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          label: 'Bayar',
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'QRIS',
+                      style: GoogleFonts.quicksand(
+                        color: !isCash ? Colors.white : Colors.black87,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
+            ],
+          ),
+          
+          const SizedBox(height: 24),
+          
+          if (isCash) ...[
+            Text(
+              'Cash Amount',
+              style: GoogleFonts.quicksand(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Text('Rp', style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.grey)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFormField(
+                      controller: totalPriceController,
+                      keyboardType: TextInputType.number,
+                      style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, fontSize: 18),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value) {
+                        // Handle manual input
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Quick Amount Buttons
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _buildQuickAmountButton(uangPas, 'Uang Pas'),
+                _buildQuickAmountButton(uangPas2, uangPas2.currencyFormatRp),
+                _buildQuickAmountButton(uangPas3, uangPas3.currencyFormatRp),
               ],
-            );
-          },
+            ),
+          ],
+          
+          const SizedBox(height: 32),
+          
+          BlocConsumer<OrderBloc, OrderState>(
+            listener: (context, state) {
+              state.maybeWhen(
+                orElse: () {},
+                loaded: (model, orderId) {
+                  // SUCCESS HANDLER
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) {
+                      return SuccessPaymentDialog(
+                        data: itemsFinal,
+                        totalQty: model.totalItem,
+                        totalPrice: model.total,
+                        totalTax: taxFinal,
+                        totalDiscount: discountAmount,
+                        subTotal: subTotalFinal,
+                        normalPrice: subTotalFinal, // Assuming normal price is subtotal
+                        totalService: serviceChargeFinal,
+                        draftName: customerController.text,
+                        paymentAmount: isCash ? totalPriceController.text.toIntegerFromText : model.total,
+                        paymentMethod: model.paymentMethod,
+                        tableName: widget.table?.tableName,
+                        orderType: widget.orderType,
+                        orderNote: orderNoteFinal,
+                        onPaymentSuccess: widget.onPaymentSuccess,
+                      );
+                    },
+                  );
+                  
+                  if (widget.onPaymentSuccess != null) {
+                    widget.onPaymentSuccess!();
+                  }
+                },
+              );
+            },
+            builder: (context, state) {
+              return state.maybeWhen(
+                orElse: () {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        // 1. VALIDATION: Customer Name
+                        final customerName = customerController.text.trim();
+                        if (customerName.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(widget.orderType == 'takeaway'
+                                  ? '⚠️ Nama customer wajib diisi untuk Takeaway!'
+                                  : '⚠️ Nama customer wajib diisi!'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        // 2. VALIDATION: Payment Amount (Cash)
+                        if (isCash) {
+                          final paymentAmountValue = totalPriceController.text.toIntegerFromText;
+                          if (paymentAmountValue < totalPriceFinal) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('⚠️ Nominal pembayaran kurang!'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+                        }
+
+                        // 3. PREPARE DATA
+                        // Get latest state values
+                        final checkoutState = context.read<CheckoutBloc>().state;
+                        final items = checkoutState.maybeWhen(
+                          orElse: () => <ProductQuantity>[],
+                          loaded: (products, _, __, ___, ____, _____, ______, _______, ________, _________) => products,
+                        );
+                        
+                        final discountModel = checkoutState.maybeWhen(
+                          orElse: () => null,
+                          loaded: (_, discountModel, __, ___, ____, _____, ______, _______, ________, _________) => discountModel,
+                        );
+                        
+                        final taxPercentage = checkoutState.maybeWhen(
+                          orElse: () => 0,
+                          loaded: (_, __, ___, ____, tax, _____, ______, _______, ________, _________) => tax,
+                        );
+                        
+                        final servicePercentage = checkoutState.maybeWhen(
+                          orElse: () => 0,
+                          loaded: (_, __, ___, ____, _____, service, ______, _______, ________, _________) => service,
+                        );
+                        
+                        final orderNote = checkoutState.maybeWhen(
+                          orElse: () => '',
+                          loaded: (_, __, ___, ____, _____, ______, _______, ________, _________, note) => note,
+                        );
+
+                        // Calculate final values
+                        final subTotal = items.fold(0, (prev, el) => prev + (el.product.price!.toIntegerFromText * el.quantity));
+                        final calculated = _calculateFinalTotal(
+                          subtotal: subTotal,
+                          discountModel: discountModel,
+                          taxPercentage: taxPercentage,
+                          servicePercentage: servicePercentage,
+                        );
+                        
+                        final totalDiscount = calculated['discountAmount']!;
+                        final finalTax = calculated['taxAmount']!;
+                        final totalService = calculated['serviceAmount']!;
+                        final finalTotal = calculated['total']!;
+                        final paymentAmountValue = isCash ? totalPriceController.text.toIntegerFromText : finalTotal;
+
+                        // SAVE STATE for Dialog
+                        setState(() {
+                          itemsFinal = items;
+                          taxFinal = finalTax;
+                          serviceChargeFinal = totalService;
+                          subTotalFinal = subTotal;
+                          discountAmount = totalDiscount;
+                          totalPriceFinal = finalTotal;
+                          orderNoteFinal = orderNote;
+                        });
+
+                        // 4. EXECUTE PAYMENT
+                        if (isCash) {
+                          // CASH PAYMENT
+                          context.read<OrderBloc>().add(OrderEvent.order(
+                            items,
+                            totalDiscount,
+                            totalDiscount,
+                            finalTax,
+                            totalService,
+                            paymentAmountValue,
+                            customerName,
+                            widget.isTable ? widget.table!.id! : 0,
+                            'paid',
+                            'paid',
+                            'Cash',
+                            finalTotal,
+                            widget.orderType,
+                            taxPercentage,
+                            servicePercentage,
+                            orderNote,
+                          ));
+                        } else {
+                          // QRIS PAYMENT
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => PaymentQrisDialog(
+                              price: finalTotal,
+                              items: items,
+                              totalQty: items.fold(0, (p, e) => p + e.quantity),
+                              tax: finalTax,
+                              discountAmount: totalDiscount,
+                              subTotal: calculated['afterDiscount']!,
+                              customerName: customerName,
+                              discount: totalDiscount,
+                              paymentAmount: paymentAmountValue,
+                              paymentMethod: 'Qris',
+                              tableNumber: widget.isTable ? widget.table!.id! : 0,
+                              paymentStatus: 'paid',
+                              serviceCharge: totalService,
+                              status: 'paid',
+                              orderType: widget.orderType,
+                              tableName: widget.table?.tableName,
+                              orderNote: orderNote,
+                              onPaymentSuccess: widget.onPaymentSuccess,
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 4,
+                        shadowColor: AppColors.primary.withOpacity(0.4),
+                      ),
+                      child: Text(
+                        'Process Payment',
+                        style: GoogleFonts.quicksand(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickAmountButton(int amount, String label) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          totalPriceController.text = amount.currencyFormatRpV2;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.grey[300]!),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.quicksand(
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+          ),
         ),
       ),
     );

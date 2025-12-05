@@ -17,16 +17,34 @@ extension StringExt on String {
     ).format(parsedValue);
   }
 
-  String get toImageUrl {
-    // If it's a full URL pointing to our storage, rewrite it to use the proxy
-    if (contains('${Variables.baseUrl}/storage/')) {
-      return replaceFirst('${Variables.baseUrl}/storage/', '${Variables.baseUrl}/storage-proxy/');
-    }
-    
-    // If it's another external URL, return as is
-    if (contains('http')) return this;
-    
-    // If it's a relative path, prepend the proxy base URL
-    return '${Variables.baseUrl}/storage-proxy/$this';
+String get toImageUrl {
+  final base = Variables.baseUrl;
+  final storage = '$base/storage/';
+  final proxy = '$base/storage-proxy/';
+
+  // Full URL pointing to our storage → convert to proxy
+  if (startsWith(storage)) {
+    return replaceFirst(storage, proxy);
   }
+
+  // Any external URL (http/https) → return as is
+  if (startsWith('http://') || startsWith('https://')) {
+    print('✅ External URL: $this');
+    return this;
+  }
+
+  // Relative paths that start with storage/
+  if (startsWith('storage/')) {
+    return '$proxy${substring('storage/'.length)}';
+  }
+
+  // Relative paths that start with /storage/
+  if (startsWith('/storage/')) {
+    return '$proxy${substring('/storage/'.length)}';
+  }
+
+  // Any other relative path
+  return '$proxy$this';
+}
+
 }

@@ -9,6 +9,7 @@ import 'package:flutter_posresto_app/presentation/table/widgets/change_table_sta
 import 'package:flutter_posresto_app/presentation/table/widgets/table_info_card.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/custom_tab_selector.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TableManagementApiPage extends StatefulWidget {
   final Function(TableModel)? onTableSelected;
@@ -35,6 +36,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
   List<TableModel> _cachedTables = []; // Cache to prevent rebuild
   int? _recentlyUpdatedTableId; // Track recently updated table for highlight
   Timer? _highlightTimer; // Timer to remove highlight after few seconds
+  bool _isManualRefresh = false; // Track manual refresh
 
   @override
   void initState() {
@@ -68,134 +70,160 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
   }
 
   void _loadData({bool isRefresh = false}) {
+    if (isRefresh) {
+      setState(() => _isManualRefresh = true);
+    }
     context.read<GetTableBloc>().add(GetTableEvent.getTables(isRefresh: isRefresh));
     context.read<GetTableBloc>().add(GetTableEvent.getCategories(isRefresh: isRefresh));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: Stack(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isTight = constraints.maxWidth < 600;
-                // Reduce margin to 0 for mobile to maximize card width
-                final margin = isTight ? 0.0 : 24.0;
-                final filterPadding = isTight ? 8.0 : 16.0;
-                
-                return Padding(
-                  padding: EdgeInsets.only(top: 100.0, left: margin, right: margin),
-                  child: Column(
-                children: [
-                  // Filters Section
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: filterPadding),
+    return BlocListener<GetTableBloc, GetTableState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          success: (tables, _) {
+            if (_isManualRefresh) {
+              setState(() => _isManualRefresh = false);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '✅ Data meja berhasil diperbarui',
+                    style: GoogleFonts.quicksand(color: Colors.white),
+                  ),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            }
+          },
+          orElse: () {},
+        );
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: SafeArea(
+          child: Stack(
+            children: [
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isTight = constraints.maxWidth < 600;
+                  // Reduce margin to 0 for mobile to maximize card width
+                  final margin = isTight ? 16.0 : 24.0;
+                  
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 100.0), // No horizontal padding here
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Category Tabs
-                        _buildCategoryFilter(),
+                        // Filters Section
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Category Tabs
+                            _buildCategoryFilter(padding: EdgeInsets.symmetric(horizontal: margin)),
+                            const SizedBox(height: 16),
+                            
+                            // Status Filters
+                            _buildStatusFilters(padding: EdgeInsets.symmetric(horizontal: margin)),
+                          ],
+                        ),
+                        
                         const SizedBox(height: 16),
                         
-                        // Status Filters
-                        _buildStatusFilters(),
-                      ],
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Tables Grid
-                  Expanded(
-                    child: _buildTablesGrid(),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-            
-            // Floating Header
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: FloatingHeader(
-                title: 'Table Management',
-                onToggleSidebar: widget.onToggleSidebar ?? () {},
-                isSidebarVisible: true,
-                actions: [
-                  // Search Bar
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final screenWidth = MediaQuery.of(context).size.width;
-                      final isSmall = screenWidth < 400;
-                      final isMobile = screenWidth < 600;
-                      return SizedBox(
-                        width: isSmall ? 100 : (isMobile ? 140 : 250), // Responsive width
-                        height: 36,
-                        child: TextField(
-                      controller: _searchController,
-                      style: const TextStyle(fontSize: 12),
-                      decoration: InputDecoration(
-                        hintText: 'Search tables...',
-                        hintStyle: TextStyle(fontSize: 13, color: Colors.grey[500]),
-                        prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[500], size: 18),
-                        suffixIcon: _searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: Icon(Icons.close, color: Colors.grey[600], size: 16),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  setState(() => _searchQuery = '');
-                                },
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                splashRadius: 16,
-                              )
-                            : null,
-                        filled: true,
-                        fillColor: Colors.grey[100],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none,
+                        // Tables Grid
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: margin),
+                            child: _buildTablesGrid(),
+                          ),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                      ),
-                      onChanged: (value) {
-                        setState(() => _searchQuery = value.toLowerCase());
-                      },
+                      ],
                     ),
                   );
                 },
               ),
-                  
-                  const SizedBox(width: 4),
-                  
-                  // Refresh Button
-                  IconButton(
-                    onPressed: () => _loadData(isRefresh: true),
-                    icon: const Icon(Icons.refresh_rounded, size: 20),
-                    color: AppColors.primary,
-                    tooltip: 'Refresh Data',
-                    style: IconButton.styleFrom(
-                      backgroundColor: AppColors.primary.withOpacity(0.1),
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(8),
+              
+              // Floating Header
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: FloatingHeader(
+                  title: 'Table Management',
+                  onToggleSidebar: widget.onToggleSidebar ?? () {},
+                  isSidebarVisible: true,
+                  actions: [
+                    // Search Bar
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final screenWidth = MediaQuery.of(context).size.width;
+                        final isSmall = screenWidth < 400;
+                        final isMobile = screenWidth < 600;
+                        return SizedBox(
+                          width: isSmall ? 100 : (isMobile ? 140 : 250), // Responsive width
+                          height: 36,
+                          child: TextField(
+                            controller: _searchController,
+                            style: const TextStyle(fontSize: 12),
+                            decoration: InputDecoration(
+                              hintText: 'Search tables...',
+                              hintStyle: TextStyle(fontSize: 13, color: Colors.grey[500]),
+                              prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[500], size: 18),
+                              suffixIcon: _searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(Icons.close, color: Colors.grey[600], size: 16),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        setState(() => _searchQuery = '');
+                                      },
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      splashRadius: 16,
+                                    )
+                                  : null,
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                            ),
+                            onChanged: (value) {
+                              setState(() => _searchQuery = value.toLowerCase());
+                            },
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ],
+                    
+                    const SizedBox(width: 4),
+                    
+                    // Refresh Button
+                    IconButton(
+                      onPressed: () => _loadData(isRefresh: true),
+                      icon: const Icon(Icons.refresh_rounded, size: 20),
+                      color: AppColors.primary,
+                      tooltip: 'Refresh Data',
+                      style: IconButton.styleFrom(
+                        backgroundColor: AppColors.primary.withOpacity(0.1),
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(8),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildCategoryFilter() {
+  Widget _buildCategoryFilter({EdgeInsetsGeometry? padding}) {
     return BlocListener<GetTableBloc, GetTableState>(
       listener: (context, state) {
         state.maybeWhen(
@@ -213,6 +241,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
         selectedIndex: _selectedCategoryId == null 
             ? 0 
             : _categories.indexWhere((c) => c.id == _selectedCategoryId) + 1,
+        padding: padding,
         onTap: (index) {
           final isAll = index == 0;
           final category = isAll ? null : _categories[index - 1];
@@ -229,7 +258,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
     );
   }
 
-  Widget _buildStatusFilters() {
+  Widget _buildStatusFilters({EdgeInsetsGeometry? padding}) {
     final statuses = [
       {'value': 'all', 'label': 'All', 'icon': Icons.grid_view_rounded, 'color': Colors.blue},
       {'value': 'available', 'label': 'Available', 'icon': Icons.check_circle_rounded, 'color': Colors.green},
@@ -238,89 +267,84 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
       {'value': 'pending_bill', 'label': 'Pending', 'icon': Icons.receipt_rounded, 'color': Colors.amber},
     ];
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: statuses.map((status) {
-            final isSelected = _selectedStatuses.contains(status['value']);
-            final color = status['color'] as Color;
-            final icon = status['icon'] as IconData;
+    return SizedBox(
+      height: 40, // Reduced height
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 24),
+        itemCount: statuses.length,
+        itemBuilder: (context, index) {
+          final status = statuses[index];
+          final isSelected = _selectedStatuses.contains(status['value']);
+          final color = status['color'] as Color;
+          final icon = status['icon'] as IconData;
+          final label = status['label'] as String;
 
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    final selected = !isSelected;
-                setState(() {
-                  if (status['value'] == 'all') {
-                    _selectedStatuses.clear();
-                    _selectedStatuses.add('all');
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                if (status['value'] == 'all') {
+                  _selectedStatuses.clear();
+                  _selectedStatuses.add('all');
+                } else {
+                  _selectedStatuses.remove('all');
+                  if (isSelected) {
+                    _selectedStatuses.remove(status['value']);
+                    if (_selectedStatuses.isEmpty) _selectedStatuses.add('all');
                   } else {
-                    _selectedStatuses.remove('all');
-                    if (selected) {
-                      _selectedStatuses.add(status['value'] as String);
-                    } else {
-                      _selectedStatuses.remove(status['value']);
-                      if (_selectedStatuses.isEmpty) {
-                        _selectedStatuses.add('all');
-                      }
-                    }
+                    _selectedStatuses.add(status['value'] as String);
                   }
-                });
+                }
+              });
 
-                    // Apply filter
-                    context.read<GetTableBloc>().add(
-                      GetTableEvent.filterByStatus(_selectedStatuses),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(30), // Rounded pills
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected ? color.withOpacity(0.1) : Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: isSelected ? color : Colors.grey[300]!,
-                        width: 1,
-                      ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: color.withOpacity(0.2),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          icon,
-                          size: 16,
-                          color: isSelected ? color : Colors.grey[600],
+              // Apply filter
+              context.read<GetTableBloc>().add(
+                GetTableEvent.filterByStatus(_selectedStatuses),
+              );
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8), // Adjusted padding
+              decoration: BoxDecoration(
+                color: isSelected ? color : Colors.white,
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                  color: isSelected ? color : Colors.grey.shade300,
+                  width: 1,
+                ),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: color.withOpacity(0.2), // Lighter shadow
+                          blurRadius: 4, // Reduced blur
+                          offset: const Offset(0, 2),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          status['label'] as String,
-                          style: TextStyle(
-                            color: isSelected ? color : Colors.grey[700],
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
+                      ]
+                    : null, // No shadow for unselected
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    icon,
+                    size: 16, // Slightly smaller icon
+                    color: isSelected ? Colors.white : color,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    label,
+                    style: GoogleFonts.quicksand(
+                      color: isSelected ? Colors.white : Colors.grey.shade700,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13, // Slightly smaller font
                     ),
                   ),
-                ),
+                ],
               ),
-            );
-          }).toList(),
+            ),
+          );
+        },
       ),
     );
   }
@@ -435,7 +459,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                 padding: const EdgeInsets.all(12),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: _getCrossAxisCount(context),
-                  childAspectRatio: 0.8, // Taller cards to prevent overflow
+                  childAspectRatio: 1.1, // Shorter cards
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
@@ -490,15 +514,11 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                         Navigator.pop(context, table);
                       }
                     } else if (action == 'change_status') {
-                      // Show status change bottom sheet
-                      final updatedTableId = await showModalBottomSheet<int>(
+                      // Show status change dialog
+                      final updatedTableId = await showDialog<int>(
                         context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => Padding(
-                          padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom,
-                          ),
+                        builder: (dialogContext) => BlocProvider.value(
+                          value: context.read<GetTableBloc>(),
                           child: ChangeTableStatusSheet(table: table),
                         ),
                       );

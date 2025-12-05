@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart'; // NEW: Google Fonts
 
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
@@ -105,7 +106,7 @@ class _HomePageState extends State<HomePage> {
   
   /// Products section padding
   EdgeInsets _getProductsPadding(double availableWidth) {
-    return const EdgeInsets.all(16.0); // Consistent padding
+    return const EdgeInsets.symmetric(vertical: 16.0); // Vertical only, horizontal handled by children
   }
   
   /// Cart font size
@@ -375,7 +376,7 @@ class _HomePageState extends State<HomePage> {
           SnackBar(
             content: Text('❌ Gagal refresh data: $e'),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 2),
+    duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -383,6 +384,8 @@ class _HomePageState extends State<HomePage> {
       setState(() => _isRefreshing = false);
     }
   }
+  
+  bool _isSearchExpanded = false; // NEW: State for mobile search expansion
 
   void onCategoryTap(int index) {
     searchController.clear();
@@ -462,59 +465,84 @@ class _HomePageState extends State<HomePage> {
                     left: 0,
                     right: 0,
                     child: FloatingHeader(
-                      title: 'Menu',
+                      title: _isSearchExpanded ? '' : 'Menu', // Hide title when searching
                       onToggleSidebar: widget.onToggleSidebar ?? () {},
                       isSidebarVisible: true,
                       actions: [
-                        // Search Bar (Smaller for mobile)
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width < 380 ? 120 : 160, // Adapt to very small screens
-                          height: 36,
-                          child: TextField(
-                            controller: searchController,
-                            onChanged: (value) {
-                              if (_debounce?.isActive ?? false) _debounce!.cancel();
-                              _debounce = Timer(const Duration(milliseconds: 500), () {
-                                setState(() {
-                                  _searchQuery = value.toLowerCase();
-                                });
-                              });
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Cari...',
-                              hintStyle: TextStyle(color: Colors.grey[500], fontSize: 12),
-                              prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 16),
-                              filled: true,
-                              fillColor: Colors.grey[100],
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                                borderSide: BorderSide.none,
+                        // Mobile Search Logic
+                        if (_isSearchExpanded)
+                          Expanded(
+                            child: Container(
+                              height: 40,
+                              margin: const EdgeInsets.only(right: 8),
+                              child: TextField(
+                                controller: searchController,
+                                autofocus: true,
+                                onChanged: (value) {
+                                  if (_debounce?.isActive ?? false) _debounce!.cancel();
+                                  _debounce = Timer(const Duration(milliseconds: 500), () {
+                                    setState(() {
+                                      _searchQuery = value.toLowerCase();
+                                    });
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Cari...',
+                                  hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 13),
+                                  prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 18),
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.close, size: 18),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isSearchExpanded = false;
+                                        searchController.clear();
+                                        _searchQuery = '';
+                                      });
+                                    },
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.grey[100],
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                                ),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                            ),
+                          )
+                        else
+                          IconButton(
+                            onPressed: () => setState(() => _isSearchExpanded = true),
+                            icon: const Icon(Icons.search),
+                            color: AppColors.primary,
+                            style: IconButton.styleFrom(
+                              backgroundColor: AppColors.primary.withOpacity(0.1),
+                              shape: const CircleBorder(),
                             ),
                           ),
-                        ),
                         
-                        const SizedBox(width: 4),
-                        
-                        // Refresh Button
-                        IconButton(
-                          onPressed: _isRefreshing ? null : _refreshAllData,
-                          icon: _isRefreshing
-                              ? const SizedBox(
-                                  width: 14,
-                                  height: 14,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Icon(Icons.refresh, size: 18),
-                          color: AppColors.primary,
-                          tooltip: 'Refresh Data',
-                          style: IconButton.styleFrom(
-                            backgroundColor: AppColors.primary.withOpacity(0.1),
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(6),
+                        if (!_isSearchExpanded) ...[
+                          const SizedBox(width: 8),
+                          // Refresh Button
+                          IconButton(
+                            onPressed: _isRefreshing ? null : _refreshAllData,
+                            icon: _isRefreshing
+                                ? const SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : const Icon(Icons.refresh, size: 18),
+                            color: AppColors.primary,
+                            tooltip: 'Refresh Data',
+                            style: IconButton.styleFrom(
+                              backgroundColor: AppColors.primary.withOpacity(0.1),
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(6),
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),
@@ -571,6 +599,7 @@ class _HomePageState extends State<HomePage> {
                 Positioned(
                   top: 0,
                   left: 0,
+                  right: 0, // Stretch full width
                   child: FloatingHeader(
                     title: 'Menu',
                     onToggleSidebar: widget.onToggleSidebar ?? () {},
@@ -591,8 +620,8 @@ class _HomePageState extends State<HomePage> {
                             });
                           },
                           decoration: InputDecoration(
-                            hintText: 'Cari produk...',
-                            hintStyle: TextStyle(color: Colors.grey[500], fontSize: 13),
+                            hintText: 'Search Product...',
+                            hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 13),
                             prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 18),
                             filled: true,
                             fillColor: Colors.grey[100],
@@ -604,8 +633,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       
                       // Refresh Button
                       IconButton(
@@ -616,13 +644,12 @@ class _HomePageState extends State<HomePage> {
                                 height: 16,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Icon(Icons.refresh, size: 20),
+                            : const Icon(Icons.refresh),
                         color: AppColors.primary,
                         tooltip: 'Refresh Data',
                         style: IconButton.styleFrom(
                           backgroundColor: AppColors.primary.withOpacity(0.1),
                           shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(8),
                         ),
                       ),
                     ],
@@ -692,6 +719,7 @@ class _HomePageState extends State<HomePage> {
                     tabTitles: tabTitles,
                     initialTabIndex: 0,
                     tabViews: tabViews,
+                    padding: EdgeInsets.zero, // Aligns with parent padding
                   );
                 },
               );
@@ -1535,12 +1563,22 @@ class _HomePageState extends State<HomePage> {
               aspectRatio = 0.7;
             }
 
+            // Calculate maxCrossAxisExtent to ensure at least 2 columns
+            // If availableWidth is small (e.g. sidebar open on tablet), 200 might force 1 column
+            // We want min 2 columns, so maxExtent should be at least availableWidth / 2
+            // But we also don't want it too small.
+            double maxExtent = 200;
+            if (availableWidth < 450) { // Threshold for very narrow spaces
+               maxExtent = (availableWidth / 2) - 24; // Force 2 columns minus spacing
+            }
+
             return GridView.builder(
               shrinkWrap: true,
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
               itemCount: filteredProducts.length,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200, // Max width per card
+                maxCrossAxisExtent: maxExtent < 160 ? 160 : maxExtent, // Min width 160
                 childAspectRatio: aspectRatio,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,

@@ -68,7 +68,7 @@ class _SettingsPageState extends State<SettingsPage> {
       children: [
         // Horizontal Tabs
         SizedBox(
-          height: 50,
+          height: 40, // Reduced height
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
@@ -174,18 +174,18 @@ class _SettingsPageState extends State<SettingsPage> {
       onTap: () => indexValue(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8), // Adjusted padding
         decoration: BoxDecoration(
           color: isActive ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(100), // Pill shape
           border: Border.all(
             color: isActive ? AppColors.primary : Colors.grey[300]!,
           ),
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
-                    blurRadius: 8,
+                    color: AppColors.primary.withOpacity(0.2), // Lighter shadow
+                    blurRadius: 4, // Reduced blur
                     offset: const Offset(0, 2),
                   )
                 ]
@@ -197,7 +197,7 @@ class _SettingsPageState extends State<SettingsPage> {
           style: GoogleFonts.quicksand(
             color: isActive ? Colors.white : Colors.grey[600],
             fontWeight: FontWeight.bold,
-            fontSize: 14,
+            fontSize: 13, // Slightly smaller font
           ),
         ),
       ),

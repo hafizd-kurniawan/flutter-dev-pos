@@ -232,6 +232,11 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
       
+      // Navigate to Dashboard
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
+      );
     }
   }
 }

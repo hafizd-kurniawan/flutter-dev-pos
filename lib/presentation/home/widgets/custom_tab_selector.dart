@@ -8,6 +8,7 @@ class CustomTabSelector extends StatelessWidget {
   final Function(int) onTap;
   final List<int?>? badges;
   final bool isScrollable;
+  final EdgeInsetsGeometry? padding;
 
   const CustomTabSelector({
     Key? key,
@@ -16,16 +17,17 @@ class CustomTabSelector extends StatelessWidget {
     required this.onTap,
     this.badges,
     this.isScrollable = true,
+    this.padding,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 45,
+      height: 40, // Reduced height for professional look
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 24),
         itemBuilder: (context, index) {
           final isSelected = index == selectedIndex;
           final badgeCount = badges != null && index < badges!.length ? badges![index] : null;
@@ -33,12 +35,12 @@ class CustomTabSelector extends StatelessWidget {
           return GestureDetector(
             onTap: () => onTap(index),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 200),
               margin: const EdgeInsets.only(right: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8), // Adjusted padding
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primary : Colors.white,
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(100),
                 border: Border.all(
                   color: isSelected ? AppColors.primary : Colors.grey.shade300,
                   width: 1,
@@ -46,13 +48,14 @@ class CustomTabSelector extends StatelessWidget {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                          color: AppColors.primary.withOpacity(0.2), // Lighter shadow
+                          blurRadius: 4, // Reduced blur
+                          offset: const Offset(0, 2),
                         ),
                       ]
-                    : null,
+                    : null, // No shadow for unselected to remove noise
               ),
+              alignment: Alignment.center,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -61,7 +64,7 @@ class CustomTabSelector extends StatelessWidget {
                     style: GoogleFonts.quicksand(
                       color: isSelected ? Colors.white : Colors.grey.shade700,
                       fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontSize: 13, // Slightly smaller font
                     ),
                   ),
                   if (badgeCount != null) ...[
@@ -70,7 +73,7 @@ class CustomTabSelector extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.white.withOpacity(0.2) : Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         badgeCount.toString(),

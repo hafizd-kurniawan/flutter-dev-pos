@@ -124,8 +124,7 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
     _UpdateTableStatus event,
     Emitter<GetTableState> emit,
   ) async {
-    // Don't emit loading to prevent flicker
-    final currentState = state;
+    emit(const _Loading()); // Emit loading to trigger state change listeners
     
     final result = await _datasource.updateStatus(
       tableId: event.tableId,
@@ -138,13 +137,13 @@ class GetTableBloc extends Bloc<GetTableEvent, GetTableState> {
     result.fold(
       (error) => emit(_Error(error)),
       (updatedTable) {
-        // Silent update - update table in the list without loading state
+        // Update local cache
         final index = _allTables.indexWhere((t) => t.id == updatedTable.id);
         if (index != -1) {
           _allTables[index] = updatedTable;
         }
         
-        // Emit new list directly (no loading state)
+        // Emit new list
         emit(_Success(tables: List.from(_allTables), categories: _categories));
       },
     );

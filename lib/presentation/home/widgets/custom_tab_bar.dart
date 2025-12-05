@@ -9,12 +9,14 @@ import 'custom_tab_selector.dart';
     final List<String> tabTitles;
     final int initialTabIndex;
     final List<Widget> tabViews;
+    final EdgeInsetsGeometry? padding;
 
     const CustomTabBar({
       super.key,
       required this.tabTitles,
       required this.initialTabIndex,
       required this.tabViews,
+      this.padding,
     });
 
     @override
@@ -39,6 +41,7 @@ import 'custom_tab_selector.dart';
           CustomTabSelector(
             items: widget.tabTitles,
             selectedIndex: _selectedIndex,
+            padding: widget.padding,
             onTap: (index) {
               setState(() {
                 _selectedIndex = index;
