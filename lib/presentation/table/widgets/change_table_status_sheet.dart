@@ -105,12 +105,15 @@ class _ChangeTableStatusSheetState extends State<ChangeTableStatusSheet> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Ubah Status Meja',
-                        style: GoogleFonts.quicksand(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                      Flexible(
+                        child: Text(
+                          'Ubah Status Meja',
+                          style: GoogleFonts.quicksand(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       IconButton(
@@ -227,12 +230,15 @@ class _ChangeTableStatusSheetState extends State<ChangeTableStatusSheet> {
                             children: [
                               Icon(Icons.people_outline, color: Colors.grey[600]),
                               const SizedBox(width: 12),
-                              Text(
-                                'Jumlah Tamu',
-                                style: GoogleFonts.quicksand(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[700],
+                              Flexible(
+                                child: Text(
+                                  'Jumlah Tamu',
+                                  style: GoogleFonts.quicksand(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey[700],
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               const Spacer(),
@@ -390,6 +396,8 @@ class _ChangeTableStatusSheetState extends State<ChangeTableStatusSheet> {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                 color: isSelected ? color : Colors.grey[600],
               ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ],
         ),

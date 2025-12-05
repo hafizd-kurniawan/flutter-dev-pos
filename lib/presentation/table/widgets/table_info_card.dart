@@ -19,8 +19,8 @@ class TableInfoCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 500), // Slower animation for visibility
-        padding: const EdgeInsets.all(10), // Reduced padding
+        duration: const Duration(milliseconds: 500),
+        padding: const EdgeInsets.all(8), // Further reduced padding
         decoration: BoxDecoration(
           color: isHighlighted ? Colors.green.shade50 : Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -34,78 +34,80 @@ class TableInfoCard extends StatelessWidget {
                   ? Colors.green.withOpacity(0.4) 
                   : Colors.black.withOpacity(0.05),
               blurRadius: isHighlighted ? 12 : 8,
-              spreadRadius: isHighlighted ? 2 : 0, // Spread shadow when highlighted
+              spreadRadius: isHighlighted ? 2 : 0,
               offset: Offset(0, isHighlighted ? 0 : 2),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Header: Status Icon + Name
-            Row(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  _getStatusIcon(table.status),
-                  size: 16,
-                  color: _getStatusColor(table.status),
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    table.name,
-                    style: const TextStyle(
-                      fontSize: 15, // Slightly smaller
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                // Header: Status Icon + Name
+                Row(
+                  children: [
+                    Icon(
+                      _getStatusIcon(table.status),
+                      size: 14, // Smaller icon
+                      color: _getStatusColor(table.status),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 4),
-            
-            // Category & Capacity
-            Row(
-              children: [
-                if (table.categoryName != null) ...[
-                  Icon(Icons.category_outlined, size: 12, color: Colors.grey[600]),
-                  const SizedBox(width: 2),
-                  Flexible(
-                    child: Text(
-                      table.categoryName!,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        table.name,
+                        style: const TextStyle(
+                          fontSize: 14, // Smaller font
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                ],
-                Icon(Icons.people_outline, size: 12, color: Colors.grey[600]),
-                const SizedBox(width: 2),
-                Text(
-                  '${table.capacity}p',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                  ],
                 ),
+                
+                const SizedBox(height: 2), // Reduced spacing
+                
+                // Category & Capacity
+                Row(
+                  children: [
+                    if (table.categoryName != null) ...[
+                      Icon(Icons.category_outlined, size: 10, color: Colors.grey[600]),
+                      const SizedBox(width: 2),
+                      Flexible(
+                        child: Text(
+                          table.categoryName!,
+                          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                    ],
+                    Icon(Icons.people_outline, size: 10, color: Colors.grey[600]),
+                    const SizedBox(width: 2),
+                    Text(
+                      '${table.capacity}p',
+                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+                
+                const Spacer(), // Push content to center/bottom
+                
+                // Status-specific info (Customer, Phone, etc.)
+                _buildStatusInfo(),
+                
+                const Spacer(),
+                
+                // Status Badge
+                _buildStatusBadge(),
               ],
-            ),
-            
-            const SizedBox(height: 6),
-            
-            // Status-specific info (Customer, Phone, etc.)
-            Expanded(
-              child: _buildStatusInfo(),
-            ),
-            
-            const SizedBox(height: 4),
-            
-            // Status Badge
-            _buildStatusBadge(),
-          ],
+            );
+          },
         ),
       ),
     );

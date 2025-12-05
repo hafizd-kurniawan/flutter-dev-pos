@@ -385,8 +385,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
   
-  bool _isSearchExpanded = false; // NEW: State for mobile search expansion
-
   void onCategoryTap(int index) {
     searchController.clear();
     setState(() {});
@@ -465,19 +463,48 @@ class _HomePageState extends State<HomePage> {
                     left: 0,
                     right: 0,
                     child: FloatingHeader(
-                      title: _isSearchExpanded ? '' : 'Menu', // Hide title when searching
+                      title: 'Menu',
                       onToggleSidebar: widget.onToggleSidebar ?? () {},
                       isSidebarVisible: true,
                       actions: [
-                        // Mobile Search Logic
-                        if (_isSearchExpanded)
-                          Expanded(
-                            child: Container(
-                              height: 40,
-                              margin: const EdgeInsets.only(right: 8),
+                        // Responsive Search Bar
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final screenWidth = MediaQuery.of(context).size.width;
+                            final isSmall = screenWidth < 400;
+                            final isMobile = screenWidth < 600;
+                            return SizedBox(
+                              width: isSmall ? 100 : (isMobile ? 140 : 250), // Responsive width
+                              height: 36,
                               child: TextField(
                                 controller: searchController,
-                                autofocus: true,
+                                style: const TextStyle(fontSize: 12),
+                                decoration: InputDecoration(
+                                  hintText: 'Cari...',
+                                  hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 13),
+                                  prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 18),
+                                  suffixIcon: _searchQuery.isNotEmpty
+                                      ? IconButton(
+                                          icon: const Icon(Icons.close, size: 16),
+                                          onPressed: () {
+                                            setState(() {
+                                              searchController.clear();
+                                              _searchQuery = '';
+                                            });
+                                          },
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                          splashRadius: 16,
+                                        )
+                                      : null,
+                                  filled: true,
+                                  fillColor: Colors.grey[100],
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                                ),
                                 onChanged: (value) {
                                   if (_debounce?.isActive ?? false) _debounce!.cancel();
                                   _debounce = Timer(const Duration(milliseconds: 500), () {
@@ -486,63 +513,31 @@ class _HomePageState extends State<HomePage> {
                                     });
                                   });
                                 },
-                                decoration: InputDecoration(
-                                  hintText: 'Cari...',
-                                  hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 13),
-                                  prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 18),
-                                  suffixIcon: IconButton(
-                                    icon: const Icon(Icons.close, size: 18),
-                                    onPressed: () {
-                                      setState(() {
-                                        _isSearchExpanded = false;
-                                        searchController.clear();
-                                        _searchQuery = '';
-                                      });
-                                    },
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey[100],
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                                ),
                               ),
-                            ),
-                          )
-                        else
-                          IconButton(
-                            onPressed: () => setState(() => _isSearchExpanded = true),
-                            icon: const Icon(Icons.search),
-                            color: AppColors.primary,
-                            style: IconButton.styleFrom(
-                              backgroundColor: AppColors.primary.withOpacity(0.1),
-                              shape: const CircleBorder(),
-                            ),
-                          ),
+                            );
+                          },
+                        ),
                         
-                        if (!_isSearchExpanded) ...[
-                          const SizedBox(width: 8),
-                          // Refresh Button
-                          IconButton(
-                            onPressed: _isRefreshing ? null : _refreshAllData,
-                            icon: _isRefreshing
-                                ? const SizedBox(
-                                    width: 14,
-                                    height: 14,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  )
-                                : const Icon(Icons.refresh, size: 18),
-                            color: AppColors.primary,
-                            tooltip: 'Refresh Data',
-                            style: IconButton.styleFrom(
-                              backgroundColor: AppColors.primary.withOpacity(0.1),
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(6),
-                            ),
+                        const SizedBox(width: 4),
+
+                        // Refresh Button
+                        IconButton(
+                          onPressed: _isRefreshing ? null : _refreshAllData,
+                          icon: _isRefreshing
+                              ? const SizedBox(
+                                  width: 14,
+                                  height: 14,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : const Icon(Icons.refresh_rounded, size: 20),
+                          color: AppColors.primary,
+                          tooltip: 'Refresh Data',
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(8),
                           ),
-                        ],
+                        ),
                       ],
                     ),
                   ),
@@ -606,50 +601,74 @@ class _HomePageState extends State<HomePage> {
                     isSidebarVisible: true,
                     actions: [
                       // Search Bar
-                      SizedBox(
-                        width: 250,
-                        height: 40,
-                        child: TextField(
-                          controller: searchController,
-                          onChanged: (value) {
-                            if (_debounce?.isActive ?? false) _debounce!.cancel();
-                            _debounce = Timer(const Duration(milliseconds: 500), () {
-                              setState(() {
-                                _searchQuery = value.toLowerCase();
-                              });
-                            });
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Search Product...',
-                            hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 13),
-                            prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 18),
-                            filled: true,
-                            fillColor: Colors.grey[100],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none,
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final screenWidth = MediaQuery.of(context).size.width;
+                          final isSmall = screenWidth < 400;
+                          final isMobile = screenWidth < 600;
+                          return SizedBox(
+                            width: isSmall ? 100 : (isMobile ? 140 : 250), // Responsive width
+                            height: 36,
+                            child: TextField(
+                              controller: searchController,
+                              style: const TextStyle(fontSize: 12),
+                              decoration: InputDecoration(
+                                hintText: 'Cari...',
+                                hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 13),
+                                prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 18),
+                                suffixIcon: _searchQuery.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.close, size: 16),
+                                        onPressed: () {
+                                          setState(() {
+                                            searchController.clear();
+                                            _searchQuery = '';
+                                          });
+                                        },
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        splashRadius: 16,
+                                      )
+                                    : null,
+                                filled: true,
+                                fillColor: Colors.grey[100],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                              ),
+                              onChanged: (value) {
+                                if (_debounce?.isActive ?? false) _debounce!.cancel();
+                                _debounce = Timer(const Duration(milliseconds: 500), () {
+                                  setState(() {
+                                    _searchQuery = value.toLowerCase();
+                                  });
+                                });
+                              },
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                          ),
-                        ),
+                          );
+                        },
                       ),
-                      const SizedBox(width: 12),
+                      
+                      const SizedBox(width: 4),
                       
                       // Refresh Button
                       IconButton(
                         onPressed: _isRefreshing ? null : _refreshAllData,
                         icon: _isRefreshing
                             ? const SizedBox(
-                                width: 16,
-                                height: 16,
+                                width: 14,
+                                height: 14,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Icon(Icons.refresh),
+                            : const Icon(Icons.refresh_rounded, size: 20),
                         color: AppColors.primary,
                         tooltip: 'Refresh Data',
                         style: IconButton.styleFrom(
                           backgroundColor: AppColors.primary.withOpacity(0.1),
                           shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(8),
                         ),
                       ),
                     ],

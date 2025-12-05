@@ -455,21 +455,49 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
           );
         }
 
-        return GridView.builder(
-                padding: const EdgeInsets.all(12),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: _getCrossAxisCount(context),
-                  childAspectRatio: 1.1, // Shorter cards
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: filteredTables.length,
-                itemBuilder: (context, index) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            
+            // Calculate crossAxisCount based on available width
+            int crossAxisCount = 2;
+            if (width > 1400) crossAxisCount = 6;
+            else if (width > 1100) crossAxisCount = 5;
+            else if (width > 900) crossAxisCount = 4;
+            else if (width > 600) crossAxisCount = 3;
+            
+            // Calculate aspect ratio dynamically
+            // Ensure minimum card height of ~110px to prevent overflow
+            // Width per card = (totalWidth - (crossAxisCount - 1) * spacing - padding) / crossAxisCount
+            final padding = 24.0; // Total horizontal padding
+            final spacing = 10.0;
+            final cardWidth = (width - padding - (crossAxisCount - 1) * spacing) / crossAxisCount;
+            
+            // Target height around 100-110px
+            // Aspect Ratio = width / height
+            // So height = width / aspectRatio => aspectRatio = width / targetHeight
+            
+            double childAspectRatio = 1.1; // Default for larger screens
+            if (cardWidth < 160) {
+              // If card is narrow, make it taller
+              childAspectRatio = cardWidth / 125; // Ensure ~125px height
+            }
+
+            return GridView.builder(
+              padding: const EdgeInsets.all(12),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                childAspectRatio: childAspectRatio,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: filteredTables.length,
+              itemBuilder: (context, index) {
                 final table = filteredTables[index];
-                final isHighlighted = table.id == _recentlyUpdatedTableId; // Check if this table was recently updated
+                final isHighlighted = table.id == _recentlyUpdatedTableId;
                 return TableInfoCard(
                   table: table,
-                  isHighlighted: isHighlighted, // Pass highlight flag
+                  isHighlighted: isHighlighted,
                   onTap: () async {
                     // Show selection dialog
                     final action = await showDialog<String>(
@@ -505,16 +533,12 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                     );
                     
                     if (action == 'select') {
-                      // Use callback to update Dashboard and navigate back to home
                       if (widget.onTableSelected != null) {
                         widget.onTableSelected!(table);
-                        print('✅ Table selected via callback: ${table.name}');
                       } else {
-                        // Fallback: return via Navigator for full-screen mode
                         Navigator.pop(context, table);
                       }
                     } else if (action == 'change_status') {
-                      // Show status change dialog
                       final updatedTableId = await showDialog<int>(
                         context: context,
                         builder: (dialogContext) => BlocProvider.value(
@@ -523,13 +547,11 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                         ),
                       );
                       
-                      // Highlight the updated table
                       if (updatedTableId != null) {
                         setState(() {
                           _recentlyUpdatedTableId = updatedTableId;
                         });
                         
-                        // Remove highlight after 5 seconds
                         _highlightTimer?.cancel();
                         _highlightTimer = Timer(const Duration(seconds: 5), () {
                           if (mounted) {
@@ -546,17 +568,10 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                 );
               },
             );
+          },
+        );
       },
     );
-  }
-
-  int _getCrossAxisCount(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    if (width > 1400) return 6;
-    if (width > 1100) return 5;
-    if (width > 900) return 4;
-    if (width > 600) return 3;
-    return 2;
   }
 
   Widget _buildSearchBar() {

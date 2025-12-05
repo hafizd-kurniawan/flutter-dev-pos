@@ -407,14 +407,17 @@ class OrderCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Diskon:',
-                        style: GoogleFonts.quicksand(
-                          fontSize: 13,
-                          color: (order.discountAmount != null &&
-                                  order.discountAmount! > 0)
-                              ? Colors.green[700]
-                              : Colors.grey[600],
+                      Flexible(
+                        child: Text(
+                          'Diskon:',
+                          style: GoogleFonts.quicksand(
+                            fontSize: 13,
+                            color: (order.discountAmount != null &&
+                                    order.discountAmount! > 0)
+                                ? Colors.green[700]
+                                : Colors.grey[600],
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
@@ -439,10 +442,14 @@ class OrderCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Pajak${(order.taxPercentage != null && order.taxPercentage! > 0) ? " (${order.taxPercentage}%)" : ""}:',
-                        style: GoogleFonts.quicksand(fontSize: 13, color: Colors.grey[700]),
+                      Flexible(
+                        child: Text(
+                          'Pajak${(order.taxPercentage != null && order.taxPercentage! > 0) ? " (${order.taxPercentage}%)" : ""}:',
+                          style: GoogleFonts.quicksand(fontSize: 13, color: Colors.grey[700]),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
+                      const SizedBox(width: 4),
                       Text(
                         (order.taxAmount ?? 0).currencyFormatRp,
                         style: GoogleFonts.quicksand(
@@ -456,10 +463,14 @@ class OrderCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Layanan${(order.serviceChargePercentage != null && order.serviceChargePercentage! > 0) ? " (${order.serviceChargePercentage}%)" : ""}:',
-                        style: GoogleFonts.quicksand(fontSize: 13, color: Colors.grey[700]),
+                      Flexible(
+                        child: Text(
+                          'Layanan${(order.serviceChargePercentage != null && order.serviceChargePercentage! > 0) ? " (${order.serviceChargePercentage}%)" : ""}:',
+                          style: GoogleFonts.quicksand(fontSize: 13, color: Colors.grey[700]),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
+                      const SizedBox(width: 4),
                       Text(
                         (order.serviceChargeAmount ?? 0).currencyFormatRp,
                         style: GoogleFonts.quicksand(
@@ -521,77 +532,105 @@ class OrderCard extends StatelessWidget {
 
             // Action Buttons
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                // Print Button
-                if (onPrint != null)
-                  Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[300]!),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.print_outlined, size: 20, color: Colors.black87),
-                      tooltip: 'Print Receipt',
-                      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-                      padding: EdgeInsets.zero,
-                      onPressed: onPrint,
-                    ),
-                  ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Check if we have enough space for the full button
+                // Print (~52px) + Share (~52px) + Status Button (~120px) = ~224px
+                final isTight = constraints.maxWidth < 280;
 
-                // Share Button
-                if (onShare != null)
-                  Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blue[200]!),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.share_outlined, size: 20, color: Colors.blue),
-                      tooltip: 'Share Receipt',
-                      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-                      padding: EdgeInsets.zero,
-                      onPressed: onShare,
-                    ),
-                  ),
-
-                // Status Update Button
-                if (order.status != 'complete') 
-                  Flexible(
-                    child: ElevatedButton.icon(
-                      onPressed: onStatusUpdate,
-                      icon: Icon(
-                        order.status == 'paid'
-                            ? Icons.restaurant
-                            : Icons.check_circle_outline,
-                        size: 18,
-                      ),
-                      label: Text(
-                        _getButtonText(),
-                        style: GoogleFonts.quicksand(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _getStatusColor(),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // Print Button
+                    if (onPrint != null)
+                      Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey[300]!),
                         ),
-                        elevation: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.print_outlined, size: 20, color: Colors.black87),
+                          tooltip: 'Print Receipt',
+                          constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+                          padding: EdgeInsets.zero,
+                          onPressed: onPrint,
+                        ),
                       ),
-                    ),
-                  ),
-              ],
+
+                    // Share Button
+                    if (onShare != null)
+                      Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.blue[200]!),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.share_outlined, size: 20, color: Colors.blue),
+                          tooltip: 'Share Receipt',
+                          constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+                          padding: EdgeInsets.zero,
+                          onPressed: onShare,
+                        ),
+                      ),
+
+                    // Status Update Button
+                    if (order.status != 'complete')
+                      Flexible(
+                        child: isTight
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  color: _getStatusColor(),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: IconButton(
+                                  onPressed: onStatusUpdate,
+                                  icon: Icon(
+                                    order.status == 'paid'
+                                        ? Icons.restaurant
+                                        : Icons.check_circle_outline,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
+                                  tooltip: _getButtonText(),
+                                  constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+                                  padding: EdgeInsets.zero,
+                                ),
+                              )
+                            : ElevatedButton.icon(
+                                onPressed: onStatusUpdate,
+                                icon: Icon(
+                                  order.status == 'paid'
+                                      ? Icons.restaurant
+                                      : Icons.check_circle_outline,
+                                  size: 18,
+                                ),
+                                label: Text(
+                                  _getButtonText(),
+                                  style: GoogleFonts.quicksand(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: _getStatusColor(),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 0,
+                                ),
+                              ),
+                      ),
+                  ],
+                );
+              },
             ),
           ],
         ),
