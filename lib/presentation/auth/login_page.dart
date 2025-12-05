@@ -15,7 +15,7 @@ import '../../core/components/spaces.dart';
 import '../../core/constants/colors.dart';
 import '../home/pages/dashboard_page.dart';
 import 'bloc/login/login_bloc.dart';
-import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW
+import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart';
 
 import 'package:flutter_posresto_app/core/services/notification_service.dart';
 
@@ -41,242 +41,202 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 260.0, vertical: 20.0),
+      backgroundColor: Colors.grey[50],
+      body: Stack(
         children: [
-          const SpaceHeight(80.0),
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 130.0),
-              child: SvgPicture.asset(
-                Assets.icons.homeResto.path,
-                width: 100,
-                height: 100,
-                color: AppColors.primary,
-              )),
-          const SpaceHeight(24.0),
-          const Center(
-            child: Text(
-              'Resto Code With Bahri',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          const SpaceHeight(8.0),
-          const Center(
-            child: Text(
-              'Akses Login Kasir Resto',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: Colors.grey,
-              ),
-            ),
-          ),
-          const SpaceHeight(40.0),
-          CustomTextField(
-            controller: emailController,
-            label: 'Email',
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-          ),
-          const SpaceHeight(12.0),
-          CustomTextField(
-            controller: passwordController,
-            label: 'Password',
-            obscureText: !isPasswordVisible,
-            textInputAction: TextInputAction.done,
-            suffixIcon: InkWell(
-              onTap: () => setState(() {
-                isPasswordVisible = !isPasswordVisible;
-              }),
-              child: Icon(
-                isPasswordVisible
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
-                color: Colors.grey,
-                size: 20,
-              ),
-            ),
-          ),
-          const SpaceHeight(24.0),
-          BlocListener<LoginBloc, LoginState>(
-            listener: (context, state) {
-              state.maybeWhen(
-                orElse: () {},
-                success: (authResponseModel) async {
-                  print('🔥 LOGIN SUCCESS - Starting product sync...');
-                  
-                  // 1. Save auth data
-                  await AuthLocalDataSource().saveAuthData(authResponseModel);
-                  print('✅ Auth data saved');
+          // Background Pattern (Optional - can be added later)
+          
+          // Main Content
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Logo & Branding
+                    SvgPicture.asset(
+                      Assets.icons.homeResto.path,
+                      width: 80,
+                      height: 80,
+                      color: AppColors.primary,
+                    ),
+                    const SpaceHeight(16.0),
+                    const Text(
+                      'Resto Code With Bahri',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SpaceHeight(8.0),
+                    Text(
+                      'Sign in to manage your restaurant',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SpaceHeight(32.0),
 
-                  // Initialize Notification Service (NEW)
-                  NotificationService().init();
-
-                  // 1.5 Fetch Settings (NEW)
-                  context.read<SettingsBloc>().add(const SettingsEvent.fetchSettings());
-                  print('✅ Settings fetch triggered');
-                  
-                  // 2. Show loading dialog for product sync
-                  if (context.mounted) {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (_) => const Center(
-                        child: Card(
-                          child: Padding(
-                            padding: EdgeInsets.all(24.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CircularProgressIndicator(),
-                                SizedBox(height: 16),
-                                Text('Loading data produk...'),
-                              ],
+                    // Login Card
+                    Container(
+                      padding: const EdgeInsets.all(32.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Welcome Back',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SpaceHeight(24.0),
+                          
+                          CustomTextField(
+                            controller: emailController,
+                            label: 'Email Address',
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            prefixIcon: const Icon(Icons.email_outlined),
+                          ),
+                          const SpaceHeight(16.0),
+                          
+                          CustomTextField(
+                            controller: passwordController,
+                            label: 'Password',
+                            obscureText: !isPasswordVisible,
+                            textInputAction: TextInputAction.done,
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: InkWell(
+                              onTap: () => setState(() {
+                                isPasswordVisible = !isPasswordVisible;
+                              }),
+                              child: Icon(
+                                isPasswordVisible
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
                             ),
                           ),
-                        ),
+                          const SpaceHeight(32.0),
+                          
+                          BlocListener<LoginBloc, LoginState>(
+                            listener: (context, state) {
+                              state.maybeWhen(
+                                orElse: () {},
+                                success: (authResponseModel) async {
+                                  _handleLoginSuccess(context, authResponseModel);
+                                },
+                                error: (message) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(message),
+                                      backgroundColor: AppColors.red,
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: BlocBuilder<LoginBloc, LoginState>(
+                              builder: (context, state) {
+                                return state.maybeWhen(
+                                  orElse: () {
+                                    return Button.filled(
+                                      onPressed: () {
+                                        context.read<LoginBloc>().add(
+                                              LoginEvent.login(
+                                                email: emailController.text,
+                                                password: passwordController.text,
+                                              ),
+                                            );
+                                      },
+                                      label: 'Sign In',
+                                      height: 50,
+                                    );
+                                  },
+                                  loading: () {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                    print('✅ Dialog shown');
-                  }
-                  
-                  try {
-                    // 3. Sync products from server
-                    print('🌐 Fetching products from API...');
-                    final productResult = await ProductRemoteDatasource().getProducts();
-                    print('📦 Product result received');
-                    
-                    await productResult.fold(
-                      (error) async {
-                        print('❌ ERROR: $error');
-                        // Failed to sync products
-                        if (context.mounted) {
-                          Navigator.pop(context); // Close loading dialog
-                          print('✅ Dialog closed (error)');
-                          
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Gagal load produk: $error'),
-                              backgroundColor: Colors.orange,
-                            ),
-                          );
-                          
-                          // Navigate anyway (graceful degradation)
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DashboardPage(),
-                            ),
-                          );
-                          print('✅ Navigated to dashboard (error flow)');
-                        }
-                      },
-                      (productResponse) async {
-                        print('✅ SUCCESS: Got ${productResponse.data?.length ?? 0} products');
-                        
-                        // Save products to storage (platform-specific)
-                        if (!kIsWeb) {
-                          // Mobile/Desktop: Save to SQLite
-                          print('💾 Deleting old products...');
-                          await ProductLocalDatasource.instance.deleteAllProducts();
-                          
-                          print('💾 Inserting new products...');
-                          await ProductLocalDatasource.instance
-                              .insertProducts(productResponse.data ?? []);
-                          print('✅ Products saved to SQLite');
-                        } else {
-                          // Web: Save to SharedPreferences
-                          print('🌐 Web platform detected - using SharedPreferences');
-                          await ProductStorageHelper.saveProducts(productResponse.data ?? []);
-                          print('✅ Products saved to SharedPreferences');
-                        }
-                        
-                        if (context.mounted) {
-                          Navigator.pop(context); // Close loading dialog
-                          print('✅ Dialog closed (success)');
-                          
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '✅ ${productResponse.data?.length ?? 0} produk berhasil dimuat!',
-                              ),
-                              backgroundColor: Colors.green,
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                          print('✅ Toast shown');
-                          
-                          // Navigate to dashboard
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DashboardPage(),
-                            ),
-                          );
-                          print('✅ Navigated to dashboard (success flow)');
-                        }
-                      },
-                    );
-                  } catch (e) {
-                    print('💥 EXCEPTION: $e');
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error: $e'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const DashboardPage(),
-                        ),
-                      );
-                    }
-                  }
-                },
-                error: (message) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(message),
-                      backgroundColor: AppColors.red,
                     ),
-                  );
-                },
-              );
-            },
-            child: BlocBuilder<LoginBloc, LoginState>(
-              builder: (context, state) {
-                return state.maybeWhen(
-                  orElse: () {
-                    return Button.filled(
-                      onPressed: () {
-                        context.read<LoginBloc>().add(
-                              LoginEvent.login(
-                                email: emailController.text,
-                                password: passwordController.text,
-                              ),
-                            );
-                      },
-                      label: 'Masuk',
-                    );
-                  },
-                  loading: () {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-                );
-              },
+                    
+                    const SpaceHeight(24.0),
+                    Text(
+                      '© 2024 Code With Bahri. All rights reserved.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[400],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _handleLoginSuccess(BuildContext context, dynamic authResponseModel) async {
+    print('🔥 LOGIN SUCCESS - Starting product sync...');
+    
+    // 1. Save auth data
+    await AuthLocalDataSource().saveAuthData(authResponseModel);
+    print('✅ Auth data saved');
+
+    // Initialize Notification Service
+    NotificationService().init();
+
+    // 1.5 Fetch Settings
+    if (context.mounted) {
+      context.read<SettingsBloc>().add(const SettingsEvent.fetchSettings());
+    }
+    print('✅ Settings fetch triggered');
+    
+    // ONLINE ONLY: Skip product sync
+    print('🌐 Online Only Mode: Skipping product sync');
+    
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login Success'),
+          backgroundColor: AppColors.primary,
+        ),
+      );
+      
+      // Navigate to Dashboard
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
+      );
+    }
   }
 }

@@ -107,105 +107,110 @@ class ProductCard extends StatelessWidget {
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: ShapeDecoration(
-          shape: RoundedRectangleBorder(
-            side: const BorderSide(width: 1, color: AppColors.card),
-            borderRadius: BorderRadius.circular(16),
-          ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Stack(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SpaceHeight(8),
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.disabled.withOpacity(0.4),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                    child: (data.image != null && data.image!.isNotEmpty && data.image != 'null')
-                        ? CachedNetworkImage(
-                            imageUrl: data.image!.toImageUrl,
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              width: 60,
-                              height: 60,
-                              color: Colors.grey[200],
-                              child: Icon(Icons.fastfood, size: 30, color: Colors.grey[400]),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Image Section (Full Width, Expanded)
+                  Expanded(
+                    flex: 1, // Changed from 4 to 1 (Equal split)
+                    child: Container(
+                      width: double.infinity,
+                      color: Colors.grey[50],
+                      child: (data.image != null && data.image!.isNotEmpty && data.image != 'null')
+                          ? CachedNetworkImage(
+                              imageUrl: data.image!.toImageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Center(
+                                child: Icon(Icons.fastfood, size: 40, color: Colors.grey[300]),
+                              ),
+                              errorWidget: (context, url, error) => Center(
+                                child: Icon(Icons.fastfood, size: 40, color: AppColors.primary),
+                              ),
+                            )
+                          : Center(
+                              child: Icon(Icons.fastfood, size: 50, color: AppColors.primary),
                             ),
-                            errorWidget: (context, url, error) => Icon(
-                              Icons.fastfood,
-                              size: 40,
-                              color: AppColors.primary,
+                    ),
+                  ),
+                  
+                  // Details Section
+                  Expanded(
+                    flex: 1, // Changed from 3 to 1 (Equal split)
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0), // Reduced from 12.0
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Name
+                          Text(
+                            data.name ?? 'Unknown Product',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14, // Reduced from 15
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.black,
+                              height: 1.2,
                             ),
-                          )
-                        : Icon(
-                            Icons.fastfood,
-                            size: 40,
-                            color: AppColors.primary,
                           ),
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  data.name ?? 'Unknown Product',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Stock indicator
-                    Flexible(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: (data.stock ?? 0) > 0 ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(
-                            color: (data.stock ?? 0) > 0 ? Colors.green : Colors.red,
-                            width: 1,
+                          
+                          // Price & Stock
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                (data.price ?? '0').toIntegerFromText.currencyFormatRp,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: AppColors.primary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              const SizedBox(height: 2), // Reduced from 6
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: (data.stock ?? 0) > 0 ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  (data.stock ?? 0) > 0 ? 'Stok: ${data.stock}' : 'Habis',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: (data.stock ?? 0) > 0 ? Colors.green : Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        child: Text(
-                          'Stock: ${data.stock ?? 0}',
-                          style: TextStyle(
-                            color: (data.stock ?? 0) > 0 ? Colors.green.shade700 : Colors.red.shade700,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    // Price
-                    Flexible(
-                      child: Text(
-                        (data.price ?? '0').toIntegerFromText.currencyFormatRp,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-              ],
+                  ),
+                ],
+              ),
             ),
+            
+            // Quantity Badge / Add Button
             BlocBuilder<CheckoutBloc, CheckoutState>(
               builder: (context, state) {
                 return state.maybeWhen(
@@ -233,8 +238,10 @@ class ProductCard extends StatelessWidget {
                                   height: 40,
                                   padding: const EdgeInsets.all(6),
                                   decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(9.0)),
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(16),
+                                      bottomLeft: Radius.circular(16),
+                                    ),
                                     color: AppColors.primary,
                                   ),
                                   child: Center(
@@ -246,7 +253,7 @@ class ProductCard extends StatelessWidget {
                                           .toString(),
                                       style: const TextStyle(
                                           color: Colors.white,
-                                          fontSize: 20,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -257,13 +264,23 @@ class ProductCard extends StatelessWidget {
                                 child: Container(
                                   width: 36,
                                   height: 36,
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(9.0)),
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
                                     color: AppColors.primary,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primary.withOpacity(0.4),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
-                                  child: Assets.icons.shoppingBasket.svg(),
+                                  child: const Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
                                 ),
                               )
                         : Align(
@@ -271,13 +288,23 @@ class ProductCard extends StatelessWidget {
                             child: Container(
                               width: 36,
                               height: 36,
-                              padding: const EdgeInsets.all(6),
-                              decoration: const BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(9.0)),
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
                                 color: AppColors.primary,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.4),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                              child: Assets.icons.shoppingBasket.svg(),
+                              child: const Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                             ),
                           );
                   },

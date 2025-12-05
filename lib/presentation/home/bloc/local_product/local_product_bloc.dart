@@ -1,11 +1,9 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
-import 'package:flutter_posresto_app/data/datasources/product_storage_helper.dart';
+import 'package:flutter_posresto_app/data/datasources/product_remote_datasource.dart';
 
 import '../../../../data/models/response/product_response_model.dart';
 
@@ -14,26 +12,25 @@ part 'local_product_event.dart';
 part 'local_product_state.dart';
 
 class LocalProductBloc extends Bloc<LocalProductEvent, LocalProductState> {
-  final ProductLocalDatasource productLocalDatasource;
+  final ProductRemoteDatasource productRemoteDatasource;
   LocalProductBloc(
-    this.productLocalDatasource,
+    this.productRemoteDatasource,
   ) : super(const _Initial()) {
     on<_GetLocalProduct>((event, emit) async {
       emit(const _Loading());
       
-      List<Product> result = [];
+      final result = await productRemoteDatasource.getProducts();
       
-      if (kIsWeb) {
-        // Web: Load from SharedPreferences
-        result = await ProductStorageHelper.getProducts();
-        log("Loaded ${result.length} products from SharedPreferences (web)");
-      } else {
-        // Mobile/Desktop: Load from SQLite
-        result = await productLocalDatasource.getProducts();
-        log("Loaded ${result.length} products from SQLite (mobile)");
-      }
-      
-      emit(_Loaded(result));
+      result.fold(
+        (error) {
+          log("❌ Failed to fetch products from API: $error");
+          emit(const _Loaded([])); // Or emit error state if available, but keeping signature safe
+        },
+        (data) {
+          log("✅ Loaded ${data.data?.length ?? 0} products from API");
+          emit(_Loaded(data.data ?? []));
+        },
+      );
     });
   }
 }

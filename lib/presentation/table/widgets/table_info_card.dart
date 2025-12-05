@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_posresto_app/core/constants/colors.dart';
 import 'package:flutter_posresto_app/data/models/response/table_model.dart';
 
 class TableInfoCard extends StatelessWidget {
@@ -8,11 +7,11 @@ class TableInfoCard extends StatelessWidget {
   final bool isHighlighted; // NEW: Highlight recently updated table
 
   const TableInfoCard({
-    Key? key,
+    super.key,
     required this.table,
     required this.onTap,
     this.isHighlighted = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,22 +19,23 @@ class TableInfoCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.all(12),
+        duration: const Duration(milliseconds: 500), // Slower animation for visibility
+        padding: const EdgeInsets.all(10), // Reduced padding
         decoration: BoxDecoration(
-          color: isHighlighted ? Colors.green.shade50 : Colors.white, // Highlight background
-          borderRadius: BorderRadius.circular(8),
+          color: isHighlighted ? Colors.green.shade50 : Colors.white,
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isHighlighted ? Colors.green : _getStatusColor(table.status), // Green border when highlighted
-            width: isHighlighted ? 3 : 2, // Thicker border when highlighted
+            color: isHighlighted ? Colors.green : Colors.transparent,
+            width: isHighlighted ? 2 : 0,
           ),
           boxShadow: [
             BoxShadow(
               color: isHighlighted 
-                  ? Colors.green.withOpacity(0.3) 
-                  : _getStatusColor(table.status).withOpacity(0.1),
-              blurRadius: isHighlighted ? 8 : 4,
-              offset: Offset(0, isHighlighted ? 2 : 1), // Remove const
+                  ? Colors.green.withOpacity(0.4) 
+                  : Colors.black.withOpacity(0.05),
+              blurRadius: isHighlighted ? 12 : 8,
+              spreadRadius: isHighlighted ? 2 : 0, // Spread shadow when highlighted
+              offset: Offset(0, isHighlighted ? 0 : 2),
             ),
           ],
         ),
@@ -51,12 +51,12 @@ class TableInfoCard extends StatelessWidget {
                   size: 16,
                   color: _getStatusColor(table.status),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     table.name,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15, // Slightly smaller
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -67,52 +67,41 @@ class TableInfoCard extends StatelessWidget {
               ],
             ),
             
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             
             // Category & Capacity
-            if (table.categoryName != null) ...[
-              Row(
-                children: [
-                  Icon(Icons.category, size: 11, color: Colors.grey[600]),
-                  const SizedBox(width: 3),
-                  Expanded(
+            Row(
+              children: [
+                if (table.categoryName != null) ...[
+                  Icon(Icons.category_outlined, size: 12, color: Colors.grey[600]),
+                  const SizedBox(width: 2),
+                  Flexible(
                     child: Text(
                       table.categoryName!,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const SizedBox(width: 8),
                 ],
-              ),
-              const SizedBox(height: 3),
-            ],
-            
-            Row(
-              children: [
-                Icon(Icons.people, size: 11, color: Colors.grey[600]),
-                const SizedBox(width: 3),
+                Icon(Icons.people_outline, size: 12, color: Colors.grey[600]),
+                const SizedBox(width: 2),
                 Text(
                   '${table.capacity}p',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                 ),
               ],
             ),
             
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             
-            // Status-specific info
+            // Status-specific info (Customer, Phone, etc.)
             Expanded(
               child: _buildStatusInfo(),
             ),
             
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             
             // Status Badge
             _buildStatusBadge(),
@@ -125,19 +114,23 @@ class TableInfoCard extends StatelessWidget {
   Widget _buildStatusInfo() {
     switch (table.status) {
       case 'occupied':
+      case 'reserved':
         return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             if (table.customerName != null && table.customerName!.isNotEmpty) ...[
+              // Customer Name
               Row(
                 children: [
-                  Icon(Icons.person, size: 11, color: Colors.grey[700]),
+                  Icon(Icons.person, size: 12, color: Colors.grey[700]),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       table.customerName!,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey[800],
                       ),
@@ -147,82 +140,54 @@ class TableInfoCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-            ],
-            if (table.partySize != null) ...[
-              Text(
-                '${table.partySize} / ${table.capacity} guests',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey[600],
+              const SizedBox(height: 2),
+              // Phone Number (New)
+              if (table.customerPhone != null && table.customerPhone!.isNotEmpty)
+                Row(
+                  children: [
+                    Icon(Icons.phone, size: 12, color: Colors.grey[600]),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        table.customerPhone!,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 4),
-            ],
-            if (table.occupiedAt != null) ...[
+            ] else
               Text(
-                _getDuration(table.occupiedAt!),
+                table.status == 'reserved' ? 'Reserved' : 'Occupied',
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.grey[500],
+                  color: _getStatusColor(table.status),
                   fontStyle: FontStyle.italic,
                 ),
               ),
-            ],
-          ],
-        );
-      
-      case 'reserved':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (table.customerName != null && table.customerName!.isNotEmpty) ...[
-              Row(
-                children: [
-                  Icon(Icons.person, size: 11, color: Colors.grey[700]),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      table.customerName!,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-            ],
-            if (table.partySize != null) ...[
-              Text(
-                '${table.partySize} guests expected',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
           ],
         );
       
       case 'pending_bill':
         return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (table.customerName != null && table.customerName!.isNotEmpty) ...[
+            if (table.customerName != null && table.customerName!.isNotEmpty)
               Row(
                 children: [
-                  Icon(Icons.person, size: 11, color: Colors.grey[700]),
+                  Icon(Icons.person, size: 12, color: Colors.grey[700]),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       table.customerName!,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey[800],
                       ),
@@ -232,26 +197,31 @@ class TableInfoCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-            ],
             Text(
-              'Waiting for payment',
+              'Waiting payment',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 11,
                 color: Colors.orange[700],
                 fontWeight: FontWeight.w500,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         );
       
       default: // available
-        return Text(
-          'Ready to serve',
-          style: TextStyle(
-            fontSize: 10,
-            color: Colors.green[700],
-            fontWeight: FontWeight.w500,
+        return Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Ready to serve',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.green[700],
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         );
     }
@@ -276,12 +246,25 @@ class TableInfoCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 6),
-          Text(
-            _getStatusText(table.status),
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: _getStatusColor(table.status),
+          Flexible(
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: _getStatusText(table.status)),
+                  if (table.status == 'occupied' && table.occupiedAt != null)
+                    TextSpan(
+                      text: ' • ${_getDuration(table.occupiedAt!)}',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                ],
+              ),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: _getStatusColor(table.status),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

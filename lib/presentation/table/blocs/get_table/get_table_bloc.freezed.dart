@@ -1353,9 +1353,9 @@ mixin _$GetTableState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TableModel> tables) success,
-    required TResult Function(List<TableCategoryModel> categories)
-        categoriesLoaded,
+    required TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)
+        success,
     required TResult Function(String message) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -1363,8 +1363,9 @@ mixin _$GetTableState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TableModel> tables)? success,
-    TResult? Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult? Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult? Function(String message)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -1372,8 +1373,9 @@ mixin _$GetTableState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TableModel> tables)? success,
-    TResult Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) =>
@@ -1383,7 +1385,6 @@ mixin _$GetTableState {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
-    required TResult Function(_CategoriesLoaded value) categoriesLoaded,
     required TResult Function(_Error value) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -1392,7 +1393,6 @@ mixin _$GetTableState {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
-    TResult? Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult? Function(_Error value)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -1401,7 +1401,6 @@ mixin _$GetTableState {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
-    TResult Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) =>
@@ -1472,9 +1471,9 @@ class _$InitialImpl implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TableModel> tables) success,
-    required TResult Function(List<TableCategoryModel> categories)
-        categoriesLoaded,
+    required TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)
+        success,
     required TResult Function(String message) error,
   }) {
     return initial();
@@ -1485,8 +1484,9 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TableModel> tables)? success,
-    TResult? Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult? Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult? Function(String message)? error,
   }) {
     return initial?.call();
@@ -1497,8 +1497,9 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TableModel> tables)? success,
-    TResult Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -1514,7 +1515,6 @@ class _$InitialImpl implements _Initial {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
-    required TResult Function(_CategoriesLoaded value) categoriesLoaded,
     required TResult Function(_Error value) error,
   }) {
     return initial(this);
@@ -1526,7 +1526,6 @@ class _$InitialImpl implements _Initial {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
-    TResult? Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult? Function(_Error value)? error,
   }) {
     return initial?.call(this);
@@ -1538,7 +1537,6 @@ class _$InitialImpl implements _Initial {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
-    TResult Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -1596,9 +1594,9 @@ class _$LoadingImpl implements _Loading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TableModel> tables) success,
-    required TResult Function(List<TableCategoryModel> categories)
-        categoriesLoaded,
+    required TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)
+        success,
     required TResult Function(String message) error,
   }) {
     return loading();
@@ -1609,8 +1607,9 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TableModel> tables)? success,
-    TResult? Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult? Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult? Function(String message)? error,
   }) {
     return loading?.call();
@@ -1621,8 +1620,9 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TableModel> tables)? success,
-    TResult Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -1638,7 +1638,6 @@ class _$LoadingImpl implements _Loading {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
-    required TResult Function(_CategoriesLoaded value) categoriesLoaded,
     required TResult Function(_Error value) error,
   }) {
     return loading(this);
@@ -1650,7 +1649,6 @@ class _$LoadingImpl implements _Loading {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
-    TResult? Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult? Function(_Error value)? error,
   }) {
     return loading?.call(this);
@@ -1662,7 +1660,6 @@ class _$LoadingImpl implements _Loading {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
-    TResult Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -1683,7 +1680,7 @@ abstract class _$$SuccessImplCopyWith<$Res> {
           _$SuccessImpl value, $Res Function(_$SuccessImpl) then) =
       __$$SuccessImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({List<TableModel> tables});
+  $Res call({List<TableModel> tables, List<TableCategoryModel> categories});
 }
 
 /// @nodoc
@@ -1700,12 +1697,17 @@ class __$$SuccessImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? tables = null,
+    Object? categories = null,
   }) {
     return _then(_$SuccessImpl(
-      null == tables
+      tables: null == tables
           ? _value._tables
           : tables // ignore: cast_nullable_to_non_nullable
               as List<TableModel>,
+      categories: null == categories
+          ? _value._categories
+          : categories // ignore: cast_nullable_to_non_nullable
+              as List<TableCategoryModel>,
     ));
   }
 }
@@ -1713,7 +1715,11 @@ class __$$SuccessImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$SuccessImpl implements _Success {
-  const _$SuccessImpl(final List<TableModel> tables) : _tables = tables;
+  const _$SuccessImpl(
+      {required final List<TableModel> tables,
+      required final List<TableCategoryModel> categories})
+      : _tables = tables,
+        _categories = categories;
 
   final List<TableModel> _tables;
   @override
@@ -1723,9 +1729,17 @@ class _$SuccessImpl implements _Success {
     return EqualUnmodifiableListView(_tables);
   }
 
+  final List<TableCategoryModel> _categories;
+  @override
+  List<TableCategoryModel> get categories {
+    if (_categories is EqualUnmodifiableListView) return _categories;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_categories);
+  }
+
   @override
   String toString() {
-    return 'GetTableState.success(tables: $tables)';
+    return 'GetTableState.success(tables: $tables, categories: $categories)';
   }
 
   @override
@@ -1733,12 +1747,16 @@ class _$SuccessImpl implements _Success {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SuccessImpl &&
-            const DeepCollectionEquality().equals(other._tables, _tables));
+            const DeepCollectionEquality().equals(other._tables, _tables) &&
+            const DeepCollectionEquality()
+                .equals(other._categories, _categories));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_tables));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_tables),
+      const DeepCollectionEquality().hash(_categories));
 
   /// Create a copy of GetTableState
   /// with the given fields replaced by the non-null parameter values.
@@ -1753,12 +1771,12 @@ class _$SuccessImpl implements _Success {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TableModel> tables) success,
-    required TResult Function(List<TableCategoryModel> categories)
-        categoriesLoaded,
+    required TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)
+        success,
     required TResult Function(String message) error,
   }) {
-    return success(tables);
+    return success(tables, categories);
   }
 
   @override
@@ -1766,11 +1784,12 @@ class _$SuccessImpl implements _Success {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TableModel> tables)? success,
-    TResult? Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult? Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult? Function(String message)? error,
   }) {
-    return success?.call(tables);
+    return success?.call(tables, categories);
   }
 
   @override
@@ -1778,13 +1797,14 @@ class _$SuccessImpl implements _Success {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TableModel> tables)? success,
-    TResult Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(tables);
+      return success(tables, categories);
     }
     return orElse();
   }
@@ -1795,7 +1815,6 @@ class _$SuccessImpl implements _Success {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
-    required TResult Function(_CategoriesLoaded value) categoriesLoaded,
     required TResult Function(_Error value) error,
   }) {
     return success(this);
@@ -1807,7 +1826,6 @@ class _$SuccessImpl implements _Success {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
-    TResult? Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult? Function(_Error value)? error,
   }) {
     return success?.call(this);
@@ -1819,7 +1837,6 @@ class _$SuccessImpl implements _Success {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
-    TResult Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -1831,183 +1848,17 @@ class _$SuccessImpl implements _Success {
 }
 
 abstract class _Success implements GetTableState {
-  const factory _Success(final List<TableModel> tables) = _$SuccessImpl;
+  const factory _Success(
+      {required final List<TableModel> tables,
+      required final List<TableCategoryModel> categories}) = _$SuccessImpl;
 
   List<TableModel> get tables;
-
-  /// Create a copy of GetTableState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$CategoriesLoadedImplCopyWith<$Res> {
-  factory _$$CategoriesLoadedImplCopyWith(_$CategoriesLoadedImpl value,
-          $Res Function(_$CategoriesLoadedImpl) then) =
-      __$$CategoriesLoadedImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({List<TableCategoryModel> categories});
-}
-
-/// @nodoc
-class __$$CategoriesLoadedImplCopyWithImpl<$Res>
-    extends _$GetTableStateCopyWithImpl<$Res, _$CategoriesLoadedImpl>
-    implements _$$CategoriesLoadedImplCopyWith<$Res> {
-  __$$CategoriesLoadedImplCopyWithImpl(_$CategoriesLoadedImpl _value,
-      $Res Function(_$CategoriesLoadedImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of GetTableState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? categories = null,
-  }) {
-    return _then(_$CategoriesLoadedImpl(
-      null == categories
-          ? _value._categories
-          : categories // ignore: cast_nullable_to_non_nullable
-              as List<TableCategoryModel>,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$CategoriesLoadedImpl implements _CategoriesLoaded {
-  const _$CategoriesLoadedImpl(final List<TableCategoryModel> categories)
-      : _categories = categories;
-
-  final List<TableCategoryModel> _categories;
-  @override
-  List<TableCategoryModel> get categories {
-    if (_categories is EqualUnmodifiableListView) return _categories;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_categories);
-  }
-
-  @override
-  String toString() {
-    return 'GetTableState.categoriesLoaded(categories: $categories)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CategoriesLoadedImpl &&
-            const DeepCollectionEquality()
-                .equals(other._categories, _categories));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_categories));
-
-  /// Create a copy of GetTableState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CategoriesLoadedImplCopyWith<_$CategoriesLoadedImpl> get copyWith =>
-      __$$CategoriesLoadedImplCopyWithImpl<_$CategoriesLoadedImpl>(
-          this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(List<TableModel> tables) success,
-    required TResult Function(List<TableCategoryModel> categories)
-        categoriesLoaded,
-    required TResult Function(String message) error,
-  }) {
-    return categoriesLoaded(categories);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(List<TableModel> tables)? success,
-    TResult? Function(List<TableCategoryModel> categories)? categoriesLoaded,
-    TResult? Function(String message)? error,
-  }) {
-    return categoriesLoaded?.call(categories);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(List<TableModel> tables)? success,
-    TResult Function(List<TableCategoryModel> categories)? categoriesLoaded,
-    TResult Function(String message)? error,
-    required TResult orElse(),
-  }) {
-    if (categoriesLoaded != null) {
-      return categoriesLoaded(categories);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_CategoriesLoaded value) categoriesLoaded,
-    required TResult Function(_Error value) error,
-  }) {
-    return categoriesLoaded(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_CategoriesLoaded value)? categoriesLoaded,
-    TResult? Function(_Error value)? error,
-  }) {
-    return categoriesLoaded?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_CategoriesLoaded value)? categoriesLoaded,
-    TResult Function(_Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (categoriesLoaded != null) {
-      return categoriesLoaded(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _CategoriesLoaded implements GetTableState {
-  const factory _CategoriesLoaded(final List<TableCategoryModel> categories) =
-      _$CategoriesLoadedImpl;
-
   List<TableCategoryModel> get categories;
 
   /// Create a copy of GetTableState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$CategoriesLoadedImplCopyWith<_$CategoriesLoadedImpl> get copyWith =>
+  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -2081,9 +1932,9 @@ class _$ErrorImpl implements _Error {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TableModel> tables) success,
-    required TResult Function(List<TableCategoryModel> categories)
-        categoriesLoaded,
+    required TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)
+        success,
     required TResult Function(String message) error,
   }) {
     return error(message);
@@ -2094,8 +1945,9 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TableModel> tables)? success,
-    TResult? Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult? Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult? Function(String message)? error,
   }) {
     return error?.call(message);
@@ -2106,8 +1958,9 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TableModel> tables)? success,
-    TResult Function(List<TableCategoryModel> categories)? categoriesLoaded,
+    TResult Function(
+            List<TableModel> tables, List<TableCategoryModel> categories)?
+        success,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -2123,7 +1976,6 @@ class _$ErrorImpl implements _Error {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Success value) success,
-    required TResult Function(_CategoriesLoaded value) categoriesLoaded,
     required TResult Function(_Error value) error,
   }) {
     return error(this);
@@ -2135,7 +1987,6 @@ class _$ErrorImpl implements _Error {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Success value)? success,
-    TResult? Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult? Function(_Error value)? error,
   }) {
     return error?.call(this);
@@ -2147,7 +1998,6 @@ class _$ErrorImpl implements _Error {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Success value)? success,
-    TResult Function(_CategoriesLoaded value)? categoriesLoaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {

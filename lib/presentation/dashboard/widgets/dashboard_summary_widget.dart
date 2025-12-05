@@ -62,8 +62,7 @@ class DashboardSummaryWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
-            const SpaceHeight(16),
+            // Header removed as requested
             _buildTodayPerformance(data.today),
             const SpaceHeight(16),
             _buildOrderTypes(data.orderTypes),
@@ -83,23 +82,19 @@ class DashboardSummaryWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
-    return const Row(
-      children: [
-        Icon(Icons.dashboard, color: AppColors.primary, size: 28),
-        SpaceWidth(12),
-        Text(
-          'Today\'s Dashboard',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-
   Widget _buildTodayPerformance(TodayStats stats) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -123,12 +118,20 @@ class DashboardSummaryWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
-                  children: [
-                    Icon(Icons.monetization_on, color: AppColors.primary, size: 24),
-                    SpaceWidth(8),
-                    Text('Total Sales', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                  ],
+                Expanded(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.monetization_on, color: AppColors.primary, size: 24),
+                      const SpaceWidth(8),
+                      Flexible(
+                        child: Text(
+                          'Total Sales',
+                          style: const TextStyle(fontSize: 14, color: Colors.grey),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Text(
                   stats.totalSales.currencyFormatRp,
@@ -193,6 +196,8 @@ class DashboardSummaryWidget extends StatelessWidget {
               Text(
                 value,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ],
           ),
@@ -205,9 +210,18 @@ class DashboardSummaryWidget extends StatelessWidget {
     final total = stats.dineIn + stats.takeaway + stats.delivery;
     if (total == 0) return const SizedBox();
     
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -285,9 +299,18 @@ class DashboardSummaryWidget extends StatelessWidget {
   }
 
   Widget _buildTopProducts(List<TopProduct> products) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -345,6 +368,8 @@ class DashboardSummaryWidget extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             const SpaceHeight(4),
                             Text(
@@ -375,12 +400,18 @@ class DashboardSummaryWidget extends StatelessWidget {
   }
 
   Widget _buildAlerts(AlertsData alerts) {
-    return Card(
-      color: Colors.orange.shade50,
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.orange.shade200),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),

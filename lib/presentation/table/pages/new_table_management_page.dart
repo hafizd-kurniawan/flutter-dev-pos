@@ -141,7 +141,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
         builder: (context, state) {
           return state.maybeWhen(orElse: () {
             return Container();
-          }, success: (tables) {
+          }, success: (tables, categories) {
             return Stack(
               children: tables.map((table) {
                 return Positioned(

@@ -110,7 +110,7 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (context) =>
-              LocalProductBloc(ProductLocalDatasource.instance),
+              LocalProductBloc(ProductRemoteDatasource()),
         ),
         BlocProvider(
           create: (context) => CheckoutBloc(),

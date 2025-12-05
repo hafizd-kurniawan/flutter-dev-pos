@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart'; // NEW: Google Fonts
 import 'package:flutter_posresto_app/core/constants/variables.dart';
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/string_ext.dart';
@@ -51,23 +52,23 @@ class OrderMenu extends StatelessWidget {
           // 1. Image (Larger)
           ClipRRect(
             borderRadius: BorderRadius.circular(12.0),
-            child: data.product.image != null && data.product.image!.isNotEmpty
-                ? CachedNetworkImage(
-                    imageUrl: data.product.image!.toImageUrl,
-                    width: 64.0,
-                    height: 64.0,
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => Icon(
-                      Icons.fastfood,
-                      size: 64,
-                      color: AppColors.primary,
+            child: SizedBox(
+              width: 64,
+              height: 64,
+              child: data.product.image != null && data.product.image!.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: data.product.image!.toImageUrl,
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[100],
+                        child: Icon(Icons.fastfood, size: 32, color: AppColors.primary.withOpacity(0.5)),
+                      ),
+                    )
+                  : Container(
+                      color: Colors.grey[100],
+                      child: Icon(Icons.fastfood, size: 32, color: AppColors.primary.withOpacity(0.5)),
                     ),
-                  )
-                : Icon(
-                    Icons.fastfood,
-                    size: 64,
-                    color: AppColors.primary,
-                  ),
+            ),
           ),
           const SizedBox(width: 16),
           
@@ -80,18 +81,19 @@ class OrderMenu extends StatelessWidget {
                   data.product.name ?? "-",
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: GoogleFonts.quicksand(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   (data.product.price ?? '0').toIntegerFromText.currencyFormatRp,
-                  style: TextStyle(
+                  style: GoogleFonts.quicksand(
                     fontSize: 13,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 if (data.note.isNotEmpty) ...[
@@ -106,10 +108,11 @@ class OrderMenu extends StatelessWidget {
                       ),
                       child: Text(
                         "Note: ${data.note}",
-                        style: const TextStyle(
+                        style: GoogleFonts.quicksand(
                           fontSize: 11,
                           color: AppColors.primary,
                           fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w500,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -122,9 +125,10 @@ class OrderMenu extends StatelessWidget {
                     onTap: () => _showNoteDialog(context),
                     child: Text(
                       '+ Tambah Catatan',
-                      style: TextStyle(
+                      style: GoogleFonts.quicksand(
                         fontSize: 12,
                         color: Colors.grey[500],
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
@@ -149,8 +153,8 @@ class OrderMenu extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: () => context.read<CheckoutBloc>().add(CheckoutEvent.removeItem(data.product)),
-                      child: const Padding(
-                        padding: EdgeInsets.all(6.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
                         child: Icon(Icons.remove, size: 16, color: AppColors.primary),
                       ),
                     ),
@@ -159,17 +163,18 @@ class OrderMenu extends StatelessWidget {
                       child: Center(
                         child: Text(
                           data.quantity.toString(),
-                          style: const TextStyle(
+                          style: GoogleFonts.quicksand(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
+                            color: Colors.black87,
                           ),
                         ),
                       ),
                     ),
                     InkWell(
                       onTap: () => context.read<CheckoutBloc>().add(CheckoutEvent.addItem(data.product)),
-                      child: const Padding(
-                        padding: EdgeInsets.all(6.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
                         child: Icon(Icons.add, size: 16, color: AppColors.primary),
                       ),
                     ),
@@ -180,7 +185,7 @@ class OrderMenu extends StatelessWidget {
               Text(
                 ((data.product.price ?? '0').toIntegerFromText * data.quantity)
                     .currencyFormatRp,
-                style: const TextStyle(
+                style: GoogleFonts.quicksand(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -203,23 +208,32 @@ class OrderMenu extends StatelessWidget {
           // 1. Product Image
           ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
-            child: data.product.image != null && data.product.image!.isNotEmpty
-                ? CachedNetworkImage(
-                    imageUrl: data.product.image!.toImageUrl,
-                    width: 40.0,
-                    height: 40.0,
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => Icon(
-                      Icons.fastfood,
-                      size: 40,
-                      color: AppColors.primary,
+            child: SizedBox(
+              width: 40,
+              height: 40,
+              child: data.product.image != null && data.product.image!.isNotEmpty
+                  ? (data.product.image!.contains('http')
+                      ? CachedNetworkImage(
+                          imageUrl: data.product.image!.toImageUrl,
+                          fit: BoxFit.cover,
+                          errorWidget: (context, url, error) => Container(
+                            color: Colors.grey[100],
+                            child: Icon(Icons.fastfood, size: 20, color: AppColors.primary.withOpacity(0.5)),
+                          ),
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: data.product.image!.toImageUrl,
+                          fit: BoxFit.cover,
+                          errorWidget: (context, url, error) => Container(
+                            color: Colors.grey[100],
+                            child: Icon(Icons.fastfood, size: 20, color: AppColors.primary.withOpacity(0.5)),
+                          ),
+                        ))
+                  : Container(
+                      color: Colors.grey[100],
+                      child: Icon(Icons.fastfood, size: 20, color: AppColors.primary.withOpacity(0.5)),
                     ),
-                  )
-                : Icon(
-                    Icons.fastfood,
-                    size: 40,
-                    color: AppColors.primary,
-                  ),
+            ),
           ),
           const SizedBox(width: 12),
           
@@ -233,9 +247,10 @@ class OrderMenu extends StatelessWidget {
                   data.product.name ?? "-",
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: GoogleFonts.quicksand(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -243,9 +258,10 @@ class OrderMenu extends StatelessWidget {
                 // Price (Single Item)
                 Text(
                   (data.product.price ?? '0').toIntegerFromText.currencyFormatRp,
-                  style: TextStyle(
+                  style: GoogleFonts.quicksand(
                     fontSize: 11,
                     color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 
@@ -261,10 +277,11 @@ class OrderMenu extends StatelessWidget {
                         Expanded(
                           child: Text(
                             data.note,
-                            style: const TextStyle(
+                            style: GoogleFonts.quicksand(
                               fontSize: 11,
                               color: AppColors.primary,
                               fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.w500,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -280,9 +297,10 @@ class OrderMenu extends StatelessWidget {
                     onTap: () => _showNoteDialog(context),
                     child: Text(
                       '+ Catatan',
-                      style: TextStyle(
+                      style: GoogleFonts.quicksand(
                         fontSize: 11,
                         color: Colors.grey[500],
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
@@ -310,9 +328,10 @@ class OrderMenu extends StatelessWidget {
                     child: Center(
                       child: Text(
                         data.quantity.toString(),
-                        style: const TextStyle(
+                        style: GoogleFonts.quicksand(
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
+                          color: Colors.black87,
                         ),
                       ),
                     ),
@@ -331,7 +350,7 @@ class OrderMenu extends StatelessWidget {
               Text(
                 ((data.product.price ?? '0').toIntegerFromText * data.quantity)
                     .currencyFormatRp,
-                style: const TextStyle(
+                style: GoogleFonts.quicksand(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
@@ -374,30 +393,131 @@ class OrderMenu extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Catatan Item'),
-          content: TextField(
-            controller: noteController,
-            maxLength: 100,
-            decoration: const InputDecoration(
-              hintText: 'Contoh: Jangan pedas, Es sedikit',
-              border: OutlineInputBorder(),
-              helperText: 'Maksimal 100 karakter',
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          titlePadding: const EdgeInsets.all(24),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+          actionsPadding: const EdgeInsets.all(24),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Catatan Item',
+                style: GoogleFonts.quicksand(
+                  color: AppColors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close, color: Colors.grey),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.grey[100],
+                  padding: const EdgeInsets.all(8),
+                ),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(color: Colors.grey[200]!),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: noteController,
+                    maxLength: 100,
+                    maxLines: 3,
+                    style: GoogleFonts.quicksand(fontWeight: FontWeight.w500),
+                    decoration: InputDecoration(
+                      hintText: 'Contoh: Jangan pedas, Es sedikit',
+                      hintStyle: GoogleFonts.quicksand(color: Colors.grey[400]),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: const EdgeInsets.all(16),
+                      counterText: "", // Hide default counter
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'Maksimal 100 karakter',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 12,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            maxLines: 3,
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                context.read<CheckoutBloc>().add(
-                      CheckoutEvent.addNoteToItem(data.product, noteController.text),
-                    );
-                Navigator.pop(context);
-              },
-              child: const Text('Simpan'),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Batal',
+                      style: GoogleFonts.quicksand(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<CheckoutBloc>().add(
+                            CheckoutEvent.addNoteToItem(data.product, noteController.text),
+                          );
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Simpan',
+                      style: GoogleFonts.quicksand(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         );
