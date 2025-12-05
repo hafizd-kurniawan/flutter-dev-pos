@@ -371,7 +371,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 widget.totalDiscount,
                 widget.subTotal,
                 1,
-                'Cashier Bahri',
+                'HayoPOS',
                 widget.draftName,
                 receiptPrinter.paper.toIntegerFromText,
                 taxPercentage,
@@ -405,7 +405,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 widget.data,
                 '',
                 widget.draftName,
-                'Cashier Bahri',
+                'HayoPOS',
                 kitchenPrinter.paper.toIntegerFromText,
                 widget.orderType ?? 'Dine In', // Default for now, or pass from widget
                 widget.tableName ?? '', // Table name if available
@@ -436,7 +436,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 widget.data,
                 widget.tableName ?? '',
                 widget.draftName,
-                'Cashier Bahri',
+                'HayoPOS',
                 barPrinter.paper.toIntegerFromText,
                 widget.orderNote ?? '', // NEW
               );

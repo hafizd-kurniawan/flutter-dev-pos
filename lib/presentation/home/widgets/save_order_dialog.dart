@@ -130,7 +130,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                                 widget.data,
                                 widget.table.tableName,
                                 widget.draftName,
-                                'Cashier Bahri',
+                                'HayoPOS',
                                 checkerPrinter.paper.toIntegerFromText,
                                 widget.orderNote ?? '', // NEW
                                 );
@@ -160,7 +160,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                           widget.data,
                           widget.table.tableName,
                           widget.draftName,
-                          'Cashier Bahri',
+                          'HayoPOS',
                           kitchenPrinter.paper.toIntegerFromText,
                           'Dine In', // Default for SaveOrder
                           widget.table.tableName,
@@ -191,7 +191,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                           widget.data,
                           widget.table.tableName,
                           widget.draftName,
-                          'Cashier Bahri',
+                          'HayoPOS',
                           barPrinter.paper.toIntegerFromText,
                           widget.orderNote ?? '', // NEW
                         );

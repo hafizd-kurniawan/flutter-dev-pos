@@ -172,7 +172,7 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
     bytes += generator.reset();
 
     bytes +=
-        generator.text('Code with Bahri', styles: const PosStyles(bold: true));
+        generator.text('HayoPOS', styles: const PosStyles(bold: true));
     bytes +=
         generator.text('Reverse text', styles: const PosStyles(reverse: true));
     bytes += generator.text('Underlined text',

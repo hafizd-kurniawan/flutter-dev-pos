@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SpaceHeight(16.0),
                     const Text(
-                      'Resto Code With Bahri',
+                      'HayoPOS',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -189,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                     
                     const SpaceHeight(24.0),
                     Text(
-                      '© 2024 Code With Bahri. All rights reserved.',
+                      '© 2025 HayoPOS. All rights reserved.',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[400],
