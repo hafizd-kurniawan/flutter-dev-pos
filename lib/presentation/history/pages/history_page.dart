@@ -16,6 +16,7 @@ import 'dart:developer';
 import 'package:flutter_posresto_app/core/extensions/string_ext.dart'; // NEW: Import String Ext
 import 'package:flutter_posresto_app/data/models/response/product_response_model.dart'; // NEW: Import Product Model
 import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
+import 'package:flutter_posresto_app/presentation/home/bloc/notification/notification_bloc.dart'; // NEW IMPORT
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -57,7 +58,14 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
   }
 
   Future<void> _refreshOrders() async {
-    _onTabChanged();
+    final index = _tabController.index;
+    if (index == 0) {
+      context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
+    } else if (index == 1) {
+      context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
+    } else if (index == 2) {
+      context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders(isRefresh: true));
+    }
   }
   
   // Show date picker dialog
@@ -439,10 +447,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
           // Refresh Button - Modern Design
           BlocBuilder<HistoryBloc, HistoryState>(
             builder: (context, state) {
-              final isLoading = state.maybeWhen(
-                loading: () => true,
-                orElse: () => false,
-              );
+              final isLoading = state.isLoading;
               
               return Padding(
                 padding: const EdgeInsets.only(right: 12),
@@ -459,7 +464,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                       : const Icon(Icons.refresh_rounded, size: 28),
                   tooltip: 'Refresh Orders',
                   onPressed: isLoading ? null : () {
-                    _onTabChanged();
+                    _refreshOrders();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('🔄 Memuat data terbaru...'),
@@ -531,217 +536,201 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
           Expanded(
             child: BlocConsumer<HistoryBloc, HistoryState>(
               listener: (context, state) {
-                state.maybeWhen(
-                  statusUpdated: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('✅ Order status updated successfully!'),
-                        backgroundColor: Colors.green,
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                    _onTabChanged();
-                  },
-                  error: (message) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('❌ Error: $message'),
-                        backgroundColor: Colors.red,
-                        duration: const Duration(seconds: 3),
-                      ),
-                    );
-                  },
-                  orElse: () {},
-                );
+                if (state.isStatusUpdated) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('✅ Order status updated successfully!'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                  // Refresh all tabs to ensure consistency
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders(isRefresh: true));
+                  
+                  // Sync Notification Badge (Count of Paid Orders)
+                  context.read<NotificationBloc>().add(const NotificationEvent.checkOrders());
+                }
+                
+                if (state.errorMessage != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('❌ Error: ${state.errorMessage}'),
+                      backgroundColor: Colors.red,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                }
               },
               builder: (context, state) {
                 return TabBarView(
                   controller: _tabController,
                   children: [
-              // Paid Orders Tab - with pull-to-refresh
-              RefreshIndicator(
-                onRefresh: () async {
-                  context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders());
-                  await Future.delayed(const Duration(seconds: 1));
-                },
-                child: _buildOrdersList(context, state, 'paid'),
-              ),
-              
-              // Cooking Orders Tab - with pull-to-refresh
-              RefreshIndicator(
-                onRefresh: () async {
-                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders());
-                  await Future.delayed(const Duration(seconds: 1));
-                },
-                child: _buildOrdersList(context, state, 'cooking'),
-              ),
-              
-              // Completed Orders Tab - with pull-to-refresh
-              RefreshIndicator(
-                onRefresh: () async {
-                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders());
-                  await Future.delayed(const Duration(seconds: 1));
-                },
-                child: _buildOrdersList(context, state, 'complete'),
-              ),
-            ],
-          );
-        },
+                    // Paid Orders Tab
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
+                      },
+                      child: _buildOrdersList(context, state.paidOrders, state.isLoading, state.errorMessage, 'paid'),
+                    ),
+                    
+                    // Cooking Orders Tab
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
+                      },
+                      child: _buildOrdersList(context, state.cookingOrders, state.isLoading, state.errorMessage, 'cooking'),
+                    ),
+                    
+                    // Completed Orders Tab
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders(isRefresh: true));
+                      },
+                      child: _buildOrdersList(context, state.completedOrders, state.isLoading, state.errorMessage, 'complete'),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
-        ),
-      ],
-    ),
     );
   }
 
-  Widget _buildOrdersList(BuildContext context, HistoryState state, String statusFilter) {
-    return state.when(
-      initial: () => const Center(child: Text('Pull to refresh')),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      loaded: (orders) {
-        // CLIENT-SIDE DATE FILTERING
-        var filteredOrders = orders;
-        
-        if (_isFilterActive && _startDate != null && _endDate != null) {
-          filteredOrders = orders.where((order) {
-            if (order.placedAt == null) return false;
-            
-            try {
-              final orderDate = DateTime.parse(order.placedAt!);
-              
-              // Set start date to beginning of day (00:00:00)
-              final startOfDay = DateTime(_startDate!.year, _startDate!.month, _startDate!.day, 0, 0, 0);
-              
-              // Set end date to end of day (23:59:59)
-              final endOfDay = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
-              
-              // Check if order date is within range
-              return orderDate.isAfter(startOfDay.subtract(const Duration(seconds: 1))) &&
-                     orderDate.isBefore(endOfDay.add(const Duration(seconds: 1)));
-            } catch (e) {
-              print('Error parsing date for order ${order.id}: $e');
-              return false;
-            }
-          }).toList();
-        }
-        
-        if (filteredOrders.isEmpty) {
-          return RefreshIndicator(
-            onRefresh: _refreshOrders,
-            child: ListView(
-              padding: const EdgeInsets.all(16),
+  Widget _buildOrdersList(
+    BuildContext context, 
+    List<OrderResponseModel> orders, 
+    bool isLoading, 
+    String? errorMessage, 
+    String statusFilter
+  ) {
+    // Show loading only if list is empty and loading is true (initial load)
+    if (isLoading && orders.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    // Show error if list is empty and error exists
+    if (errorMessage != null && orders.isEmpty) {
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 100),
-                      Icon(
-                        statusFilter == 'paid'
-                            ? Icons.payment
-                            : statusFilter == 'cooking'
-                                ? Icons.restaurant
-                                : Icons.check_circle,
-                        size: 80,
-                        color: Colors.grey[300],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        _isFilterActive 
-                            ? 'No orders in date range' 
-                            : 'No ${statusFilter} orders',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _isFilterActive
-                            ? 'No orders found between\n${_startDate!.day}/${_startDate!.month}/${_startDate!.year} - ${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
-                            : statusFilter == 'paid'
-                                ? 'New orders will appear here'
-                                : statusFilter == 'cooking'
-                                    ? 'Orders being prepared will appear here'
-                                    : 'Completed orders will appear here',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[500],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: 100),
+                const Icon(Icons.error_outline, size: 80, color: Colors.red),
+                const SizedBox(height: 16),
+                const Text(
+                  'Error loading orders',
+                  style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  errorMessage,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: _refreshOrders,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
                 ),
               ],
             ),
-          );
-        }
-
-        return RefreshIndicator(
-          onRefresh: _refreshOrders,
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: filteredOrders.length,
-            itemBuilder: (context, index) {
-              final order = filteredOrders[index];
-              return OrderCard(
-                order: order,
-                onStatusUpdate: () => _showStatusUpdateDialog(context, order),
-                onPrint: () => _handlePrintReceipt(order), // NEW
-                onShare: () => _handleShareReceipt(order), // NEW
-              );
-            },
           ),
+        ],
+      );
+    }
+
+    // CLIENT-SIDE DATE FILTERING
+    var filteredOrders = orders;
+    
+    if (_isFilterActive && _startDate != null && _endDate != null) {
+      filteredOrders = orders.where((order) {
+        if (order.placedAt == null) return false;
+        
+        try {
+          final orderDate = DateTime.parse(order.placedAt!);
+          final startOfDay = DateTime(_startDate!.year, _startDate!.month, _startDate!.day, 0, 0, 0);
+          final endOfDay = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
+          
+          return orderDate.isAfter(startOfDay.subtract(const Duration(seconds: 1))) &&
+                 orderDate.isBefore(endOfDay.add(const Duration(seconds: 1)));
+        } catch (e) {
+          print('Error parsing date for order ${order.id}: $e');
+          return false;
+        }
+      }).toList();
+    }
+    
+    if (filteredOrders.isEmpty) {
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 100),
+                Icon(
+                  statusFilter == 'paid'
+                      ? Icons.payment
+                      : statusFilter == 'cooking'
+                          ? Icons.restaurant
+                          : Icons.check_circle,
+                  size: 80,
+                  color: Colors.grey[300],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  _isFilterActive 
+                      ? 'No orders in date range' 
+                      : 'No ${statusFilter} orders',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _isFilterActive
+                      ? 'No orders found between\n${_startDate!.day}/${_startDate!.month}/${_startDate!.year} - ${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
+                      : statusFilter == 'paid'
+                          ? 'New orders will appear here'
+                          : statusFilter == 'cooking'
+                              ? 'Orders being prepared will appear here'
+                              : 'Completed orders will appear here',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[500],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: filteredOrders.length,
+      itemBuilder: (context, index) {
+        final order = filteredOrders[index];
+        return OrderCard(
+          order: order,
+          onStatusUpdate: () => _showStatusUpdateDialog(context, order),
+          onPrint: () => _handlePrintReceipt(order),
+          onShare: () => _handleShareReceipt(order),
         );
       },
-      error: (message) => RefreshIndicator(
-        onRefresh: _refreshOrders,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 100),
-                  const Icon(
-                    Icons.error_outline,
-                    size: 80,
-                    color: Colors.red,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error loading orders',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[800],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    message,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: _refreshOrders,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      statusUpdated: () => const Center(child: CircularProgressIndicator()),
     );
   }
 }

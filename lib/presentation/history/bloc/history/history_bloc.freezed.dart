@@ -19,27 +19,27 @@ mixin _$HistoryEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) =>
@@ -137,9 +137,9 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
     return started();
@@ -149,9 +149,9 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
     return started?.call();
@@ -161,9 +161,9 @@ class _$StartedImpl implements _Started {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {
@@ -223,6 +223,8 @@ abstract class _$$FetchPaidOrdersImplCopyWith<$Res> {
   factory _$$FetchPaidOrdersImplCopyWith(_$FetchPaidOrdersImpl value,
           $Res Function(_$FetchPaidOrdersImpl) then) =
       __$$FetchPaidOrdersImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool? isRefresh});
 }
 
 /// @nodoc
@@ -235,63 +237,90 @@ class __$$FetchPaidOrdersImplCopyWithImpl<$Res>
 
   /// Create a copy of HistoryEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isRefresh = freezed,
+  }) {
+    return _then(_$FetchPaidOrdersImpl(
+      isRefresh: freezed == isRefresh
+          ? _value.isRefresh
+          : isRefresh // ignore: cast_nullable_to_non_nullable
+              as bool?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$FetchPaidOrdersImpl implements _FetchPaidOrders {
-  const _$FetchPaidOrdersImpl();
+  const _$FetchPaidOrdersImpl({this.isRefresh});
+
+  @override
+  final bool? isRefresh;
 
   @override
   String toString() {
-    return 'HistoryEvent.fetchPaidOrders()';
+    return 'HistoryEvent.fetchPaidOrders(isRefresh: $isRefresh)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$FetchPaidOrdersImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$FetchPaidOrdersImpl &&
+            (identical(other.isRefresh, isRefresh) ||
+                other.isRefresh == isRefresh));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, isRefresh);
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FetchPaidOrdersImplCopyWith<_$FetchPaidOrdersImpl> get copyWith =>
+      __$$FetchPaidOrdersImplCopyWithImpl<_$FetchPaidOrdersImpl>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
-    return fetchPaidOrders();
+    return fetchPaidOrders(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
-    return fetchPaidOrders?.call();
+    return fetchPaidOrders?.call(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {
     if (fetchPaidOrders != null) {
-      return fetchPaidOrders();
+      return fetchPaidOrders(isRefresh);
     }
     return orElse();
   }
@@ -338,7 +367,16 @@ class _$FetchPaidOrdersImpl implements _FetchPaidOrders {
 }
 
 abstract class _FetchPaidOrders implements HistoryEvent {
-  const factory _FetchPaidOrders() = _$FetchPaidOrdersImpl;
+  const factory _FetchPaidOrders({final bool? isRefresh}) =
+      _$FetchPaidOrdersImpl;
+
+  bool? get isRefresh;
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FetchPaidOrdersImplCopyWith<_$FetchPaidOrdersImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -346,6 +384,8 @@ abstract class _$$FetchCookingOrdersImplCopyWith<$Res> {
   factory _$$FetchCookingOrdersImplCopyWith(_$FetchCookingOrdersImpl value,
           $Res Function(_$FetchCookingOrdersImpl) then) =
       __$$FetchCookingOrdersImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool? isRefresh});
 }
 
 /// @nodoc
@@ -358,63 +398,90 @@ class __$$FetchCookingOrdersImplCopyWithImpl<$Res>
 
   /// Create a copy of HistoryEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isRefresh = freezed,
+  }) {
+    return _then(_$FetchCookingOrdersImpl(
+      isRefresh: freezed == isRefresh
+          ? _value.isRefresh
+          : isRefresh // ignore: cast_nullable_to_non_nullable
+              as bool?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$FetchCookingOrdersImpl implements _FetchCookingOrders {
-  const _$FetchCookingOrdersImpl();
+  const _$FetchCookingOrdersImpl({this.isRefresh});
+
+  @override
+  final bool? isRefresh;
 
   @override
   String toString() {
-    return 'HistoryEvent.fetchCookingOrders()';
+    return 'HistoryEvent.fetchCookingOrders(isRefresh: $isRefresh)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$FetchCookingOrdersImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$FetchCookingOrdersImpl &&
+            (identical(other.isRefresh, isRefresh) ||
+                other.isRefresh == isRefresh));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, isRefresh);
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FetchCookingOrdersImplCopyWith<_$FetchCookingOrdersImpl> get copyWith =>
+      __$$FetchCookingOrdersImplCopyWithImpl<_$FetchCookingOrdersImpl>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
-    return fetchCookingOrders();
+    return fetchCookingOrders(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
-    return fetchCookingOrders?.call();
+    return fetchCookingOrders?.call(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {
     if (fetchCookingOrders != null) {
-      return fetchCookingOrders();
+      return fetchCookingOrders(isRefresh);
     }
     return orElse();
   }
@@ -461,7 +528,16 @@ class _$FetchCookingOrdersImpl implements _FetchCookingOrders {
 }
 
 abstract class _FetchCookingOrders implements HistoryEvent {
-  const factory _FetchCookingOrders() = _$FetchCookingOrdersImpl;
+  const factory _FetchCookingOrders({final bool? isRefresh}) =
+      _$FetchCookingOrdersImpl;
+
+  bool? get isRefresh;
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FetchCookingOrdersImplCopyWith<_$FetchCookingOrdersImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -469,6 +545,8 @@ abstract class _$$FetchCompletedOrdersImplCopyWith<$Res> {
   factory _$$FetchCompletedOrdersImplCopyWith(_$FetchCompletedOrdersImpl value,
           $Res Function(_$FetchCompletedOrdersImpl) then) =
       __$$FetchCompletedOrdersImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool? isRefresh});
 }
 
 /// @nodoc
@@ -481,64 +559,91 @@ class __$$FetchCompletedOrdersImplCopyWithImpl<$Res>
 
   /// Create a copy of HistoryEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isRefresh = freezed,
+  }) {
+    return _then(_$FetchCompletedOrdersImpl(
+      isRefresh: freezed == isRefresh
+          ? _value.isRefresh
+          : isRefresh // ignore: cast_nullable_to_non_nullable
+              as bool?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$FetchCompletedOrdersImpl implements _FetchCompletedOrders {
-  const _$FetchCompletedOrdersImpl();
+  const _$FetchCompletedOrdersImpl({this.isRefresh});
+
+  @override
+  final bool? isRefresh;
 
   @override
   String toString() {
-    return 'HistoryEvent.fetchCompletedOrders()';
+    return 'HistoryEvent.fetchCompletedOrders(isRefresh: $isRefresh)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FetchCompletedOrdersImpl);
+            other is _$FetchCompletedOrdersImpl &&
+            (identical(other.isRefresh, isRefresh) ||
+                other.isRefresh == isRefresh));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, isRefresh);
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FetchCompletedOrdersImplCopyWith<_$FetchCompletedOrdersImpl>
+      get copyWith =>
+          __$$FetchCompletedOrdersImplCopyWithImpl<_$FetchCompletedOrdersImpl>(
+              this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
-    return fetchCompletedOrders();
+    return fetchCompletedOrders(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
-    return fetchCompletedOrders?.call();
+    return fetchCompletedOrders?.call(isRefresh);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {
     if (fetchCompletedOrders != null) {
-      return fetchCompletedOrders();
+      return fetchCompletedOrders(isRefresh);
     }
     return orElse();
   }
@@ -585,7 +690,16 @@ class _$FetchCompletedOrdersImpl implements _FetchCompletedOrders {
 }
 
 abstract class _FetchCompletedOrders implements HistoryEvent {
-  const factory _FetchCompletedOrders() = _$FetchCompletedOrdersImpl;
+  const factory _FetchCompletedOrders({final bool? isRefresh}) =
+      _$FetchCompletedOrdersImpl;
+
+  bool? get isRefresh;
+
+  /// Create a copy of HistoryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FetchCompletedOrdersImplCopyWith<_$FetchCompletedOrdersImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -666,9 +780,9 @@ class _$UpdateOrderStatusImpl implements _UpdateOrderStatus {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function() fetchPaidOrders,
-    required TResult Function() fetchCookingOrders,
-    required TResult Function() fetchCompletedOrders,
+    required TResult Function(bool? isRefresh) fetchPaidOrders,
+    required TResult Function(bool? isRefresh) fetchCookingOrders,
+    required TResult Function(bool? isRefresh) fetchCompletedOrders,
     required TResult Function(int orderId, String status) updateOrderStatus,
   }) {
     return updateOrderStatus(orderId, status);
@@ -678,9 +792,9 @@ class _$UpdateOrderStatusImpl implements _UpdateOrderStatus {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function()? fetchPaidOrders,
-    TResult? Function()? fetchCookingOrders,
-    TResult? Function()? fetchCompletedOrders,
+    TResult? Function(bool? isRefresh)? fetchPaidOrders,
+    TResult? Function(bool? isRefresh)? fetchCookingOrders,
+    TResult? Function(bool? isRefresh)? fetchCompletedOrders,
     TResult? Function(int orderId, String status)? updateOrderStatus,
   }) {
     return updateOrderStatus?.call(orderId, status);
@@ -690,9 +804,9 @@ class _$UpdateOrderStatusImpl implements _UpdateOrderStatus {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function()? fetchPaidOrders,
-    TResult Function()? fetchCookingOrders,
-    TResult Function()? fetchCompletedOrders,
+    TResult Function(bool? isRefresh)? fetchPaidOrders,
+    TResult Function(bool? isRefresh)? fetchCookingOrders,
+    TResult Function(bool? isRefresh)? fetchCompletedOrders,
     TResult Function(int orderId, String status)? updateOrderStatus,
     required TResult orElse(),
   }) {
@@ -760,61 +874,19 @@ abstract class _UpdateOrderStatus implements HistoryEvent {
 
 /// @nodoc
 mixin _$HistoryState {
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(List<OrderResponseModel> orders) loaded,
-    required TResult Function(String message) error,
-    required TResult Function() statusUpdated,
-  }) =>
+  List<OrderResponseModel> get paidOrders => throw _privateConstructorUsedError;
+  List<OrderResponseModel> get cookingOrders =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(List<OrderResponseModel> orders)? loaded,
-    TResult? Function(String message)? error,
-    TResult? Function()? statusUpdated,
-  }) =>
+  List<OrderResponseModel> get completedOrders =>
       throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(List<OrderResponseModel> orders)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? statusUpdated,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Loaded value) loaded,
-    required TResult Function(_Error value) error,
-    required TResult Function(_StatusUpdated value) statusUpdated,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Loaded value)? loaded,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_StatusUpdated value)? statusUpdated,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Loaded value)? loaded,
-    TResult Function(_Error value)? error,
-    TResult Function(_StatusUpdated value)? statusUpdated,
-    required TResult orElse(),
-  }) =>
+  bool get isLoading => throw _privateConstructorUsedError;
+  String? get errorMessage => throw _privateConstructorUsedError;
+  bool get isStatusUpdated => throw _privateConstructorUsedError;
+
+  /// Create a copy of HistoryState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $HistoryStateCopyWith<HistoryState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -823,6 +895,14 @@ abstract class $HistoryStateCopyWith<$Res> {
   factory $HistoryStateCopyWith(
           HistoryState value, $Res Function(HistoryState) then) =
       _$HistoryStateCopyWithImpl<$Res, HistoryState>;
+  @useResult
+  $Res call(
+      {List<OrderResponseModel> paidOrders,
+      List<OrderResponseModel> cookingOrders,
+      List<OrderResponseModel> completedOrders,
+      bool isLoading,
+      String? errorMessage,
+      bool isStatusUpdated});
 }
 
 /// @nodoc
@@ -837,433 +917,68 @@ class _$HistoryStateCopyWithImpl<$Res, $Val extends HistoryState>
 
   /// Create a copy of HistoryState
   /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-abstract class _$$InitialImplCopyWith<$Res> {
-  factory _$$InitialImplCopyWith(
-          _$InitialImpl value, $Res Function(_$InitialImpl) then) =
-      __$$InitialImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$InitialImplCopyWithImpl<$Res>
-    extends _$HistoryStateCopyWithImpl<$Res, _$InitialImpl>
-    implements _$$InitialImplCopyWith<$Res> {
-  __$$InitialImplCopyWithImpl(
-      _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of HistoryState
-  /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-
-class _$InitialImpl implements _Initial {
-  const _$InitialImpl();
-
-  @override
-  String toString() {
-    return 'HistoryState.initial()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$InitialImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(List<OrderResponseModel> orders) loaded,
-    required TResult Function(String message) error,
-    required TResult Function() statusUpdated,
-  }) {
-    return initial();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(List<OrderResponseModel> orders)? loaded,
-    TResult? Function(String message)? error,
-    TResult? Function()? statusUpdated,
-  }) {
-    return initial?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(List<OrderResponseModel> orders)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (initial != null) {
-      return initial();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Loaded value) loaded,
-    required TResult Function(_Error value) error,
-    required TResult Function(_StatusUpdated value) statusUpdated,
-  }) {
-    return initial(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Loaded value)? loaded,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_StatusUpdated value)? statusUpdated,
-  }) {
-    return initial?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Loaded value)? loaded,
-    TResult Function(_Error value)? error,
-    TResult Function(_StatusUpdated value)? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (initial != null) {
-      return initial(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _Initial implements HistoryState {
-  const factory _Initial() = _$InitialImpl;
-}
-
-/// @nodoc
-abstract class _$$LoadingImplCopyWith<$Res> {
-  factory _$$LoadingImplCopyWith(
-          _$LoadingImpl value, $Res Function(_$LoadingImpl) then) =
-      __$$LoadingImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$LoadingImplCopyWithImpl<$Res>
-    extends _$HistoryStateCopyWithImpl<$Res, _$LoadingImpl>
-    implements _$$LoadingImplCopyWith<$Res> {
-  __$$LoadingImplCopyWithImpl(
-      _$LoadingImpl _value, $Res Function(_$LoadingImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of HistoryState
-  /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-
-class _$LoadingImpl implements _Loading {
-  const _$LoadingImpl();
-
-  @override
-  String toString() {
-    return 'HistoryState.loading()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$LoadingImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(List<OrderResponseModel> orders) loaded,
-    required TResult Function(String message) error,
-    required TResult Function() statusUpdated,
-  }) {
-    return loading();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(List<OrderResponseModel> orders)? loaded,
-    TResult? Function(String message)? error,
-    TResult? Function()? statusUpdated,
-  }) {
-    return loading?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(List<OrderResponseModel> orders)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (loading != null) {
-      return loading();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Loaded value) loaded,
-    required TResult Function(_Error value) error,
-    required TResult Function(_StatusUpdated value) statusUpdated,
-  }) {
-    return loading(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Loaded value)? loaded,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_StatusUpdated value)? statusUpdated,
-  }) {
-    return loading?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Loaded value)? loaded,
-    TResult Function(_Error value)? error,
-    TResult Function(_StatusUpdated value)? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (loading != null) {
-      return loading(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _Loading implements HistoryState {
-  const factory _Loading() = _$LoadingImpl;
-}
-
-/// @nodoc
-abstract class _$$LoadedImplCopyWith<$Res> {
-  factory _$$LoadedImplCopyWith(
-          _$LoadedImpl value, $Res Function(_$LoadedImpl) then) =
-      __$$LoadedImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({List<OrderResponseModel> orders});
-}
-
-/// @nodoc
-class __$$LoadedImplCopyWithImpl<$Res>
-    extends _$HistoryStateCopyWithImpl<$Res, _$LoadedImpl>
-    implements _$$LoadedImplCopyWith<$Res> {
-  __$$LoadedImplCopyWithImpl(
-      _$LoadedImpl _value, $Res Function(_$LoadedImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of HistoryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? orders = null,
+    Object? paidOrders = null,
+    Object? cookingOrders = null,
+    Object? completedOrders = null,
+    Object? isLoading = null,
+    Object? errorMessage = freezed,
+    Object? isStatusUpdated = null,
   }) {
-    return _then(_$LoadedImpl(
-      null == orders
-          ? _value._orders
-          : orders // ignore: cast_nullable_to_non_nullable
+    return _then(_value.copyWith(
+      paidOrders: null == paidOrders
+          ? _value.paidOrders
+          : paidOrders // ignore: cast_nullable_to_non_nullable
               as List<OrderResponseModel>,
-    ));
+      cookingOrders: null == cookingOrders
+          ? _value.cookingOrders
+          : cookingOrders // ignore: cast_nullable_to_non_nullable
+              as List<OrderResponseModel>,
+      completedOrders: null == completedOrders
+          ? _value.completedOrders
+          : completedOrders // ignore: cast_nullable_to_non_nullable
+              as List<OrderResponseModel>,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errorMessage: freezed == errorMessage
+          ? _value.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isStatusUpdated: null == isStatusUpdated
+          ? _value.isStatusUpdated
+          : isStatusUpdated // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
   }
 }
 
 /// @nodoc
-
-class _$LoadedImpl implements _Loaded {
-  const _$LoadedImpl(final List<OrderResponseModel> orders) : _orders = orders;
-
-  final List<OrderResponseModel> _orders;
+abstract class _$$HistoryStateImplCopyWith<$Res>
+    implements $HistoryStateCopyWith<$Res> {
+  factory _$$HistoryStateImplCopyWith(
+          _$HistoryStateImpl value, $Res Function(_$HistoryStateImpl) then) =
+      __$$HistoryStateImplCopyWithImpl<$Res>;
   @override
-  List<OrderResponseModel> get orders {
-    if (_orders is EqualUnmodifiableListView) return _orders;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_orders);
-  }
-
-  @override
-  String toString() {
-    return 'HistoryState.loaded(orders: $orders)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LoadedImpl &&
-            const DeepCollectionEquality().equals(other._orders, _orders));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_orders));
-
-  /// Create a copy of HistoryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
-      __$$LoadedImplCopyWithImpl<_$LoadedImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(List<OrderResponseModel> orders) loaded,
-    required TResult Function(String message) error,
-    required TResult Function() statusUpdated,
-  }) {
-    return loaded(orders);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(List<OrderResponseModel> orders)? loaded,
-    TResult? Function(String message)? error,
-    TResult? Function()? statusUpdated,
-  }) {
-    return loaded?.call(orders);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(List<OrderResponseModel> orders)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (loaded != null) {
-      return loaded(orders);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Loaded value) loaded,
-    required TResult Function(_Error value) error,
-    required TResult Function(_StatusUpdated value) statusUpdated,
-  }) {
-    return loaded(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Loaded value)? loaded,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_StatusUpdated value)? statusUpdated,
-  }) {
-    return loaded?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Loaded value)? loaded,
-    TResult Function(_Error value)? error,
-    TResult Function(_StatusUpdated value)? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (loaded != null) {
-      return loaded(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _Loaded implements HistoryState {
-  const factory _Loaded(final List<OrderResponseModel> orders) = _$LoadedImpl;
-
-  List<OrderResponseModel> get orders;
-
-  /// Create a copy of HistoryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$ErrorImplCopyWith<$Res> {
-  factory _$$ErrorImplCopyWith(
-          _$ErrorImpl value, $Res Function(_$ErrorImpl) then) =
-      __$$ErrorImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String message});
+  $Res call(
+      {List<OrderResponseModel> paidOrders,
+      List<OrderResponseModel> cookingOrders,
+      List<OrderResponseModel> completedOrders,
+      bool isLoading,
+      String? errorMessage,
+      bool isStatusUpdated});
 }
 
 /// @nodoc
-class __$$ErrorImplCopyWithImpl<$Res>
-    extends _$HistoryStateCopyWithImpl<$Res, _$ErrorImpl>
-    implements _$$ErrorImplCopyWith<$Res> {
-  __$$ErrorImplCopyWithImpl(
-      _$ErrorImpl _value, $Res Function(_$ErrorImpl) _then)
+class __$$HistoryStateImplCopyWithImpl<$Res>
+    extends _$HistoryStateCopyWithImpl<$Res, _$HistoryStateImpl>
+    implements _$$HistoryStateImplCopyWith<$Res> {
+  __$$HistoryStateImplCopyWithImpl(
+      _$HistoryStateImpl _value, $Res Function(_$HistoryStateImpl) _then)
       : super(_value, _then);
 
   /// Create a copy of HistoryState
@@ -1271,261 +986,161 @@ class __$$ErrorImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? message = null,
+    Object? paidOrders = null,
+    Object? cookingOrders = null,
+    Object? completedOrders = null,
+    Object? isLoading = null,
+    Object? errorMessage = freezed,
+    Object? isStatusUpdated = null,
   }) {
-    return _then(_$ErrorImpl(
-      null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
+    return _then(_$HistoryStateImpl(
+      paidOrders: null == paidOrders
+          ? _value._paidOrders
+          : paidOrders // ignore: cast_nullable_to_non_nullable
+              as List<OrderResponseModel>,
+      cookingOrders: null == cookingOrders
+          ? _value._cookingOrders
+          : cookingOrders // ignore: cast_nullable_to_non_nullable
+              as List<OrderResponseModel>,
+      completedOrders: null == completedOrders
+          ? _value._completedOrders
+          : completedOrders // ignore: cast_nullable_to_non_nullable
+              as List<OrderResponseModel>,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errorMessage: freezed == errorMessage
+          ? _value.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isStatusUpdated: null == isStatusUpdated
+          ? _value.isStatusUpdated
+          : isStatusUpdated // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
 
 /// @nodoc
 
-class _$ErrorImpl implements _Error {
-  const _$ErrorImpl(this.message);
+class _$HistoryStateImpl implements _HistoryState {
+  const _$HistoryStateImpl(
+      {final List<OrderResponseModel> paidOrders = const [],
+      final List<OrderResponseModel> cookingOrders = const [],
+      final List<OrderResponseModel> completedOrders = const [],
+      this.isLoading = false,
+      this.errorMessage,
+      this.isStatusUpdated = false})
+      : _paidOrders = paidOrders,
+        _cookingOrders = cookingOrders,
+        _completedOrders = completedOrders;
+
+  final List<OrderResponseModel> _paidOrders;
+  @override
+  @JsonKey()
+  List<OrderResponseModel> get paidOrders {
+    if (_paidOrders is EqualUnmodifiableListView) return _paidOrders;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_paidOrders);
+  }
+
+  final List<OrderResponseModel> _cookingOrders;
+  @override
+  @JsonKey()
+  List<OrderResponseModel> get cookingOrders {
+    if (_cookingOrders is EqualUnmodifiableListView) return _cookingOrders;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_cookingOrders);
+  }
+
+  final List<OrderResponseModel> _completedOrders;
+  @override
+  @JsonKey()
+  List<OrderResponseModel> get completedOrders {
+    if (_completedOrders is EqualUnmodifiableListView) return _completedOrders;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_completedOrders);
+  }
 
   @override
-  final String message;
+  @JsonKey()
+  final bool isLoading;
+  @override
+  final String? errorMessage;
+  @override
+  @JsonKey()
+  final bool isStatusUpdated;
 
   @override
   String toString() {
-    return 'HistoryState.error(message: $message)';
+    return 'HistoryState(paidOrders: $paidOrders, cookingOrders: $cookingOrders, completedOrders: $completedOrders, isLoading: $isLoading, errorMessage: $errorMessage, isStatusUpdated: $isStatusUpdated)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ErrorImpl &&
-            (identical(other.message, message) || other.message == message));
+            other is _$HistoryStateImpl &&
+            const DeepCollectionEquality()
+                .equals(other._paidOrders, _paidOrders) &&
+            const DeepCollectionEquality()
+                .equals(other._cookingOrders, _cookingOrders) &&
+            const DeepCollectionEquality()
+                .equals(other._completedOrders, _completedOrders) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading) &&
+            (identical(other.errorMessage, errorMessage) ||
+                other.errorMessage == errorMessage) &&
+            (identical(other.isStatusUpdated, isStatusUpdated) ||
+                other.isStatusUpdated == isStatusUpdated));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, message);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_paidOrders),
+      const DeepCollectionEquality().hash(_cookingOrders),
+      const DeepCollectionEquality().hash(_completedOrders),
+      isLoading,
+      errorMessage,
+      isStatusUpdated);
 
   /// Create a copy of HistoryState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
-      __$$ErrorImplCopyWithImpl<_$ErrorImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(List<OrderResponseModel> orders) loaded,
-    required TResult Function(String message) error,
-    required TResult Function() statusUpdated,
-  }) {
-    return error(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(List<OrderResponseModel> orders)? loaded,
-    TResult? Function(String message)? error,
-    TResult? Function()? statusUpdated,
-  }) {
-    return error?.call(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(List<OrderResponseModel> orders)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (error != null) {
-      return error(message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Loaded value) loaded,
-    required TResult Function(_Error value) error,
-    required TResult Function(_StatusUpdated value) statusUpdated,
-  }) {
-    return error(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Loaded value)? loaded,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_StatusUpdated value)? statusUpdated,
-  }) {
-    return error?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Loaded value)? loaded,
-    TResult Function(_Error value)? error,
-    TResult Function(_StatusUpdated value)? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (error != null) {
-      return error(this);
-    }
-    return orElse();
-  }
+  _$$HistoryStateImplCopyWith<_$HistoryStateImpl> get copyWith =>
+      __$$HistoryStateImplCopyWithImpl<_$HistoryStateImpl>(this, _$identity);
 }
 
-abstract class _Error implements HistoryState {
-  const factory _Error(final String message) = _$ErrorImpl;
+abstract class _HistoryState implements HistoryState {
+  const factory _HistoryState(
+      {final List<OrderResponseModel> paidOrders,
+      final List<OrderResponseModel> cookingOrders,
+      final List<OrderResponseModel> completedOrders,
+      final bool isLoading,
+      final String? errorMessage,
+      final bool isStatusUpdated}) = _$HistoryStateImpl;
 
-  String get message;
+  @override
+  List<OrderResponseModel> get paidOrders;
+  @override
+  List<OrderResponseModel> get cookingOrders;
+  @override
+  List<OrderResponseModel> get completedOrders;
+  @override
+  bool get isLoading;
+  @override
+  String? get errorMessage;
+  @override
+  bool get isStatusUpdated;
 
   /// Create a copy of HistoryState
   /// with the given fields replaced by the non-null parameter values.
+  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
+  _$$HistoryStateImplCopyWith<_$HistoryStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$StatusUpdatedImplCopyWith<$Res> {
-  factory _$$StatusUpdatedImplCopyWith(
-          _$StatusUpdatedImpl value, $Res Function(_$StatusUpdatedImpl) then) =
-      __$$StatusUpdatedImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$StatusUpdatedImplCopyWithImpl<$Res>
-    extends _$HistoryStateCopyWithImpl<$Res, _$StatusUpdatedImpl>
-    implements _$$StatusUpdatedImplCopyWith<$Res> {
-  __$$StatusUpdatedImplCopyWithImpl(
-      _$StatusUpdatedImpl _value, $Res Function(_$StatusUpdatedImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of HistoryState
-  /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-
-class _$StatusUpdatedImpl implements _StatusUpdated {
-  const _$StatusUpdatedImpl();
-
-  @override
-  String toString() {
-    return 'HistoryState.statusUpdated()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$StatusUpdatedImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(List<OrderResponseModel> orders) loaded,
-    required TResult Function(String message) error,
-    required TResult Function() statusUpdated,
-  }) {
-    return statusUpdated();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(List<OrderResponseModel> orders)? loaded,
-    TResult? Function(String message)? error,
-    TResult? Function()? statusUpdated,
-  }) {
-    return statusUpdated?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(List<OrderResponseModel> orders)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (statusUpdated != null) {
-      return statusUpdated();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Loaded value) loaded,
-    required TResult Function(_Error value) error,
-    required TResult Function(_StatusUpdated value) statusUpdated,
-  }) {
-    return statusUpdated(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Loaded value)? loaded,
-    TResult? Function(_Error value)? error,
-    TResult? Function(_StatusUpdated value)? statusUpdated,
-  }) {
-    return statusUpdated?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Loaded value)? loaded,
-    TResult Function(_Error value)? error,
-    TResult Function(_StatusUpdated value)? statusUpdated,
-    required TResult orElse(),
-  }) {
-    if (statusUpdated != null) {
-      return statusUpdated(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _StatusUpdated implements HistoryState {
-  const factory _StatusUpdated() = _$StatusUpdatedImpl;
 }

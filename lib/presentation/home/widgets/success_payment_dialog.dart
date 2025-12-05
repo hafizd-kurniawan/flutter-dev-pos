@@ -48,6 +48,7 @@ class SuccessPaymentDialog extends StatefulWidget {
     this.tableName, // NEW: Table name for dine-in
     this.orderType, // NEW: 'dine_in' or 'takeaway'
     this.orderNote, // NEW: Global Order Note
+    this.paymentMethod = 'Cash', // NEW: Payment Method (default Cash)
     this.onPaymentSuccess, // NEW: Callback for success
   }) : super(key: key);
   final List<ProductQuantity> data;
@@ -64,6 +65,7 @@ class SuccessPaymentDialog extends StatefulWidget {
   final String? tableName; // NEW: Table name (e.g., "Meja 5")
   final String? orderType; // NEW: Order type (dine_in/takeaway)
   final String? orderNote; // NEW: Global Order Note
+  final String paymentMethod; // NEW: Payment Method
   final VoidCallback? onPaymentSuccess; // NEW: Callback
   @override
   State<SuccessPaymentDialog> createState() => _SuccessPaymentDialogState();
@@ -113,6 +115,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
   
   @override
   Widget build(BuildContext context) {
+    log("SUCCESS DIALOG: Building dialog...");
     return AlertDialog(
       content: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -134,7 +137,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             const Text('METODE BAYAR'),
             const SpaceHeight(5.0),
             Text(
-              'Cash', // Fixed: Cash payment for success dialog
+              widget.paymentMethod, // Fixed: Dynamic payment method
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
               ),
@@ -343,7 +346,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                               widget.data,
                               widget.totalQty,
                               widget.totalPrice,
-                              'Cash',
+                              widget.paymentMethod,
                               paymentAmount,
                               kembalian,
                               widget.totalTax,
@@ -467,7 +470,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                           widget.data,
                           widget.totalQty,
                           widget.totalPrice,
-                          'Cash',
+                          widget.paymentMethod,
                           paymentAmountValue,
                           kembalian,
                           widget.subTotal,

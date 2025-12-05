@@ -131,9 +131,7 @@ class ProductCard extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(40.0)),
                     child: (data.image != null && data.image!.isNotEmpty && data.image != 'null')
                         ? CachedNetworkImage(
-                            imageUrl: data.image!.contains('http')
-                                ? data.image!
-                                : '${Variables.baseUrl}/${data.image}',
+                            imageUrl: data.image!.toImageUrl,
                             width: 60,
                             height: 60,
                             fit: BoxFit.cover,
