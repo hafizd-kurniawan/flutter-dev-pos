@@ -7,6 +7,7 @@ import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/data/models/response/dashboard_summary_model.dart';
 import 'package:flutter_posresto_app/presentation/dashboard/bloc/dashboard_summary_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 class DashboardSummaryWidget extends StatelessWidget {
   const DashboardSummaryWidget({Key? key}) : super(key: key);
@@ -544,9 +545,7 @@ class DashboardSummaryWidget extends StatelessWidget {
     if (await canLaunchUrl(webUrl)) {
       await launchUrl(webUrl, mode: LaunchMode.externalApplication);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open web dashboard')),
-      );
+      NotificationHelper.showError(context, 'Could not open web dashboard');
     }
   }
 
@@ -556,9 +555,7 @@ class DashboardSummaryWidget extends StatelessWidget {
     if (await canLaunchUrl(upgradeUrl)) {
       await launchUrl(upgradeUrl, mode: LaunchMode.externalApplication);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open upgrade page')),
-      );
+      NotificationHelper.showError(context, 'Could not open upgrade page');
     }
   }
 }

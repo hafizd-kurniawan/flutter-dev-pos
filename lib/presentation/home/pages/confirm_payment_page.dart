@@ -19,6 +19,7 @@ import 'package:flutter_posresto_app/presentation/home/dialog/payment_qris_dialo
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/save_order_dialog.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 import '../../../core/components/buttons.dart';
 import '../../../core/components/spaces.dart';
@@ -755,13 +756,11 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                         // 1. VALIDATION: Customer Name
                         final customerName = customerController.text.trim();
                         if (customerName.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(widget.orderType == 'takeaway'
-                                  ? '⚠️ Nama customer wajib diisi untuk Takeaway!'
-                                  : '⚠️ Nama customer wajib diisi!'),
-                              backgroundColor: Colors.red,
-                            ),
+                          NotificationHelper.showWarning(
+                            context,
+                            widget.orderType == 'takeaway'
+                                ? 'Nama customer wajib diisi untuk Takeaway!'
+                                : 'Nama customer wajib diisi!',
                           );
                           return;
                         }
@@ -770,12 +769,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                         if (isCash) {
                           final paymentAmountValue = totalPriceController.text.toIntegerFromText;
                           if (paymentAmountValue < totalPriceFinal) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('⚠️ Nominal pembayaran kurang!'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
+                            NotificationHelper.showWarning(context, 'Nominal pembayaran kurang!');
                             return;
                           }
                         }

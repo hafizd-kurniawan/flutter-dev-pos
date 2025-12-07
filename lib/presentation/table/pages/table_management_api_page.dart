@@ -7,6 +7,7 @@ import 'package:flutter_posresto_app/data/models/response/table_category_model.d
 import 'package:flutter_posresto_app/presentation/table/blocs/get_table/get_table_bloc.dart';
 import 'package:flutter_posresto_app/presentation/table/widgets/change_table_status_sheet.dart';
 import 'package:flutter_posresto_app/presentation/table/widgets/table_info_card.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/custom_tab_selector.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -85,18 +86,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
           success: (tables, _) {
             if (_isManualRefresh) {
               setState(() => _isManualRefresh = false);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '✅ Data meja berhasil diperbarui',
-                    style: GoogleFonts.quicksand(color: Colors.white),
-                  ),
-                  backgroundColor: Colors.green,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+              NotificationHelper.showSuccess(context, 'Data meja berhasil diperbarui');
             }
           },
           orElse: () {},

@@ -20,6 +20,8 @@ import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.
 import 'package:flutter_posresto_app/presentation/home/bloc/notification/notification_bloc.dart'; // NEW IMPORT
 import 'package:flutter_posresto_app/core/constants/colors.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
+import 'package:flutter_posresto_app/core/components/modern_refresh_button.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 class HistoryPage extends StatefulWidget {
   final VoidCallback? onToggleSidebar;
@@ -166,21 +168,12 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                   Navigator.pop(dialogContext);
                   _onTabChanged(); // Refresh with filter
                   
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        '📅 Filter: ${pickedStartDate!.day}/${pickedStartDate!.month} - ${pickedEndDate!.day}/${pickedEndDate!.month}',
-                      ),
-                      duration: const Duration(seconds: 2),
-                    ),
+                  NotificationHelper.showInfo(
+                    context,
+                    '📅 Filter: ${pickedStartDate!.day}/${pickedStartDate!.month} - ${pickedEndDate!.day}/${pickedEndDate!.month}',
                   );
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('⚠️ Please select both start and end dates'),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
+                  NotificationHelper.showWarning(context, 'Please select both start and end dates');
                 }
               },
               child: const Text('Apply Filter'),
@@ -385,12 +378,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                               ),
                             );
                         
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Updating order status to $newStatus...'),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
+                        NotificationHelper.showInfo(context, 'Updating order status to $newStatus...');
                         
                         Future.delayed(const Duration(seconds: 1), () {
                           _onTabChanged();
@@ -427,15 +415,11 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
   // NEW: Handle Print Receipt
   Future<void> _handlePrintReceipt(OrderResponseModel order) async {
     try {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('🖨️ Printing receipt...')),
-      );
+      NotificationHelper.showInfo(context, 'Printing receipt...');
 
       final receiptPrinter = await ProductLocalDatasource.instance.getPrinterByCode('receipt');
       if (receiptPrinter == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('⚠️ No receipt printer found')),
-        );
+        NotificationHelper.showWarning(context, 'No receipt printer found');
         return;
       }
 
@@ -486,16 +470,12 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
           printer.disconnect();
         } else {
           log("Failed to connect to printer");
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('❌ Failed to connect to printer')),
-          );
+            NotificationHelper.showError(context, 'Failed to connect to printer');
         }
       }
     } catch (e) {
       log('Error printing: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Error printing: $e')),
-      );
+      NotificationHelper.showError(context, 'Error printing: $e');
     }
   }
 
@@ -546,9 +526,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
       await Share.shareXFiles([xFile], text: 'Receipt from $appName');
     } catch (e) {
       log('Error sharing: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Error sharing: $e')),
-      );
+      NotificationHelper.showError(context, 'Error sharing: $e');
     }
   }
 
@@ -651,13 +629,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
             child: BlocConsumer<HistoryBloc, HistoryState>(
               listener: (context, state) {
                 if (state.isStatusUpdated) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('✅ Order status updated successfully!'),
-                      backgroundColor: Colors.green,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  NotificationHelper.showSuccess(context, 'Order status updated successfully!');
                   // Refresh all tabs to ensure consistency
                   context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
                   context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
@@ -668,13 +640,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                 }
                 
                 if (state.errorMessage != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('❌ Error: ${state.errorMessage}'),
-                      backgroundColor: Colors.red,
-                      duration: const Duration(seconds: 3),
-                    ),
-                  );
+                  NotificationHelper.showError(context, 'Error: ${state.errorMessage}');
                 }
               },
               builder: (context, state) {
@@ -766,33 +732,13 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                 BlocBuilder<HistoryBloc, HistoryState>(
                   builder: (context, state) {
                     final isLoading = state.isLoading;
-                    return IconButton(
-                      icon: isLoading
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                              ),
-                            )
-                          : const Icon(Icons.refresh_rounded, size: 20),
-                      tooltip: 'Refresh Orders',
-                      onPressed: isLoading ? null : () {
+                    return ModernRefreshButton(
+                      isLoading: isLoading,
+                      onPressed: () {
                         _refreshOrders();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('🔄 Memuat data terbaru...'),
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
+                        NotificationHelper.showInfo(context, 'Memuat data terbaru...');
                       },
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(8),
-                      ),
-                      color: AppColors.primary,
+                      tooltip: 'Refresh Orders',
                     );
                   },
                 ),

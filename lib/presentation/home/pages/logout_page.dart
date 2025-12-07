@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 import '../../../core/constants/colors.dart';
 import '../../../data/datasources/auth_local_datasource.dart';
@@ -35,21 +36,11 @@ class _LogoutPageState extends State<LogoutPage> {
                 state.maybeMap(
                   orElse: () {},
                   error: (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(e.message),
-                        backgroundColor: AppColors.red,
-                      ),
-                    );
+                    NotificationHelper.showError(context, e.message);
                   },
                   success: (value) {
                     AuthLocalDataSource().removeAuthData();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Logout success'),
-                        backgroundColor: AppColors.primary,
-                      ),
-                    );
+                    NotificationHelper.showSuccess(context, 'Logout success');
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
                       return const LoginPage();

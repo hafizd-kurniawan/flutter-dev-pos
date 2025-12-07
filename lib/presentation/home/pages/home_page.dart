@@ -36,6 +36,8 @@ import '../widgets/home_title.dart';
 import '../widgets/order_menu.dart';
 import '../widgets/product_card.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
+import 'package:flutter_posresto_app/core/components/modern_refresh_button.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 class HomePage extends StatefulWidget {
   final bool isTable;
@@ -352,33 +354,21 @@ class _HomePageState extends State<HomePage> {
       // Show result
       if (mounted) {
         if (errors.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('✅ Semua data berhasil diperbarui! ($successCount/$totalCount)'),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
-            ),
+          NotificationHelper.showSuccess(
+            context, 
+            'Semua data berhasil diperbarui!'
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('⚠️ Refresh selesai dengan ${errors.length} error:\n${errors.join('\n')}'),
-              backgroundColor: Colors.orange,
-              duration: const Duration(seconds: 3),
-            ),
+          NotificationHelper.showWarning(
+            context,
+            'Refresh selesai dengan ${errors.length} error:\n${errors.join('\n')}'
           );
         }
       }
     } catch (e) {
       print('❌ Refresh error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Gagal refresh data: $e'),
-            backgroundColor: Colors.red,
-    duration: const Duration(seconds: 2),
-          ),
-        );
+        NotificationHelper.showError(context, 'Gagal refresh data: $e');
       }
     } finally {
       setState(() => _isRefreshing = false);
@@ -521,22 +511,9 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(width: 4),
 
                         // Refresh Button
-                        IconButton(
-                          onPressed: _isRefreshing ? null : _refreshAllData,
-                          icon: _isRefreshing
-                              ? const SizedBox(
-                                  width: 14,
-                                  height: 14,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Icon(Icons.refresh_rounded, size: 20),
-                          color: AppColors.primary,
-                          tooltip: 'Refresh Data',
-                          style: IconButton.styleFrom(
-                            backgroundColor: AppColors.primary.withOpacity(0.1),
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(8),
-                          ),
+                        ModernRefreshButton(
+                          isLoading: _isRefreshing,
+                          onPressed: _refreshAllData,
                         ),
                       ],
                     ),
@@ -654,22 +631,9 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(width: 4),
                       
                       // Refresh Button
-                      IconButton(
-                        onPressed: _isRefreshing ? null : _refreshAllData,
-                        icon: _isRefreshing
-                            ? const SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : const Icon(Icons.refresh_rounded, size: 20),
-                        color: AppColors.primary,
-                        tooltip: 'Refresh Data',
-                        style: IconButton.styleFrom(
-                          backgroundColor: AppColors.primary.withOpacity(0.1),
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(8),
-                        ),
+                      ModernRefreshButton(
+                        isLoading: _isRefreshing,
+                        onPressed: _refreshAllData,
                       ),
                     ],
                   ),
@@ -1214,12 +1178,7 @@ class _HomePageState extends State<HomePage> {
                                 result.fold(
                                   (error) {
                                     // Network error
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Gagal validasi stok: $error'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
+                                    NotificationHelper.showError(context, 'Gagal validasi stok: $error');
                                   },
                                   (validation) async { // ADDED: async for await
                                     final isValid = validation['is_valid'] ?? false;
@@ -1227,12 +1186,7 @@ class _HomePageState extends State<HomePage> {
                                     if (isValid) {
                                       // Validate: Dine-in must have table selected
                                       if (_orderType == 'dine_in' && _selectedTable == null && widget.table == null) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('⚠️ Pilih meja terlebih dahulu untuk Dine In'),
-                                            backgroundColor: Colors.orange,
-                                          ),
-                                        );
+                                        NotificationHelper.showWarning(context, 'Pilih meja terlebih dahulu untuk Dine In');
                                         return;
                                       }
                                       
@@ -1384,7 +1338,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     isTakeaway 
                         ? 'Takeaway (No Table)'
-                        : (hasTable ? _selectedTable!.name! : 'Tap untuk memilih meja'),
+                        : (hasTable ? _selectedTable!.name : 'Tap untuk memilih meja'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1616,23 +1570,4 @@ class _HomePageState extends State<HomePage> {
 
 }
 
-class _IsEmpty extends StatelessWidget {
-  const _IsEmpty();
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SpaceHeight(40),
-        Assets.icons.noProduct.svg(),
-        const SizedBox(height: 40.0),
-        const Text(
-          'Belum Ada Produk',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16),
-        ),
-      ],
-    );
-  }
-}

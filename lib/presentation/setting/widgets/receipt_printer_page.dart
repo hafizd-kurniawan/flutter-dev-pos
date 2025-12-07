@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posresto_app/core/components/components.dart';
@@ -166,23 +168,13 @@ class _ReceiptPrinterPageState extends State<ReceiptPrinterPage> {
                                 state.maybeWhen(
                                   orElse: () {},
                                   success: (message) {
-                                    final snackBar = SnackBar(
-                                      content: Text(message),
-                                      backgroundColor: AppColors.primary,
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                    NotificationHelper.showSuccess(context, message);
                                     context
                                         .read<GetPrinterReceiptBloc>()
                                         .add(GetPrinterReceiptEvent.get());
                                   },
                                   error: (message) {
-                                    final snackBar = SnackBar(
-                                      content: Text(message),
-                                      backgroundColor: AppColors.red,
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                    NotificationHelper.showError(context, message);
                                   },
                                 );
                               },
@@ -218,23 +210,13 @@ class _ReceiptPrinterPageState extends State<ReceiptPrinterPage> {
                                 state.maybeWhen(
                                   orElse: () {},
                                   success: (message) {
-                                    final snackBar = SnackBar(
-                                      content: Text(message),
-                                      backgroundColor: AppColors.primary,
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                    NotificationHelper.showSuccess(context, message);
                                     context
                                         .read<GetPrinterReceiptBloc>()
                                         .add(GetPrinterReceiptEvent.get());
                                   },
                                   error: (message) {
-                                    final snackBar = SnackBar(
-                                      content: Text(message),
-                                      backgroundColor: AppColors.red,
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                    NotificationHelper.showError(context, message);
                                   },
                                 );
                               },

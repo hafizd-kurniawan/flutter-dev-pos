@@ -7,6 +7,7 @@ import 'package:flutter_posresto_app/core/extensions/string_ext.dart';
 import 'package:flutter_posresto_app/data/datasources/stock_remote_datasource.dart';
 import 'package:flutter_posresto_app/data/models/response/product_response_model.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/checkout/checkout_bloc.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/components/spaces.dart';
@@ -44,13 +45,7 @@ class ProductCard extends StatelessWidget {
         
         if (requestedQty > availableStock) {
           // Stock insufficient
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('❌ Stok tidak cukup! Tersedia: $availableStock, Di keranjang: $currentQtyInCart'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          NotificationHelper.showError(context, 'Stok tidak cukup! Tersedia: $availableStock, Di keranjang: $currentQtyInCart');
           return;
         }
         
@@ -71,13 +66,7 @@ class ProductCard extends StatelessWidget {
           (error) {
             // Network error, allow add with local stock check
             context.read<CheckoutBloc>().add(CheckoutEvent.addItem(data));
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('⚠️ Tidak dapat verifikasi stok online. Ditambahkan berdasarkan stok lokal.'),
-                backgroundColor: Colors.orange,
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            NotificationHelper.showWarning(context, 'Tidak dapat verifikasi stok online. Ditambahkan berdasarkan stok lokal.');
           },
           (stockData) {
             final serverStock = stockData['current_stock'] ?? 0;
@@ -85,23 +74,11 @@ class ProductCard extends StatelessWidget {
             
             if (!isAvailable || serverStock < requestedQty) {
               // Stock not available on server
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('❌ Stok tidak cukup! Server stock: $serverStock'),
-                  backgroundColor: Colors.red,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+              NotificationHelper.showError(context, 'Stok tidak mencukupi');
             } else {
               // Stock available, add to cart
               context.read<CheckoutBloc>().add(CheckoutEvent.addItem(data));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('✅ ${data.name} ditambahkan ke keranjang'),
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 1),
-                ),
-              );
+              NotificationHelper.showSuccess(context, 'Berhasil ditambahkan');
             }
           },
         );

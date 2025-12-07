@@ -20,6 +20,7 @@ import 'package:flutter_posresto_app/data/datasources/product_remote_datasource.
 import 'package:flutter_posresto_app/data/datasources/product_storage_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
 
 import '../../../core/assets/assets.gen.dart';
@@ -467,9 +468,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
     return Button.outlined(
       onPressed: () async {
         try {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('📄 Generating PDF...')),
-          );
+          NotificationHelper.showSuccess(context, 'Generating PDF...');
 
           final paymentAmountValue = widget.paymentAmount ?? widget.totalPrice;
           final kembalian = paymentAmountValue - widget.totalPrice;
@@ -510,15 +509,11 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
           final appName = settings['app_name'] ?? 'Self Order POS';
 
           await Share.shareXFiles([xFile], text: 'Receipt from $appName');
+          NotificationHelper.showSuccess(context, 'Receipt shared successfully!');
         } catch (e, stackTrace) {
           print('Error sharing receipt: $e');
           print('Stack trace: $stackTrace');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('❌ Error: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          NotificationHelper.showError(context, 'Error sharing receipt: $e');
         }
       },
       label: 'Struk',

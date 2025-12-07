@@ -35,6 +35,7 @@ import 'home_page.dart';
 
 import 'package:flutter_posresto_app/core/services/notification_service.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 class DashboardPage extends StatefulWidget {
   final int? index;
@@ -256,23 +257,13 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
                             orElse: () {},
                             error: (e) {
                               if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(e.message),
-                                    backgroundColor: AppColors.red,
-                                  ),
-                                );
+                                NotificationHelper.showError(context, e.message);
                               }
                             },
                             success: (value) {
                               AuthLocalDataSource().removeAuthData();
                               if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Logout Success'),
-                                    backgroundColor: AppColors.primary,
-                                  ),
-                                );
+                                NotificationHelper.showSuccess(context, 'Logout success');
                                 Navigator.pushReplacement(context,
                                     MaterialPageRoute(builder: (context) {
                                   return const LoginPage();
@@ -296,23 +287,13 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
                           state.maybeWhen(
                             loaded: (response) {
                               if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('✅ Settings Synced Successfully!'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
+                                NotificationHelper.showSuccess(context, 'Sync settings success');
                               }
                             },
                             error: (message) {
                               if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('❌ Sync Failed: $message'),
-                                    backgroundColor: Colors.red,
-                                    duration: const Duration(seconds: 5),
-                                  ),
-                                );
+                                NotificationHelper.showError(context, 'Sync settings failed');
+                              
                               }
                             },
                             orElse: () {},
@@ -322,12 +303,7 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
                                 icon: Icons.sync,
                                 isActive: false,
                                 onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('🔄 Syncing Settings...'),
-                                      duration: Duration(seconds: 1),
-                                    ),
-                                  );
+                                  NotificationHelper.showInfo(context, 'Syncing settings...');
                                   context
                                       .read<SettingsBloc>()
                                       .add(const SettingsEvent.fetchSettings());
@@ -349,13 +325,7 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
                   
                   // Optional: Show snackbar or toast
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('🔔 New Order Received! History Updated.'),
-                        backgroundColor: AppColors.primary,
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    NotificationHelper.showSuccess(context, 'New Order Received! History Updated.');
                   }
                 },
                 child: IndexedStack(

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_posresto_app/core/constants/colors.dart';
 import 'package:flutter_posresto_app/data/models/response/table_model.dart';
 import 'package:flutter_posresto_app/presentation/table/blocs/get_table/get_table_bloc.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 class ChangeTableStatusSheet extends StatefulWidget {
   final TableModel table;
@@ -52,34 +53,13 @@ class _ChangeTableStatusSheetState extends State<ChangeTableStatusSheet> {
                 _isLoading = false;
                 _isUpdated = true; // Mark as updated
               });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '✅ Status meja berhasil diperbarui',
-                    style: GoogleFonts.quicksand(color: Colors.white),
-                  ),
-                  backgroundColor: Colors.green,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+              NotificationHelper.showSuccess(context, 'Status meja berhasil diperbarui');
             }
           },
           error: (message) {
             if (_isLoading) {
               setState(() => _isLoading = false);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Gagal memperbarui status: $message',
-                    style: GoogleFonts.quicksand(color: Colors.white),
-                  ),
-                  backgroundColor: AppColors.red,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-              );
+              NotificationHelper.showError(context, 'Gagal memperbarui status: $message');
             }
           },
           orElse: () {},

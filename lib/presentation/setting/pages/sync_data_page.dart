@@ -5,6 +5,7 @@ import 'package:flutter_posresto_app/data/datasources/product_local_datasource.d
 import 'package:flutter_posresto_app/presentation/home/bloc/local_product/local_product_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_order/sync_order_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_product/sync_product_bloc.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SyncDataPage extends StatefulWidget {
@@ -45,12 +46,7 @@ class _SyncDataPageState extends State<SyncDataPage> {
               state.maybeWhen(
                 orElse: () {},
                 error: (message) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(message, style: GoogleFonts.quicksand()),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+                  NotificationHelper.showError(context, message);
                 },
                 loaded: (productResponseModel) {
                   // Reload home page
@@ -61,15 +57,7 @@ class _SyncDataPageState extends State<SyncDataPage> {
                   }
                   
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '✅ ${productResponseModel.data?.length ?? 0} produk berhasil disinkronkan!',
-                          style: GoogleFonts.quicksand(),
-                        ),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
+                    NotificationHelper.showSuccess(context, '${productResponseModel.data?.length ?? 0} produk berhasil disinkronkan!');
                   }
                 },
               );
@@ -100,20 +88,10 @@ class _SyncDataPageState extends State<SyncDataPage> {
               state.maybeWhen(
                 orElse: () {},
                 error: (message) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(message, style: GoogleFonts.quicksand()),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+                  NotificationHelper.showError(context, message);
                 },
                 loaded: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Sync Order Success', style: GoogleFonts.quicksand()),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                  NotificationHelper.showSuccess(context, 'Sync Order Success');
                 },
               );
             },

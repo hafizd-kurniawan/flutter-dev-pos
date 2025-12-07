@@ -16,6 +16,7 @@ import '../../core/constants/colors.dart';
 import '../home/pages/dashboard_page.dart';
 import 'bloc/login/login_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 import 'package:flutter_posresto_app/core/services/notification_service.dart';
 
@@ -147,13 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                                   _handleLoginSuccess(context, authResponseModel);
                                 },
                                 error: (message) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(message),
-                                      backgroundColor: AppColors.red,
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
+                                  NotificationHelper.showError(context, message);
                                 },
                               );
                             },
@@ -225,12 +220,7 @@ class _LoginPageState extends State<LoginPage> {
     print('🌐 Online Only Mode: Skipping product sync');
     
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login Success'),
-          backgroundColor: AppColors.primary,
-        ),
-      );
+      NotificationHelper.showSuccess(context, 'Login Success');
       
       // Navigate to Dashboard
       Navigator.pushReplacement(

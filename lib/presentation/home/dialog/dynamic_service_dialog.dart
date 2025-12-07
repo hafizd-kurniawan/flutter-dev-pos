@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/checkout/checkout_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/pos_settings/pos_settings_bloc.dart';
@@ -129,13 +130,7 @@ class _DynamicServiceDialogState extends State<DynamicServiceDialog> {
                               
                               setState(() => _selectedServiceId = service.id);
                               
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('✅ Layanan ${service.name} diterapkan'),
-                                  backgroundColor: Colors.green,
-                                  duration: const Duration(seconds: 1),
-                                ),
-                              );
+                              NotificationHelper.showSuccess(context, 'Layanan ${service.name} diterapkan');
                               context.pop();
                             },
                           ),
