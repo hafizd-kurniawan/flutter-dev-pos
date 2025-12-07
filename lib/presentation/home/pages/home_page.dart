@@ -576,44 +576,25 @@ class _HomePageState extends State<HomePage> {
                     title: 'Menu',
                     onToggleSidebar: widget.onToggleSidebar ?? () {},
                     isSidebarVisible: true,
-                    actions: [
-                      // Search Bar
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final screenWidth = MediaQuery.of(context).size.width;
-                          final isSmall = screenWidth < 400;
-                          final isMobile = screenWidth < 600;
-                          return SizedBox(
-                            width: isSmall ? 100 : (isMobile ? 140 : 250), // Responsive width
-                            height: 36,
+                    titleWidget: _isSearchActive
+                        ? SizedBox(
+                            height: 40,
                             child: TextField(
                               controller: searchController,
-                              style: const TextStyle(fontSize: 12),
+                              autofocus: true,
+                              style: const TextStyle(fontSize: 14),
                               decoration: InputDecoration(
-                                hintText: 'Cari...',
-                                hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 13),
-                                prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 18),
-                                suffixIcon: _searchQuery.isNotEmpty
-                                    ? IconButton(
-                                        icon: const Icon(Icons.close, size: 16),
-                                        onPressed: () {
-                                          setState(() {
-                                            searchController.clear();
-                                            _searchQuery = '';
-                                          });
-                                        },
-                                        padding: EdgeInsets.zero,
-                                        constraints: const BoxConstraints(),
-                                        splashRadius: 16,
-                                      )
-                                    : null,
+                                hintText: 'Cari produk...',
+                                hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 14),
+                                prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 20),
                                 filled: true,
                                 fillColor: Colors.grey[100],
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(18),
+                                  borderRadius: BorderRadius.circular(30),
                                   borderSide: BorderSide.none,
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                                isDense: true,
                               ),
                               onChanged: (value) {
                                 if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -624,17 +605,35 @@ class _HomePageState extends State<HomePage> {
                                 });
                               },
                             ),
-                          );
-                        },
-                      ),
-                      
-                      const SizedBox(width: 4),
-                      
-                      // Refresh Button
-                      ModernRefreshButton(
-                        isLoading: _isRefreshing,
-                        onPressed: _refreshAllData,
-                      ),
+                          )
+                        : null,
+                    actions: [
+                      if (_isSearchActive)
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            setState(() {
+                              _isSearchActive = false;
+                              searchController.clear();
+                              _searchQuery = '';
+                            });
+                          },
+                        )
+                      else ...[
+                        IconButton(
+                          icon: const Icon(Icons.search),
+                          onPressed: () {
+                            setState(() {
+                              _isSearchActive = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 4),
+                        ModernRefreshButton(
+                          isLoading: _isRefreshing,
+                          onPressed: _refreshAllData,
+                        ),
+                      ],
                     ],
                   ),
                 ),
