@@ -14,8 +14,11 @@ class FloatingHeader extends StatelessWidget {
     required this.onToggleSidebar,
     required this.isSidebarVisible,
     this.actions,
-    this.useBackIcon = false, // NEW: Flag for Back Button
+    this.useBackIcon = false,
+    this.titleWidget, // NEW: Custom title widget
   }) : super(key: key);
+
+  final Widget? titleWidget;
 
   final bool useBackIcon;
 
@@ -65,7 +68,7 @@ class FloatingHeader extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(
+            child: titleWidget ?? Text(
               title,
               textAlign: TextAlign.center,
               style: GoogleFonts.quicksand(
@@ -102,7 +105,7 @@ class FloatingHeader extends StatelessWidget {
         // 2. Center
         Align(
           alignment: Alignment.center,
-          child: Text(
+          child: titleWidget ?? Text(
             title,
             style: GoogleFonts.quicksand(
               fontSize: 18.0,

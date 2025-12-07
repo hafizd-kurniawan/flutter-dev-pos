@@ -38,6 +38,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
   int? _recentlyUpdatedTableId; // Track recently updated table for highlight
   Timer? _highlightTimer; // Timer to remove highlight after few seconds
   bool _isManualRefresh = false; // Track manual refresh
+  bool _isSearchActive = false; // NEW: Track search bar visibility on mobile
 
   @override
   void initState() {
@@ -144,65 +145,65 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                   title: 'Table Management',
                   onToggleSidebar: widget.onToggleSidebar ?? () {},
                   isSidebarVisible: true,
-                  actions: [
-                    // Search Bar
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final screenWidth = MediaQuery.of(context).size.width;
-                        final isSmall = screenWidth < 400;
-                        final isMobile = screenWidth < 600;
-                        return SizedBox(
-                          width: isSmall ? 100 : (isMobile ? 140 : 250), // Responsive width
-                          height: 36,
+                  titleWidget: _isSearchActive
+                      ? SizedBox(
+                          height: 40,
                           child: TextField(
                             controller: _searchController,
-                            style: const TextStyle(fontSize: 12),
+                            autofocus: true,
+                            style: const TextStyle(fontSize: 14),
                             decoration: InputDecoration(
                               hintText: 'Search tables...',
-                              hintStyle: TextStyle(fontSize: 13, color: Colors.grey[500]),
-                              prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[500], size: 18),
-                              suffixIcon: _searchQuery.isNotEmpty
-                                  ? IconButton(
-                                      icon: Icon(Icons.close, color: Colors.grey[600], size: 16),
-                                      onPressed: () {
-                                        _searchController.clear();
-                                        setState(() => _searchQuery = '');
-                                      },
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(),
-                                      splashRadius: 16,
-                                    )
-                                  : null,
+                              hintStyle: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                              prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[500], size: 20),
                               filled: true,
                               fillColor: Colors.grey[100],
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(30),
                                 borderSide: BorderSide.none,
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                              isDense: true,
                             ),
                             onChanged: (value) {
                               setState(() => _searchQuery = value.toLowerCase());
                             },
                           ),
-                        );
-                      },
-                    ),
-                    
-                    const SizedBox(width: 4),
-                    
-                    // Refresh Button
-                    IconButton(
-                      onPressed: () => _loadData(isRefresh: true),
-                      icon: const Icon(Icons.refresh_rounded, size: 20),
-                      color: AppColors.primary,
-                      tooltip: 'Refresh Data',
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(8),
+                        )
+                      : null,
+                  actions: [
+                    if (_isSearchActive)
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          setState(() {
+                            _isSearchActive = false;
+                            _searchController.clear();
+                            _searchQuery = '';
+                          });
+                        },
+                      )
+                    else ...[
+                      IconButton(
+                        icon: const Icon(Icons.search_rounded),
+                        onPressed: () {
+                          setState(() {
+                            _isSearchActive = true;
+                          });
+                        },
                       ),
-                    ),
+                      const SizedBox(width: 4),
+                      IconButton(
+                        onPressed: () => _loadData(isRefresh: true),
+                        icon: const Icon(Icons.refresh_rounded, size: 20),
+                        color: AppColors.primary,
+                        tooltip: 'Refresh Data',
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.primary.withOpacity(0.1),
+                          shape: const CircleBorder(),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -564,79 +565,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
     );
   }
 
-  Widget _buildSearchBar() {
-    return Container(
-      height: 48,
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: _searchQuery.isNotEmpty ? AppColors.primary.withOpacity(0.3) : Colors.grey[300]!,
-          width: 1.5,
-        ),
-      ),
-      child: TextField(
-        controller: _searchController,
-        style: const TextStyle(fontSize: 14),
-        decoration: InputDecoration(
-          hintText: 'Search table or customer name...',
-          hintStyle: TextStyle(fontSize: 13, color: Colors.grey[500]),
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            color: _searchQuery.isNotEmpty ? AppColors.primary : Colors.grey[500],
-            size: 22,
-          ),
-          suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(
-                  icon: Icon(Icons.close, color: Colors.grey[600], size: 20),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() => _searchQuery = '');
-                  },
-                  splashRadius: 20,
-                )
-              : null,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        ),
-        onChanged: (value) {
-          setState(() => _searchQuery = value.toLowerCase());
-        },
-      ),
-    );
-  }
 
-  Widget _buildRefreshButton() {
-    return Container(
-      height: 48,
-      width: 48,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _loadData(isRefresh: true),
-          borderRadius: BorderRadius.circular(12),
-          child: const Icon(
-            Icons.refresh_rounded,
-            color: Colors.white,
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
+
+
 }
