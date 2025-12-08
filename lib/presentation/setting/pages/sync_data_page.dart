@@ -5,6 +5,8 @@ import 'package:flutter_posresto_app/data/datasources/product_local_datasource.d
 import 'package:flutter_posresto_app/presentation/home/bloc/local_product/local_product_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_order/sync_order_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_product/sync_product_bloc.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SyncDataPage extends StatefulWidget {
   const SyncDataPage({super.key});
@@ -16,28 +18,35 @@ class SyncDataPage extends StatefulWidget {
 class _SyncDataPageState extends State<SyncDataPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sync Data'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Sync Data',
+            style: GoogleFonts.quicksand(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Sinkronisasi data dari dan ke server',
+            style: GoogleFonts.quicksand(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 24),
+          
           BlocConsumer<SyncProductBloc, SyncProductState>(
             listener: (context, state) {
               state.maybeWhen(
                 orElse: () {},
                 error: (message) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(message),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+                  NotificationHelper.showError(context, message);
                 },
                 loaded: (productResponseModel) {
                   // Reload home page
@@ -48,14 +57,7 @@ class _SyncDataPageState extends State<SyncDataPage> {
                   }
                   
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '✅ ${productResponseModel.data?.length ?? 0} produk berhasil disinkronkan!',
-                        ),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
+                    NotificationHelper.showSuccess(context, '${productResponseModel.data?.length ?? 0} produk berhasil disinkronkan!');
                   }
                 },
               );
@@ -63,37 +65,19 @@ class _SyncDataPageState extends State<SyncDataPage> {
             builder: (context, state) {
               return state.maybeWhen(
                 orElse: () {
-                  return ElevatedButton.icon(
+                  return _buildSyncButton(
                     onPressed: () {
                       context
                           .read<SyncProductBloc>()
                           .add(const SyncProductEvent.syncProduct());
                     },
-                    icon: const Icon(Icons.sync),
-                    label: const Text('Sync Produk Sekarang'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
+                    icon: Icons.sync,
+                    label: 'Sync Produk Sekarang',
+                    color: AppColors.primary,
                   );
                 },
                 loading: () {
-                  return ElevatedButton.icon(
-                    onPressed: null,
-                    icon: const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    ),
-                    label: const Text('Syncing...'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  );
+                  return _buildLoadingButton('Syncing...');
                 },
               );
             },
@@ -104,62 +88,113 @@ class _SyncDataPageState extends State<SyncDataPage> {
               state.maybeWhen(
                 orElse: () {},
                 error: (message) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(message),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+                  NotificationHelper.showError(context, message);
                 },
                 loaded: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Sync Order Success'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                  NotificationHelper.showSuccess(context, 'Sync Order Success');
                 },
               );
             },
             builder: (context, state) {
               return state.maybeWhen(
                 orElse: () {
-                  return ElevatedButton.icon(
+                  return _buildSyncButton(
                     onPressed: () {
                       context
                           .read<SyncOrderBloc>()
                           .add(const SyncOrderEvent.syncOrder());
                     },
-                    icon: const Icon(Icons.cloud_upload),
-                    label: const Text('Sync Order Sekarang'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
+                    icon: Icons.cloud_upload,
+                    label: 'Sync Order Sekarang',
+                    color: Colors.green,
                   );
                 },
                 loading: () {
-                  return ElevatedButton.icon(
-                    onPressed: null,
-                    icon: const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    ),
-                    label: const Text('Syncing...'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  );
+                  return _buildLoadingButton('Syncing...');
                 },
               );
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSyncButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          label,
+          style: GoogleFonts.quicksand(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingButton(String label) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey[300],
+      ),
+      child: ElevatedButton.icon(
+        onPressed: null,
+        icon: const SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+          ),
+        ),
+        label: Text(
+          label,
+          style: GoogleFonts.quicksand(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey,
+          disabledBackgroundColor: Colors.grey,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
         ),
       ),
     );

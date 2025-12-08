@@ -13,7 +13,8 @@ class CheckoutState with _$CheckoutState {
       int serviceCharge,
       int totalQuantity,
       int totalPrice,
-      String draftName) = _Loaded;
+      String draftName,
+      String orderNote) = _Loaded;
   const factory CheckoutState.error(String message) = _Error;
 
   //save draft order

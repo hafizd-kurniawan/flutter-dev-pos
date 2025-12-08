@@ -65,12 +65,12 @@ class QrisStatusResponseModel {
         transactionTime: json["transaction_time"] == null
             ? null
             : DateTime.parse(json["transaction_time"]),
-        grossAmount: json["gross_amount"],
+        grossAmount: json["gross_amount"]?.toString(),
         currency: json["currency"],
-        orderId: json["order_id"],
+        orderId: json["order_id"]?.toString(),
         paymentType: json["payment_type"],
         signatureKey: json["signature_key"],
-        statusCode: json["status_code"],
+        statusCode: json["status_code"]?.toString(),
         transactionId: json["transaction_id"],
         transactionStatus: json["transaction_status"],
         fraudStatus: json["fraud_status"],

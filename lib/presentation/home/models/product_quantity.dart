@@ -6,9 +6,12 @@ import 'package:flutter_posresto_app/data/models/response/product_response_model
 class ProductQuantity {
   final Product product;
   int quantity;
+  String note; // NEW: Note per item
+
   ProductQuantity({
     required this.product,
     required this.quantity,
+    this.note = '', // Default empty
   });
 
   @override
@@ -17,16 +20,18 @@ class ProductQuantity {
 
     return other is ProductQuantity &&
         other.product == product &&
-        other.quantity == quantity;
+        other.quantity == quantity &&
+        other.note == note;
   }
 
   @override
-  int get hashCode => product.hashCode ^ quantity.hashCode;
+  int get hashCode => product.hashCode ^ quantity.hashCode ^ note.hashCode;
 
   Map<String, dynamic> toMap() {
     return {
       'product': product.toMap(),
       'quantity': quantity,
+      'note': note,
     };
   }
 
@@ -38,6 +43,7 @@ class ProductQuantity {
       'id_product': product.productId,
       'quantity': quantity,
       'price': product.price,
+      'note': note,
     };
   }
 
@@ -46,9 +52,10 @@ class ProductQuantity {
 
     return {
       'id_order': orderId ?? 0,
-      'product_id': product.id,  // FIXED: Changed from id_product to product_id for backend compatibility
+      'product_id': product.id,
       'quantity': quantity,
       'price': product.price,
+      'notes': note, // Map to 'notes' for backend
     };
   }
 
@@ -56,6 +63,7 @@ class ProductQuantity {
     return ProductQuantity(
       product: Product.fromMap(map['product']),
       quantity: map['quantity']?.toInt() ?? 0,
+      note: map['note'] ?? '',
     );
   }
 

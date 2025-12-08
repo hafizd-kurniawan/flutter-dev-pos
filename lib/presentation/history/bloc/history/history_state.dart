@@ -1,10 +1,16 @@
 part of 'history_bloc.dart';
 
 @freezed
+@freezed
 class HistoryState with _$HistoryState {
-  const factory HistoryState.initial() = _Initial;
-  const factory HistoryState.loading() = _Loading;
-  const factory HistoryState.loaded(List<OrderResponseModel> orders) = _Loaded;
-  const factory HistoryState.error(String message) = _Error;
-  const factory HistoryState.statusUpdated() = _StatusUpdated;
+  const factory HistoryState({
+    @Default([]) List<OrderResponseModel> paidOrders,
+    @Default([]) List<OrderResponseModel> cookingOrders,
+    @Default([]) List<OrderResponseModel> completedOrders,
+    @Default(false) bool isLoading,
+    String? errorMessage,
+    @Default(false) bool isStatusUpdated,
+  }) = _HistoryState;
+
+  factory HistoryState.initial() => const HistoryState();
 }

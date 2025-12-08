@@ -20,9 +20,11 @@ import 'package:flutter_posresto_app/data/datasources/product_remote_datasource.
 import 'package:flutter_posresto_app/data/datasources/product_storage_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
 
 import '../../../core/assets/assets.gen.dart';
+import '../../../core/constants/colors.dart';
 import '../../../core/components/buttons.dart';
 import '../../../core/components/spaces.dart';
 import '../../table/blocs/get_table/get_table_bloc.dart';
@@ -47,6 +49,8 @@ class SuccessPaymentDialog extends StatefulWidget {
     this.isTablePaymentPage = false,
     this.tableName, // NEW: Table name for dine-in
     this.orderType, // NEW: 'dine_in' or 'takeaway'
+    this.orderNote, // NEW: Global Order Note
+    this.paymentMethod = 'Cash', // NEW: Payment Method (default Cash)
     this.onPaymentSuccess, // NEW: Callback for success
   }) : super(key: key);
   final List<ProductQuantity> data;
@@ -62,6 +66,8 @@ class SuccessPaymentDialog extends StatefulWidget {
   final bool? isTablePaymentPage;
   final String? tableName; // NEW: Table name (e.g., "Meja 5")
   final String? orderType; // NEW: Order type (dine_in/takeaway)
+  final String? orderNote; // NEW: Global Order Note
+  final String paymentMethod; // NEW: Payment Method
   final VoidCallback? onPaymentSuccess; // NEW: Callback
   @override
   State<SuccessPaymentDialog> createState() => _SuccessPaymentDialogState();
@@ -111,79 +117,58 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
   
   @override
   Widget build(BuildContext context) {
+    log("SUCCESS DIALOG: Building dialog...");
     return AlertDialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       content: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Center(child: Assets.icons.success.svg()),
             const SpaceHeight(16.0),
             const Center(
               child: Text(
-                'Pembayaran telah sukses dilakukan',
+                'Pembayaran Sukses',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
                 ),
               ),
             ),
-            const SpaceHeight(20.0),
-            const Text('METODE BAYAR'),
-            const SpaceHeight(5.0),
-            Text(
-              'Cash', // Fixed: Cash payment for success dialog
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SpaceHeight(10.0),
-            const Divider(),
-            const SpaceHeight(8.0),
-            // NEW: Show table/order type information
-            const Text('TIPE ORDER'),
-            const SpaceHeight(5.0),
-            Text(
+            const SpaceHeight(24.0),
+            
+            // Payment Method
+            _buildInfoRow('Metode Bayar', widget.paymentMethod),
+            const Divider(height: 24),
+            
+            // Order Type
+            _buildInfoRow(
+              'Tipe Order', 
               widget.orderType == 'dine_in' 
                   ? 'Dine In${widget.tableName != null ? " - ${widget.tableName}" : ""}' 
-                  : 'Takeaway',
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-                color: Colors.black87,
-              ),
+                  : 'Takeaway'
             ),
-            const SpaceHeight(10.0),
-            const Divider(),
-            const SpaceHeight(8.0),
-            const Text('TOTAL TAGIHAN'),
-            const SpaceHeight(5.0),
-            Text(
-              widget.totalPrice.currencyFormatRp,
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 18,
-                color: Colors.black87,
-              ),
+            const Divider(height: 24),
+            
+            // Total Bill
+            _buildInfoRow('Total Tagihan', widget.totalPrice.currencyFormatRp, isBold: true),
+            const Divider(height: 24),
+            
+            // Payment Amount
+            _buildInfoRow(
+              'Nominal Bayar', 
+              (widget.paymentAmount ?? widget.totalPrice).currencyFormatRp, 
+              color: Colors.blue,
+              isBold: true
             ),
-            const SpaceHeight(10.0),
-            const Divider(),
-            const SpaceHeight(8.0),
-            const Text('NOMINAL BAYAR'),
-            const SpaceHeight(5.0),
-            Text(
-              (widget.paymentAmount ?? widget.totalPrice).currencyFormatRp,
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 18,
-                color: Colors.blue,
-              ),
-            ),
-            const SpaceHeight(10.0),
-            const Divider(),
-            const SpaceHeight(8.0),
-            const Text('KEMBALIAN'),
-            const SpaceHeight(5.0),
+            const Divider(height: 24),
+            
+            // Change (Kembalian)
             Builder(
               builder: (context) {
                 final paymentAmt = widget.paymentAmount ?? widget.totalPrice;
@@ -192,6 +177,11 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      'Kembalian',
+                      style: TextStyle(color: AppColors.grey, fontSize: 14),
+                    ),
+                    const SpaceHeight(4.0),
                     Text(
                       kembalian.currencyFormatRp,
                       style: TextStyle(
@@ -215,291 +205,318 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 );
               },
             ),
-            const SpaceHeight(10.0),
-            const Divider(),
-            const SpaceHeight(8.0),
-            const Text('WAKTU PEMBAYARAN'),
-            const SpaceHeight(5.0),
-            Text(
-              DateFormat('dd MMMM yyyy, HH:mm').format(DateTime.now()),
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-              ),
+            const Divider(height: 24),
+            
+            // Time
+            _buildInfoRow(
+              'Waktu Pembayaran', 
+              DateFormat('dd MMMM yyyy, HH:mm').format(DateTime.now())
             ),
-            const SpaceHeight(20.0),
-            Row(
-              children: [
-                Flexible(
-                  child: Button.filled(
-                    onPressed: () async {
-                      log('✅ Selesai button pressed - Closing dialog and returning to home...');
-                      
-                      // 1. Clear ONLY cart items, KEEP tax/service/discount settings
-                      context
-                          .read<CheckoutBloc>()
-                          .add(const CheckoutEvent.clearItems());
-                      
-                      // 2. ✅ CRITICAL FIX: Reload saved tax & service settings
-                      await _reloadSavedSettings(context);
-                      log('✅ Tax & Service settings restored from saved preferences');
-                      
-                      // 3. Refresh table list
-                      context
-                          .read<GetTableBloc>()
-                          .add(const GetTableEvent.getTables());
-                      
-                      // 4. ✅ CRITICAL FIX: Refresh products from SERVER (not local storage)
-                      // This ensures stock is updated after order
-                      log('🔄 Fetching fresh products from server...');
-                      final productRemote = ProductRemoteDatasource();
-                      final productResult = await productRemote.getProducts();
-                      
-                      await productResult.fold(
-                        (error) {
-                          log('⚠️ Error refreshing products: $error');
-                        },
-                        (productResponse) async {
-                          // Save to storage
-                          if (kIsWeb) {
-                            await ProductStorageHelper.saveProducts(productResponse.data ?? []);
-                          } else {
-                            // Mobile: SQLite
-                            await context.read<LocalProductBloc>().productLocalDatasource.deleteAllProducts();
-                            await context.read<LocalProductBloc>().productLocalDatasource.insertProducts(productResponse.data ?? []);
-                          }
-                          
-                          // Reload products in UI
-                          context.read<LocalProductBloc>().add(const LocalProductEvent.getLocalProduct());
-                          log('✅ Products refreshed from server: ${productResponse.data?.length ?? 0} items');
-                        },
-                      );
-                      
-                      // 5. Trigger callback if provided
-                      if (widget.onPaymentSuccess != null) {
-                        log('✅ Triggering onPaymentSuccess callback...');
-                        widget.onPaymentSuccess!();
-                      }
-                      
-                      // 6. Close dialog and navigate back to home with popToRoot
-                      if (context.mounted) {
-                        log('✅ AUTO-REDIRECT: Navigating to home using popToRoot...');
-                        context.popToRoot();
-                        log('✅ Successfully returned to HomePage');
-                      }
-                    },
-                    label: 'Selesai',
-                  ),
-                ),
-                const SpaceWidth(8.0),
-                Flexible(
-                  child: BlocBuilder<OrderBloc, OrderState>(
-                    builder: (context, state) {
-                      final paymentAmount = state.maybeWhen(
-                        orElse: () => 0,
-                        loaded: (model, orderId) => model.paymentAmount,
-                      );
-
-                      final kembalian = paymentAmount - widget.totalPrice;
-                      return Button.filled(
-                        onPressed: () async {
-                          final receiptPrinter = await ProductLocalDatasource
-                              .instance
-                              .getPrinterByCode('receipt');
-                          final kitchenPrinter = await ProductLocalDatasource
-                              .instance
-                              .getPrinterByCode('kitchen');
-                          final barPrinter = await ProductLocalDatasource
-                              .instance
-                              .getPrinterByCode('bar');
-                          // final sizeReceipt = '58';
-                          // await AuthLocalDataSource().getSizeReceipt();
-
-                          // await LamanPrint.instance.printOrderV3(
-                          //   widget.data,
-                          //   widget.totalQty,
-                          //   widget.totalPrice,
-                          //   'Cash',
-                          //   paymentAmount,
-                          //   kembalian,
-                          //   widget.totalTax,
-                          //   widget.totalDiscount,
-                          //   widget.subTotal,
-                          //   1,
-                          //   'Cashier Ali',
-                          //   widget.draftName,
-                          //   int.parse(sizeReceipt),
-                          // );
-
-                          // Receipt Printer
-                          if (receiptPrinter != null) {
-                            // Calculate percentages
-                            final taxPercentage = widget.subTotal > 0 ? ((widget.totalTax / widget.subTotal) * 100).round() : 0;
-                            final servicePercentage = widget.subTotal > 0 ? ((widget.totalService / widget.subTotal) * 100).round() : 0;
-
-                            final printValue =
-                                await PrintDataoutputs.instance.printOrderV3(
-                              widget.data,
-                              widget.totalQty,
-                              widget.totalPrice,
-                              'Cash',
-                              paymentAmount,
-                              kembalian,
-                              widget.totalTax,
-                              widget.totalDiscount,
-                              widget.subTotal,
-                              1,
-                              'Cashier Bahri',
-                              widget.draftName,
-                              receiptPrinter.paper.toIntegerFromText,
-                              taxPercentage,
-                              servicePercentage,
-                              widget.orderType ?? 'Dine In', // NEW
-                              widget.tableName ?? '', // NEW
-                            );
-                            if (receiptPrinter!.type == 'Bluetooth') {
-                              await PrintBluetoothThermal.writeBytes(
-                                  printValue);
-                            } else {
-                              final printer =
-                                  PrinterNetworkManager(receiptPrinter.address);
-                              PosPrintResult connect = await printer.connect();
-                              if (connect == PosPrintResult.success) {
-                                PosPrintResult printing =
-                                    await printer.printTicket(printValue);
-                                printer.disconnect();
-                              } else {
-                                log("Failed to connect to printer");
-                              }
-                            }
-                          }
-
-                          // Kitchen Printer
-                          if (kitchenPrinter != null &&
-                              widget.isTablePaymentPage == false) {
-                            final printValue =
-                                await PrintDataoutputs.instance.printKitchen(
-                              widget.data,
-                              '',
-                              widget.draftName,
-                              'Cashier Bahri',
-                              kitchenPrinter.paper.toIntegerFromText,
-                            );
-                            if (kitchenPrinter!.type == 'Bluetooth') {
-                              await PrintBluetoothThermal.writeBytes(
-                                  printValue);
-                            } else {
-                              final printer =
-                                  PrinterNetworkManager(kitchenPrinter.address);
-                              PosPrintResult connect = await printer.connect();
-                              if (connect == PosPrintResult.success) {
-                                PosPrintResult printing =
-                                    await printer.printTicket(printValue);
-                                printer.disconnect();
-                              } else {
-                                log("Failed to connect to printer");
-                              }
-                            }
-                          }
-
-                          // bar printer
-                          if (barPrinter != null &&
-                              widget.isTablePaymentPage == false) {
-                            final printValue =
-                                await PrintDataoutputs.instance.printBar(
-                              widget.data,
-                              '',
-                              widget.draftName,
-                              'Cashier Bahri',
-                              barPrinter.paper.toIntegerFromText,
-                            );
-                            if (barPrinter!.type == 'Bluetooth') {
-                              await PrintBluetoothThermal.writeBytes(
-                                  printValue);
-                            } else {
-                              final printer =
-                                  PrinterNetworkManager(barPrinter.address);
-                              PosPrintResult connect = await printer.connect();
-                              if (connect == PosPrintResult.success) {
-                                PosPrintResult printing =
-                                    await printer.printTicket(printValue);
-                                printer.disconnect();
-                              } else {
-                                log("Failed to connect to printer");
-                              }
-                            }
-                          }
-                        },
-                        label: 'Print',
-                      );
-                    },
-                  ),
-                ),
-                const SpaceWidth(10.0),
-                Flexible(
-                  child: Button.outlined(
-                    onPressed: () async {
-                      try {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('📄 Generating PDF...')),
-                        );
-
-                        final paymentAmountValue = widget.paymentAmount ?? widget.totalPrice;
-                        final kembalian = paymentAmountValue - widget.totalPrice;
-                        
-                        log('Generating PDF for order...');
-                        
-                        // Get current user for Cashier Name
-                        final authData = await AuthLocalDataSource().getAuthData();
-                        final cashierName = authData?.user?.name ?? 'Cashier';
-
-                        // Calculate percentages
-                        final taxPercentage = widget.subTotal > 0 ? ((widget.totalTax / widget.subTotal) * 100).round() : 0;
-                        final servicePercentage = widget.subTotal > 0 ? ((widget.totalService / widget.subTotal) * 100).round() : 0;
-
-                        final xFile = await PrintDataoutputs.instance.generateReceiptPdf(
-                          widget.data,
-                          widget.totalQty,
-                          widget.totalPrice,
-                          'Cash',
-                          paymentAmountValue,
-                          kembalian,
-                          widget.subTotal,
-                          widget.totalDiscount,
-                          widget.totalTax,
-                          widget.totalService,
-                          cashierName,
-                          widget.draftName,
-                          widget.orderType ?? 'Dine In',
-                          widget.tableName ?? '', // NEW
-                          taxPercentage,
-                          servicePercentage,
-                        );
-                        
-                        print('PDF generated at: ${xFile.path}');
-                        // Fetch Settings for Share Text
-                        final settings = await SettingsLocalDatasource().getSettings();
-                        final appName = settings['app_name'] ?? 'Self Order POS';
-
-                        await Share.shareXFiles([xFile], text: 'Receipt from $appName');
-                      } catch (e, stackTrace) {
-                        print('Error sharing receipt: $e');
-                        print('Stack trace: $stackTrace');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('❌ Error: $e'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    label: 'Kirim Struk',
-                  ),
-                ),
-              ],
+            
+            const SpaceHeight(32.0),
+            
+            // Responsive Buttons
+            Builder(
+              builder: (context) {
+                final screenWidth = MediaQuery.of(context).size.width;
+                final isSmall = screenWidth < 600; // Increased breakpoint for dialog
+                
+                if (isSmall) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildDoneButton(context),
+                      const SpaceHeight(12),
+                      _buildPrintButton(),
+                      const SpaceHeight(12),
+                      _buildShareButton(context),
+                    ],
+                  );
+                }
+                
+                return Row(
+                  children: [
+                    Expanded(child: _buildDoneButton(context)),
+                    const SpaceWidth(8.0),
+                    Expanded(child: _buildPrintButton()),
+                    const SpaceWidth(8.0),
+                    Expanded(child: _buildShareButton(context)),
+                  ],
+                );
+              },
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, {Color? color, bool isBold = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.grey, fontSize: 14),
+        ),
+        const SpaceHeight(4.0),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
+            fontSize: isBold ? 16 : 15,
+            color: color ?? Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDoneButton(BuildContext context) {
+    return Button.filled(
+      onPressed: () async {
+        log('✅ Selesai button pressed - Closing dialog and returning to home...');
+        
+        // 1. Clear ONLY cart items, KEEP tax/service/discount settings
+        context
+            .read<CheckoutBloc>()
+            .add(const CheckoutEvent.clearItems());
+        
+        // 2. ✅ CRITICAL FIX: Reload saved tax & service settings
+        await _reloadSavedSettings(context);
+        log('✅ Tax & Service settings restored from saved preferences');
+        
+        // 3. Refresh table list
+        context
+            .read<GetTableBloc>()
+            .add(const GetTableEvent.getTables());
+        
+        // 4. ✅ CRITICAL FIX: Refresh products from SERVER (not local storage)
+        // This ensures stock is updated after order
+        log('🔄 Fetching fresh products from server...');
+        final productRemote = ProductRemoteDatasource();
+        final productResult = await productRemote.getProducts();
+        
+        await productResult.fold(
+          (error) {
+            log('⚠️ Error refreshing products: $error');
+          },
+          (productResponse) async {
+            // Save to storage
+            if (kIsWeb) {
+              await ProductStorageHelper.saveProducts(productResponse.data ?? []);
+            } else {
+              // Mobile: Online Only - Skip SQLite
+              log('🌐 Online Only Mode: Skipping local DB save');
+            }
+            
+            // Reload products in UI
+            context.read<LocalProductBloc>().add(const LocalProductEvent.getLocalProduct());
+            log('✅ Products refreshed from server: ${productResponse.data?.length ?? 0} items');
+          },
+        );
+        
+        // 5. Trigger callback if provided
+        if (widget.onPaymentSuccess != null) {
+          log('✅ Triggering onPaymentSuccess callback...');
+          widget.onPaymentSuccess!();
+        }
+        
+        // 6. Close dialog and navigate back to home with popToRoot
+        if (context.mounted) {
+          log('✅ AUTO-REDIRECT: Navigating to home using popToRoot...');
+          context.popToRoot();
+          log('✅ Successfully returned to HomePage');
+        }
+      },
+      label: 'Selesai',
+    );
+  }
+
+  Widget _buildPrintButton() {
+    return BlocBuilder<OrderBloc, OrderState>(
+      builder: (context, state) {
+        final paymentAmount = state.maybeWhen(
+          orElse: () => 0,
+          loaded: (model, orderId) => model.paymentAmount,
+        );
+
+        final kembalian = paymentAmount - widget.totalPrice;
+        return Button.filled(
+          onPressed: () async {
+            final receiptPrinter = await ProductLocalDatasource
+                .instance
+                .getPrinterByCode('receipt');
+            final kitchenPrinter = await ProductLocalDatasource
+                .instance
+                .getPrinterByCode('kitchen');
+            final barPrinter = await ProductLocalDatasource
+                .instance
+                .getPrinterByCode('bar');
+
+            // Receipt Printer
+            if (receiptPrinter != null) {
+              // Calculate percentages
+              final taxPercentage = widget.subTotal > 0 ? ((widget.totalTax / widget.subTotal) * 100).round() : 0;
+              final servicePercentage = widget.subTotal > 0 ? ((widget.totalService / widget.subTotal) * 100).round() : 0;
+
+              final printValue =
+                  await PrintDataoutputs.instance.printOrderV3(
+                widget.data,
+                widget.totalQty,
+                widget.totalPrice,
+                widget.paymentMethod,
+                paymentAmount,
+                kembalian,
+                widget.totalTax,
+                widget.totalDiscount,
+                widget.subTotal,
+                1,
+                'HayoPOS',
+                widget.draftName,
+                receiptPrinter.paper.toIntegerFromText,
+                taxPercentage,
+                servicePercentage,
+                widget.orderType ?? 'Dine In', // NEW
+                widget.tableName ?? '', // NEW
+                widget.orderNote ?? '', // NEW: Global Order Note
+              );
+              if (receiptPrinter.type == 'Bluetooth') {
+                await PrintBluetoothThermal.writeBytes(
+                    printValue);
+              } else {
+                final printer =
+                    PrinterNetworkManager(receiptPrinter.address);
+                PosPrintResult connect = await printer.connect();
+                if (connect == PosPrintResult.success) {
+                  PosPrintResult printing =
+                      await printer.printTicket(printValue);
+                  printer.disconnect();
+                } else {
+                  log("Failed to connect to printer");
+                }
+              }
+            }
+
+            // Kitchen Printer
+            if (kitchenPrinter != null &&
+                widget.isTablePaymentPage == false) {
+              final printValue =
+                  await PrintDataoutputs.instance.printKitchen(
+                widget.data,
+                '',
+                widget.draftName,
+                'HayoPOS',
+                kitchenPrinter.paper.toIntegerFromText,
+                widget.orderType ?? 'Dine In', // Default for now, or pass from widget
+                widget.tableName ?? '', // Table name if available
+                widget.orderNote ?? '', // Pass Global Note
+              );
+              if (kitchenPrinter.type == 'Bluetooth') {
+                await PrintBluetoothThermal.writeBytes(
+                    printValue);
+              } else {
+                final printer =
+                    PrinterNetworkManager(kitchenPrinter.address);
+                PosPrintResult connect = await printer.connect();
+                if (connect == PosPrintResult.success) {
+                  PosPrintResult printing =
+                      await printer.printTicket(printValue);
+                  printer.disconnect();
+                } else {
+                  log("Failed to connect to printer");
+                }
+              }
+            }
+
+            // bar printer
+            if (barPrinter != null &&
+                widget.isTablePaymentPage == false) {
+              final printValue =
+                  await PrintDataoutputs.instance.printBar(
+                widget.data,
+                widget.tableName ?? '',
+                widget.draftName,
+                'HayoPOS',
+                barPrinter.paper.toIntegerFromText,
+                widget.orderNote ?? '', // NEW
+              );
+              if (barPrinter.type == 'Bluetooth') {
+                await PrintBluetoothThermal.writeBytes(
+                    printValue);
+              } else {
+                final printer =
+                    PrinterNetworkManager(barPrinter.address);
+                PosPrintResult connect = await printer.connect();
+                if (connect == PosPrintResult.success) {
+                  PosPrintResult printing =
+                      await printer.printTicket(printValue);
+                  printer.disconnect();
+                } else {
+                  log("Failed to connect to printer");
+                }
+              }
+            }
+          },
+          label: 'Print',
+        );
+      },
+    );
+  }
+
+  Widget _buildShareButton(BuildContext context) {
+    return Button.outlined(
+      onPressed: () async {
+        try {
+          NotificationHelper.showSuccess(context, 'Generating PDF...');
+
+          final paymentAmountValue = widget.paymentAmount ?? widget.totalPrice;
+          final kembalian = paymentAmountValue - widget.totalPrice;
+          
+          log('Generating PDF for order...');
+          
+          // Get current user for Cashier Name
+          final authData = await AuthLocalDataSource().getAuthData();
+          final cashierName = authData?.user?.name ?? 'Cashier';
+
+          // Calculate percentages
+          final taxPercentage = widget.subTotal > 0 ? ((widget.totalTax / widget.subTotal) * 100).round() : 0;
+          final servicePercentage = widget.subTotal > 0 ? ((widget.totalService / widget.subTotal) * 100).round() : 0;
+
+          final xFile = await PrintDataoutputs.instance.generateReceiptPdf(
+            widget.data,
+            widget.totalQty,
+            widget.totalPrice,
+            widget.paymentMethod,
+            paymentAmountValue,
+            kembalian,
+            widget.subTotal,
+            widget.totalDiscount,
+            widget.totalTax,
+            widget.totalService,
+            cashierName,
+            widget.draftName,
+            widget.orderType ?? 'Dine In',
+            widget.tableName ?? '', // NEW
+            taxPercentage,
+            servicePercentage,
+            widget.orderNote ?? '', // NEW
+          );
+          
+          print('PDF generated at: ${xFile.path}');
+          // Fetch Settings for Share Text
+          final settings = await SettingsLocalDatasource().getSettings();
+          final appName = settings['app_name'] ?? 'Self Order POS';
+
+          await Share.shareXFiles([xFile], text: 'Receipt from $appName');
+          NotificationHelper.showSuccess(context, 'Receipt shared successfully!');
+        } catch (e, stackTrace) {
+          print('Error sharing receipt: $e');
+          print('Stack trace: $stackTrace');
+          NotificationHelper.showError(context, 'Error sharing receipt: $e');
+        }
+      },
+      label: 'Struk',
     );
   }
 }

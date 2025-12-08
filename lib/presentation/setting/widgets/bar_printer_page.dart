@@ -3,13 +3,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posresto_app/core/components/components.dart';
-import 'package:flutter_posresto_app/core/constants/colors.dart';
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
 import 'package:flutter_posresto_app/data/models/response/print_model.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/create_printer/create_printer_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/get_printer_bar/get_printer_bar_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/update_printer/update_printer_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/widgets/dialog_search_printer.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 class BarPrinterPage extends StatefulWidget {
   const BarPrinterPage({super.key});
@@ -166,12 +166,8 @@ class _BarPrinterPageState extends State<BarPrinterPage> {
                                 state.maybeWhen(
                                   orElse: () {},
                                   success: (message) {
-                                    final snackBar = SnackBar(
-                                      content: Text(message),
-                                      backgroundColor: AppColors.primary,
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                  
+                                    NotificationHelper.showSuccess(context, message);
                                     context
                                         .read<GetPrinterBarBloc>()
                                         .add(GetPrinterBarEvent.get());
@@ -210,12 +206,7 @@ class _BarPrinterPageState extends State<BarPrinterPage> {
                                 state.maybeWhen(
                                   orElse: () {},
                                   success: (message) {
-                                    final snackBar = SnackBar(
-                                      content: Text(message),
-                                      backgroundColor: AppColors.primary,
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                    NotificationHelper.showSuccess(context, message);
                                     context
                                         .read<GetPrinterBarBloc>()
                                         .add(GetPrinterBarEvent.get());

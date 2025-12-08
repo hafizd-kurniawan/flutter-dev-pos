@@ -1,6 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/data/models/response/discount_response_model.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/checkout/checkout_bloc.dart';
@@ -35,26 +37,29 @@ class _DynamicDiscountDialogState extends State<DynamicDiscountDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Stack(
-        alignment: Alignment.center,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
+      titlePadding: const EdgeInsets.all(24),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+      actionsPadding: const EdgeInsets.all(24),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text(
-            'PILIH DISKON',
+            'Pilih Diskon',
             style: TextStyle(
-              color: AppColors.primary,
-              fontSize: 28,
-              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconButton(
-              onPressed: () => context.pop(),
-              icon: const Icon(
-                Icons.cancel,
-                color: AppColors.primary,
-                size: 30.0,
-              ),
+          IconButton(
+            onPressed: () => context.pop(),
+            icon: const Icon(Icons.close, color: Colors.grey),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.grey[100],
+              padding: const EdgeInsets.all(8),
             ),
           ),
         ],
@@ -62,174 +67,170 @@ class _DynamicDiscountDialogState extends State<DynamicDiscountDialog> {
       content: BlocBuilder<PosSettingsBloc, PosSettingsState>(
         builder: (context, state) {
           return state.maybeWhen(
-            orElse: () => const Center(
-              child: CircularProgressIndicator(),
+            orElse: () => const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
             ),
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
+            loading: () => const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
             ),
-            error: (message) => Center(
-              child: Text('Error: $message'),
+            error: (message) => SizedBox(
+              height: 100,
+              child: Center(child: Text('Error: $message')),
             ),
             loaded: (settings) {
               final discounts = settings.discounts;
 
               if (discounts.isEmpty) {
-                return const Text('Tidak ada diskon tersedia');
+                return const SizedBox(
+                  height: 100,
+                  child: Center(child: Text('Tidak ada diskon tersedia')),
+                );
               }
 
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Option: No discount
-                    RadioListTile<int?>(
-                      title: const Text('Tidak ada diskon'),
-                      subtitle: const Text('Tidak menggunakan diskon'),
-                      value: null,
-                      groupValue: _selectedDiscountId,
-                      activeColor: AppColors.primary,
-                      contentPadding: EdgeInsets.zero,
-                      onChanged: (value) async {
-                        // Save selection
-                        await _localDatasource.saveSelectedDiscount(null);
-
-                        // Remove discount from checkout
-                        context.read<CheckoutBloc>().add(
-                              const CheckoutEvent.removeDiscount(),
-                            );
-
-                        // Update UI
-                        setState(() {
-                          _selectedDiscountId = null;
-                        });
-
-                        // Close dialog
-                        if (mounted) {
-                          context.pop();
-                        }
-                      },
-                    ),
-
-                    const Divider(),
-
-                    // Available discounts
-                    ...discounts.map((discount) {
-                      final isSelected = _selectedDiscountId == discount.id;
-                      return InkWell(
+              return SizedBox(
+                width: 400,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Option: No discount
+                      _buildDiscountOption(
+                        context,
+                        id: null,
+                        name: 'Tanpa Diskon',
+                        description: 'Tidak menggunakan diskon',
+                        isSelected: _selectedDiscountId == null,
                         onTap: () async {
-                          print('🔵 Discount tapped: ${discount.name}, ID: ${discount.id}');
-                          print('   Current selected: $_selectedDiscountId');
-                          
-                          // Save selection
-                          await _localDatasource.saveSelectedDiscount(discount.id);
-                          print('✅ Saved to local storage');
-
-                          // Apply discount to checkout (ALWAYS apply, even if already selected)
-                          context.read<CheckoutBloc>().add(
-                                CheckoutEvent.addDiscount(
-                                  Discount(
-                                    id: discount.id,
-                                    name: discount.name,
-                                    value: discount.value.toString(),
-                                    type: discount.type,
-                                  ),
-                                ),
-                              );
-                          print('✅ Applied to CheckoutBloc');
-
-                          // Update UI
-                          setState(() {
-                            _selectedDiscountId = discount.id;
-                          });
-
-                          // Show success message
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('✅ Diskon ${discount.name} diterapkan'),
-                                backgroundColor: Colors.green,
-                                duration: const Duration(seconds: 1),
-                              ),
-                            );
-
-                            // Close dialog
-                            context.pop();
-                          }
+                          await _localDatasource.saveSelectedDiscount(null);
+                          if (!context.mounted) return;
+                          context.read<CheckoutBloc>().add(const CheckoutEvent.removeDiscount());
+                          setState(() => _selectedDiscountId = null);
+                          context.pop();
                         },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Colors.grey.shade200,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              // Radio indicator
-                              Container(
-                                width: 20,
-                                height: 20,
-                                margin: const EdgeInsets.only(right: 12),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isSelected ? AppColors.primary : Colors.grey,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: isSelected
-                                    ? Center(
-                                        child: Container(
-                                          width: 10,
-                                          height: 10,
-                                          decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: AppColors.primary,
-                                          ),
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              // Text
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      discount.name,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      // Available discounts
+                      ...discounts.map((discount) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildDiscountOption(
+                            context,
+                            id: discount.id,
+                            name: discount.name,
+                            description: discount.displayText,
+                            isSelected: _selectedDiscountId == discount.id,
+                            onTap: () async {
+                              await _localDatasource.saveSelectedDiscount(discount.id);
+                              if (!context.mounted) return;
+                              
+                              context.read<CheckoutBloc>().add(
+                                    CheckoutEvent.addDiscount(
+                                      Discount(
+                                        id: discount.id,
+                                        name: discount.name,
+                                        value: discount.value.toString(),
+                                        type: discount.type,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      discount.displayText,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                        color: isSelected ? AppColors.primary : Colors.grey.shade700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                                  );
+                              
+                              setState(() => _selectedDiscountId = discount.id);
+                              
+                              NotificationHelper.showSuccess(context, 'Discount applied successfully');
+                              context.pop();
+                            },
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  ],
+                        );
+                      }).toList(),
+                    ],
+                  ),
                 ),
               );
             },
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildDiscountOption(
+    BuildContext context, {
+    required int? id,
+    required String name,
+    required String description,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary.withOpacity(0.05) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : Colors.grey[200]!,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: [
+            if (!isSelected)
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.grey[100],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                id == null ? Icons.money_off : Icons.percent,
+                color: isSelected ? AppColors.primary : Colors.grey[600],
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? AppColors.primary : AppColors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle,
+                color: AppColors.primary,
+                size: 24,
+              ),
+          ],
+        ),
       ),
     );
   }

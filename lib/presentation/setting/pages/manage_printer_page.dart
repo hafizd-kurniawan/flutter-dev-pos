@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_posresto_app/core/components/components.dart';
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
@@ -172,7 +173,7 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
     bytes += generator.reset();
 
     bytes +=
-        generator.text('Code with Bahri', styles: const PosStyles(bold: true));
+        generator.text('HayoPOS', styles: const PosStyles(bold: true));
     bytes +=
         generator.text('Reverse text', styles: const PosStyles(reverse: true));
     bytes += generator.text('Underlined text',
@@ -263,16 +264,10 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
                 await connect(macName);
 
                 // Tampilkan pesan berhasil
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Pengaturan berhasil disimpan')),
-                );
+                NotificationHelper.showSuccess(context, 'Pengaturan berhasil disimpan');
               } else {
                 // Tampilkan pesan error jika belum dipilih
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content:
-                          Text('Pilih ukuran dan printer terlebih dahulu')),
-                );
+                NotificationHelper.showWarning(context, 'Printer disconnected');
               }
             },
             label: 'Simpan'),

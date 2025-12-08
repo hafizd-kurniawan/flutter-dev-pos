@@ -7,13 +7,19 @@ import 'package:flutter_posresto_app/data/models/response/table_category_model.d
 import 'package:flutter_posresto_app/presentation/table/blocs/get_table/get_table_bloc.dart';
 import 'package:flutter_posresto_app/presentation/table/widgets/change_table_status_sheet.dart';
 import 'package:flutter_posresto_app/presentation/table/widgets/table_info_card.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
+import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
+import 'package:flutter_posresto_app/presentation/home/widgets/custom_tab_selector.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TableManagementApiPage extends StatefulWidget {
   final Function(TableModel)? onTableSelected;
+  final VoidCallback? onToggleSidebar;
   
   const TableManagementApiPage({
     Key? key,
     this.onTableSelected,
+    this.onToggleSidebar,
   }) : super(key: key);
 
   @override
@@ -31,6 +37,8 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
   List<TableModel> _cachedTables = []; // Cache to prevent rebuild
   int? _recentlyUpdatedTableId; // Track recently updated table for highlight
   Timer? _highlightTimer; // Timer to remove highlight after few seconds
+  bool _isManualRefresh = false; // Track manual refresh
+  bool _isSearchActive = false; // NEW: Track search bar visibility on mobile
 
   @override
   void initState() {
@@ -63,106 +71,154 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
     _autoRefreshTimer?.cancel();
   }
 
-  void _loadData() {
-    context.read<GetTableBloc>().add(const GetTableEvent.getTables());
-    context.read<GetTableBloc>().add(const GetTableEvent.getCategories());
+  void _loadData({bool isRefresh = false}) {
+    if (isRefresh) {
+      setState(() => _isManualRefresh = true);
+    }
+    context.read<GetTableBloc>().add(GetTableEvent.getTables(isRefresh: isRefresh));
+    context.read<GetTableBloc>().add(GetTableEvent.getCategories(isRefresh: isRefresh));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Table Management',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.primary,
-        elevation: 0,
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _loadData();
-          await Future.delayed(const Duration(seconds: 1));
-        },
-        child: Column(
-          children: [
-            // Filters Section - Professional Design
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Row 1: Search + Refresh
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _buildSearchBar(),
-                        ),
-                        const SizedBox(width: 12),
-                        _buildRefreshButton(),
-                      ],
-                    ),
-                  ),
+    return BlocListener<GetTableBloc, GetTableState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          success: (tables, _) {
+            if (_isManualRefresh) {
+              setState(() => _isManualRefresh = false);
+              NotificationHelper.showSuccess(context, 'Data meja berhasil diperbarui');
+            }
+          },
+          orElse: () {},
+        );
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: SafeArea(
+          child: Stack(
+            children: [
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isTight = constraints.maxWidth < 600;
+                  // Reduce margin to 0 for mobile to maximize card width
+                  final margin = isTight ? 16.0 : 24.0;
                   
-                  // Row 2: Category + Status Filters
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 100.0), // No horizontal padding here
+                    child: Column(
                       children: [
-                        // Category Filter
-                        SizedBox(
-                          width: 200,
-                          child: _buildCategoryFilter(),
+                        // Filters Section
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Category Tabs
+                            _buildCategoryFilter(padding: EdgeInsets.symmetric(horizontal: margin)),
+                            const SizedBox(height: 16),
+                            
+                            // Status Filters
+                            _buildStatusFilters(padding: EdgeInsets.symmetric(horizontal: margin)),
+                          ],
                         ),
-                        const SizedBox(width: 16),
-                        // Vertical Divider
-                        Container(
-                          height: 40,
-                          width: 1,
-                          color: Colors.grey[300],
-                        ),
-                        const SizedBox(width: 16),
-                        // Status Filters
+                        
+                        const SizedBox(height: 16),
+                        
+                        // Tables Grid
                         Expanded(
-                          child: _buildStatusFilters(),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: margin),
+                            child: _buildTablesGrid(),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
-            ),
-            
-            const Divider(height: 1),
-            
-            // Tables Grid
-            Expanded(
-              child: _buildTablesGrid(),
-            ),
-          ],
+              
+              // Floating Header
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: FloatingHeader(
+                  title: 'Table Management',
+                  onToggleSidebar: widget.onToggleSidebar ?? () {},
+                  isSidebarVisible: true,
+                  titleWidget: _isSearchActive
+                      ? SizedBox(
+                          height: 40,
+                          child: TextField(
+                            controller: _searchController,
+                            autofocus: true,
+                            style: const TextStyle(fontSize: 14),
+                            decoration: InputDecoration(
+                              hintText: 'Search tables...',
+                              hintStyle: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                              prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[500], size: 20),
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                              isDense: true,
+                            ),
+                            onChanged: (value) {
+                              setState(() => _searchQuery = value.toLowerCase());
+                            },
+                          ),
+                        )
+                      : null,
+                  actions: [
+                    if (_isSearchActive)
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          setState(() {
+                            _isSearchActive = false;
+                            _searchController.clear();
+                            _searchQuery = '';
+                          });
+                        },
+                      )
+                    else ...[
+                      IconButton(
+                        icon: const Icon(Icons.search_rounded),
+                        onPressed: () {
+                          setState(() {
+                            _isSearchActive = true;
+                          });
+                        },
+                      ),
+                      const SizedBox(width: 4),
+                      IconButton(
+                        onPressed: () => _loadData(isRefresh: true),
+                        icon: const Icon(Icons.refresh_rounded, size: 20),
+                        color: AppColors.primary,
+                        tooltip: 'Refresh Data',
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.primary.withOpacity(0.1),
+                          shape: const CircleBorder(),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildCategoryFilter() {
+  Widget _buildCategoryFilter({EdgeInsetsGeometry? padding}) {
     return BlocListener<GetTableBloc, GetTableState>(
       listener: (context, state) {
         state.maybeWhen(
-          categoriesLoaded: (categories) {
+          success: (tables, categories) {
             setState(() {
               _categories = categories;
             });
@@ -170,115 +226,30 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
           orElse: () {},
         );
       },
-      child: Container(
-            height: 48,
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: _selectedCategoryId != null ? AppColors.primary.withOpacity(0.3) : Colors.grey[300]!,
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 4,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: DropdownButton<int?>(
-              value: _selectedCategoryId,
-              isExpanded: true,
-              underline: const SizedBox(),
-              icon: Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: _selectedCategoryId != null ? AppColors.primary : Colors.grey[600],
-                size: 24,
-              ),
-              hint: Row(
-                children: [
-                  Icon(
-                    Icons.category_rounded,
-                    size: 18,
-                    color: Colors.grey[600],
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'All Categories',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[800],
-                fontWeight: FontWeight.w500,
-              ),
-              items: [
-                DropdownMenuItem<int?>(
-                  value: null,
-                  child: Row(
-                    children: [
-                      Icon(Icons.category_rounded, size: 18, color: Colors.grey[600]),
-                      const SizedBox(width: 10),
-                      const Text('All Categories'),
-                    ],
-                  ),
-                ),
-                ..._categories.map((category) {
-                  return DropdownMenuItem<int?>(
-                    value: category.id,
-                    child: Row(
-                      children: [
-                        Icon(Icons.label_rounded, size: 16, color: AppColors.primary.withOpacity(0.7)),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            category.name,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            '${category.available}/${category.total}',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.green[700],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _selectedCategoryId = value;
-                });
-                context.read<GetTableBloc>().add(
-                  GetTableEvent.filterByCategory(value),
-                );
-              },
-            ),
-          ),
+      child: CustomTabSelector(
+        items: ['All Categories', ..._categories.map((e) => e.name)],
+        badges: [null, ..._categories.map((e) => e.available)],
+        selectedIndex: _selectedCategoryId == null 
+            ? 0 
+            : _categories.indexWhere((c) => c.id == _selectedCategoryId) + 1,
+        padding: padding,
+        onTap: (index) {
+          final isAll = index == 0;
+          final category = isAll ? null : _categories[index - 1];
+          
+          setState(() {
+            _selectedCategoryId = isAll ? null : category?.id;
+          });
+          
+          context.read<GetTableBloc>().add(
+            GetTableEvent.filterByCategory(_selectedCategoryId),
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildStatusFilters() {
+  Widget _buildStatusFilters({EdgeInsetsGeometry? padding}) {
     final statuses = [
       {'value': 'all', 'label': 'All', 'icon': Icons.grid_view_rounded, 'color': Colors.blue},
       {'value': 'available', 'label': 'Available', 'icon': Icons.check_circle_rounded, 'color': Colors.green},
@@ -287,88 +258,84 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
       {'value': 'pending_bill', 'label': 'Pending', 'icon': Icons.receipt_rounded, 'color': Colors.amber},
     ];
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: statuses.map((status) {
-            final isSelected = _selectedStatuses.contains(status['value']);
-            final color = status['color'] as Color;
-            final icon = status['icon'] as IconData;
+    return SizedBox(
+      height: 40, // Reduced height
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 24),
+        itemCount: statuses.length,
+        itemBuilder: (context, index) {
+          final status = statuses[index];
+          final isSelected = _selectedStatuses.contains(status['value']);
+          final color = status['color'] as Color;
+          final icon = status['icon'] as IconData;
+          final label = status['label'] as String;
 
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    final selected = !isSelected;
-                setState(() {
-                  if (status['value'] == 'all') {
-                    _selectedStatuses.clear();
-                    _selectedStatuses.add('all');
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                if (status['value'] == 'all') {
+                  _selectedStatuses.clear();
+                  _selectedStatuses.add('all');
+                } else {
+                  _selectedStatuses.remove('all');
+                  if (isSelected) {
+                    _selectedStatuses.remove(status['value']);
+                    if (_selectedStatuses.isEmpty) _selectedStatuses.add('all');
                   } else {
-                    _selectedStatuses.remove('all');
-                    if (selected) {
-                      _selectedStatuses.add(status['value'] as String);
-                    } else {
-                      _selectedStatuses.remove(status['value']);
-                      if (_selectedStatuses.isEmpty) {
-                        _selectedStatuses.add('all');
-                      }
-                    }
+                    _selectedStatuses.add(status['value'] as String);
                   }
-                });
+                }
+              });
 
-                    // Apply filter
-                    context.read<GetTableBloc>().add(
-                      GetTableEvent.filterByStatus(_selectedStatuses),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected ? color.withOpacity(0.15) : Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isSelected ? color : Colors.grey[300]!,
-                        width: isSelected ? 2 : 1.5,
-                      ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: color.withOpacity(0.2),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : [],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          icon,
-                          size: 16,
-                          color: isSelected ? color : Colors.grey[600],
+              // Apply filter
+              context.read<GetTableBloc>().add(
+                GetTableEvent.filterByStatus(_selectedStatuses),
+              );
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8), // Adjusted padding
+              decoration: BoxDecoration(
+                color: isSelected ? color : Colors.white,
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                  color: isSelected ? color : Colors.grey.shade300,
+                  width: 1,
+                ),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: color.withOpacity(0.2), // Lighter shadow
+                          blurRadius: 4, // Reduced blur
+                          offset: const Offset(0, 2),
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          status['label'] as String,
-                          style: TextStyle(
-                            color: isSelected ? color : Colors.grey[700],
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
+                      ]
+                    : null, // No shadow for unselected
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    icon,
+                    size: 16, // Slightly smaller icon
+                    color: isSelected ? Colors.white : color,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    label,
+                    style: GoogleFonts.quicksand(
+                      color: isSelected ? Colors.white : Colors.grey.shade700,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13, // Slightly smaller font
                     ),
                   ),
-                ),
+                ],
               ),
-            );
-          }).toList(),
+            ),
+          );
+        },
       ),
     );
   }
@@ -378,7 +345,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
       listener: (context, state) {
         // Update cache silently WITHOUT setState - no flicker!
         state.maybeWhen(
-          success: (tables) {
+          success: (tables, categories) {
             _cachedTables = tables;
             // Force a single rebuild after cache update
             if (mounted) {
@@ -479,21 +446,49 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
           );
         }
 
-        return GridView.builder(
-                padding: const EdgeInsets.all(12),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: _getCrossAxisCount(context),
-                  childAspectRatio: 0.9,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: filteredTables.length,
-                itemBuilder: (context, index) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            
+            // Calculate crossAxisCount based on available width
+            int crossAxisCount = 2;
+            if (width > 1400) crossAxisCount = 6;
+            else if (width > 1100) crossAxisCount = 5;
+            else if (width > 900) crossAxisCount = 4;
+            else if (width > 600) crossAxisCount = 3;
+            
+            // Calculate aspect ratio dynamically
+            // Ensure minimum card height of ~110px to prevent overflow
+            // Width per card = (totalWidth - (crossAxisCount - 1) * spacing - padding) / crossAxisCount
+            final padding = 24.0; // Total horizontal padding
+            final spacing = 10.0;
+            final cardWidth = (width - padding - (crossAxisCount - 1) * spacing) / crossAxisCount;
+            
+            // Target height around 100-110px
+            // Aspect Ratio = width / height
+            // So height = width / aspectRatio => aspectRatio = width / targetHeight
+            
+            double childAspectRatio = 1.1; // Default for larger screens
+            if (cardWidth < 160) {
+              // If card is narrow, make it taller
+              childAspectRatio = cardWidth / 125; // Ensure ~125px height
+            }
+
+            return GridView.builder(
+              padding: const EdgeInsets.all(12),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                childAspectRatio: childAspectRatio,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: filteredTables.length,
+              itemBuilder: (context, index) {
                 final table = filteredTables[index];
-                final isHighlighted = table.id == _recentlyUpdatedTableId; // Check if this table was recently updated
+                final isHighlighted = table.id == _recentlyUpdatedTableId;
                 return TableInfoCard(
                   table: table,
-                  isHighlighted: isHighlighted, // Pass highlight flag
+                  isHighlighted: isHighlighted,
                   onTap: () async {
                     // Show selection dialog
                     final action = await showDialog<String>(
@@ -529,35 +524,25 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                     );
                     
                     if (action == 'select') {
-                      // Use callback to update Dashboard and navigate back to home
                       if (widget.onTableSelected != null) {
                         widget.onTableSelected!(table);
-                        print('✅ Table selected via callback: ${table.name}');
                       } else {
-                        // Fallback: return via Navigator for full-screen mode
                         Navigator.pop(context, table);
                       }
                     } else if (action == 'change_status') {
-                      // Show status change bottom sheet
-                      final updatedTableId = await showModalBottomSheet<int>(
+                      final updatedTableId = await showDialog<int>(
                         context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => Padding(
-                          padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom,
-                          ),
+                        builder: (dialogContext) => BlocProvider.value(
+                          value: context.read<GetTableBloc>(),
                           child: ChangeTableStatusSheet(table: table),
                         ),
                       );
                       
-                      // Highlight the updated table
                       if (updatedTableId != null) {
                         setState(() {
                           _recentlyUpdatedTableId = updatedTableId;
                         });
                         
-                        // Remove highlight after 5 seconds
                         _highlightTimer?.cancel();
                         _highlightTimer = Timer(const Duration(seconds: 5), () {
                           if (mounted) {
@@ -574,92 +559,13 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                 );
               },
             );
+          },
+        );
       },
     );
   }
 
-  int _getCrossAxisCount(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    if (width > 1400) return 6;
-    if (width > 1100) return 5;
-    if (width > 900) return 4;
-    if (width > 600) return 3;
-    return 2;
-  }
 
-  Widget _buildSearchBar() {
-    return Container(
-      height: 48,
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: _searchQuery.isNotEmpty ? AppColors.primary.withOpacity(0.3) : Colors.grey[300]!,
-          width: 1.5,
-        ),
-      ),
-      child: TextField(
-        controller: _searchController,
-        style: const TextStyle(fontSize: 14),
-        decoration: InputDecoration(
-          hintText: 'Search table or customer name...',
-          hintStyle: TextStyle(fontSize: 13, color: Colors.grey[500]),
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            color: _searchQuery.isNotEmpty ? AppColors.primary : Colors.grey[500],
-            size: 22,
-          ),
-          suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(
-                  icon: Icon(Icons.close, color: Colors.grey[600], size: 20),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() => _searchQuery = '');
-                  },
-                  splashRadius: 20,
-                )
-              : null,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        ),
-        onChanged: (value) {
-          setState(() => _searchQuery = value.toLowerCase());
-        },
-      ),
-    );
-  }
 
-  Widget _buildRefreshButton() {
-    return Container(
-      height: 48,
-      width: 48,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _loadData,
-          borderRadius: BorderRadius.circular(12),
-          child: const Icon(
-            Icons.refresh_rounded,
-            color: Colors.white,
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
+
 }

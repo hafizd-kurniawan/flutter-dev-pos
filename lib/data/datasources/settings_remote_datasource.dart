@@ -13,15 +13,18 @@ class SettingsRemoteDatasource {
         headers: headers,
       );
 
+      print('🔌 Settings API Request: ${Variables.baseUrl}/api/settings');
+      print('🔌 Response Code: ${response.statusCode}');
+      print('🔌 Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
-        print('✅ Settings API Response: ${response.body}'); // DEBUG LOG
         return Right(SettingsResponseModel.fromJson(response.body));
       } else {
-        print('❌ Settings API Error: ${response.statusCode} - ${response.body}'); // DEBUG LOG
-        return Left('Failed to load settings: ${response.statusCode}');
+        return Left('Server Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      return Left('Error: $e');
+      print('❌ Settings API Exception: $e');
+      return Left(e.toString());
     }
   }
 }

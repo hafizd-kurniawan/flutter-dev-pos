@@ -5,6 +5,7 @@ import 'package:flutter_posresto_app/data/datasources/order_remote_datasource.da
 import 'package:flutter_posresto_app/data/models/response/order_response_model.dart';
 import 'package:flutter_posresto_app/presentation/history/bloc/history/history_bloc.dart';
 import 'package:flutter_posresto_app/data/dataoutputs/print_dataoutputs.dart';
+import 'package:google_fonts/google_fonts.dart'; // NEW
 import 'package:flutter_posresto_app/data/datasources/product_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 import 'package:flutter_posresto_app/presentation/history/widgets/order_card.dart';
@@ -16,9 +17,19 @@ import 'dart:developer';
 import 'package:flutter_posresto_app/core/extensions/string_ext.dart'; // NEW: Import String Ext
 import 'package:flutter_posresto_app/data/models/response/product_response_model.dart'; // NEW: Import Product Model
 import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
+import 'package:flutter_posresto_app/presentation/home/bloc/notification/notification_bloc.dart'; // NEW IMPORT
+import 'package:flutter_posresto_app/core/constants/colors.dart';
+import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
+import 'package:flutter_posresto_app/core/components/modern_refresh_button.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({Key? key}) : super(key: key);
+  final VoidCallback? onToggleSidebar;
+  
+  const HistoryPage({
+    Key? key,
+    this.onToggleSidebar,
+  }) : super(key: key);
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -57,7 +68,14 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
   }
 
   Future<void> _refreshOrders() async {
-    _onTabChanged();
+    final index = _tabController.index;
+    if (index == 0) {
+      context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
+    } else if (index == 1) {
+      context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
+    } else if (index == 2) {
+      context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders(isRefresh: true));
+    }
   }
   
   // Show date picker dialog
@@ -150,21 +168,12 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                   Navigator.pop(dialogContext);
                   _onTabChanged(); // Refresh with filter
                   
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        '📅 Filter: ${pickedStartDate!.day}/${pickedStartDate!.month} - ${pickedEndDate!.day}/${pickedEndDate!.month}',
-                      ),
-                      duration: const Duration(seconds: 2),
-                    ),
+                  NotificationHelper.showInfo(
+                    context,
+                    '📅 Filter: ${pickedStartDate!.day}/${pickedStartDate!.month} - ${pickedEndDate!.day}/${pickedEndDate!.month}',
                   );
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('⚠️ Please select both start and end dates'),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
+                  NotificationHelper.showWarning(context, 'Please select both start and end dates');
                 }
               },
               child: const Text('Apply Filter'),
@@ -182,51 +191,223 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
     if (order.status == 'paid') {
       newStatus = 'cooking';
     } else if (order.status == 'cooking') {
-      newStatus = 'complete'; // Changed from 'completed' to 'complete'
+      newStatus = 'complete';
     } else {
       return; // Already complete
     }
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Update Order Status'),
-        content: Text(
-          order.status == 'paid'
-              ? 'Start cooking order ${order.code}?'
-              : 'Mark order ${order.code} as completed?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<HistoryBloc>().add(
-                    HistoryEvent.updateOrderStatus(
-                      orderId: order.id,
-                      status: newStatus,
+      builder: (dialogContext) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Update Status',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
-                  );
-              
-              // Show snackbar
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Updating order status to $newStatus...'),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-              
-              // Refresh after short delay
-              Future.delayed(const Duration(seconds: 1), () {
-                _onTabChanged();
-              });
-            },
-            child: const Text('Confirm'),
-          ),
-        ],
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    icon: const Icon(Icons.close, color: Colors.grey),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.grey[100],
+                      padding: const EdgeInsets.all(8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    order.status == 'paid'
+                        ? 'Mulai memasak pesanan ini?'
+                        : 'Tandai pesanan selesai?',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Order Info Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.receipt_long, color: Colors.blue),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                order.code,
+                                style: GoogleFonts.quicksand(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                order.customerName ?? 'Guest',
+                                style: GoogleFonts.quicksand(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  if (order.note != null && order.note!.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.yellow[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.yellow.shade300),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.note, size: 16, color: Colors.orange[800]),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Catatan Pesanan:',
+                                style: GoogleFonts.quicksand(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange[800],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            order.note!,
+                            style: GoogleFonts.quicksand(
+                              fontSize: 14,
+                              color: Colors.orange[900],
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            
+            // Actions
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(dialogContext),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Batal',
+                        style: GoogleFonts.quicksand(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(dialogContext);
+                        context.read<HistoryBloc>().add(
+                              HistoryEvent.updateOrderStatus(
+                                orderId: order.id,
+                                status: newStatus,
+                              ),
+                            );
+                        
+                        NotificationHelper.showInfo(context, 'Updating order status to $newStatus...');
+                        
+                        Future.delayed(const Duration(seconds: 1), () {
+                          _onTabChanged();
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Konfirmasi',
+                        style: GoogleFonts.quicksand(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        ),
       ),
     );
   }
@@ -234,15 +415,11 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
   // NEW: Handle Print Receipt
   Future<void> _handlePrintReceipt(OrderResponseModel order) async {
     try {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('🖨️ Printing receipt...')),
-      );
+      NotificationHelper.showInfo(context, 'Printing receipt...');
 
       final receiptPrinter = await ProductLocalDatasource.instance.getPrinterByCode('receipt');
       if (receiptPrinter == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('⚠️ No receipt printer found')),
-        );
+        NotificationHelper.showWarning(context, 'No receipt printer found');
         return;
       }
 
@@ -255,6 +432,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
             price: item.price.toString(),
           ),
           quantity: item.quantity,
+          note: item.note ?? '', // NEW: Pass item note for printing
         );
       }).toList();
 
@@ -279,6 +457,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         order.serviceChargePercentage ?? 0,
         order.orderType ?? 'Dine In', // NEW
         order.tableNumber ?? '', // NEW
+        order.note ?? '', // NEW: Global Order Note
       );
 
       if (receiptPrinter.type == 'Bluetooth') {
@@ -291,16 +470,12 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
           printer.disconnect();
         } else {
           log("Failed to connect to printer");
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('❌ Failed to connect to printer')),
-          );
+            NotificationHelper.showError(context, 'Failed to connect to printer');
         }
       }
     } catch (e) {
       log('Error printing: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Error printing: $e')),
-      );
+      NotificationHelper.showError(context, 'Error printing: $e');
     }
   }
 
@@ -316,6 +491,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
             price: item.price.toString(),
           ),
           quantity: item.quantity,
+          note: item.note ?? '', // NEW: Pass item note for sharing
         );
       }).toList();
 
@@ -340,6 +516,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         order.tableNumber ?? '', // NEW
         order.taxPercentage ?? 0,
         order.serviceChargePercentage ?? 0,
+        order.note ?? '', // NEW: Pass Global Note
       );
 
       // Fetch Settings for Share Text
@@ -349,97 +526,61 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
       await Share.shareXFiles([xFile], text: 'Receipt from $appName');
     } catch (e) {
       log('Error sharing: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Error sharing: $e')),
-      );
+      NotificationHelper.showError(context, 'Error sharing: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('History Orders', style: TextStyle(fontWeight: FontWeight.bold)),
-        elevation: 0,
-        centerTitle: true,
-        actions: [
-
-          // Date Filter Button
-          IconButton(
-            icon: Stack(
-              children: [
-                const Icon(Icons.filter_list_rounded, size: 26),
-                if (_isFilterActive)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                        color: Colors.orange,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 8,
-                        minHeight: 8,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            tooltip: _isFilterActive 
-                ? 'Filter Active: ${_startDate!.day}/${_startDate!.month} - ${_endDate!.day}/${_endDate!.month}'
-                : 'Filter by Date',
-            onPressed: _showDateFilterDialog,
-          ),
-          // Refresh Button - Modern Design
-          BlocBuilder<HistoryBloc, HistoryState>(
-            builder: (context, state) {
-              final isLoading = state.maybeWhen(
-                loading: () => true,
-                orElse: () => false,
-              );
+      backgroundColor: const Color(0xFFF8F5FF), // App Background
+      body: Stack(
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isTight = constraints.maxWidth < 600;
+              final margin = isTight ? 16.0 : 24.0;
               
               return Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: IconButton(
-                  icon: isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Icon(Icons.refresh_rounded, size: 28),
-                  tooltip: 'Refresh Orders',
-                  onPressed: isLoading ? null : () {
-                    _onTabChanged();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('🔄 Memuat data terbaru...'),
-                        duration: Duration(seconds: 1),
+                padding: EdgeInsets.only(top: 100.0, left: margin, right: margin),
+                child: Column(
+              children: [
+                // Tab Bar
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 0.0), // Removed margin
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                    );
-                  },
+                    ],
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    onTap: (_) => _onTabChanged(),
+                    indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16.0),
+                      color: AppColors.primary,
+                    ),
+                    labelColor: Colors.white,
+                    unselectedLabelColor: Colors.grey[600],
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelStyle: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
+                    unselectedLabelStyle: GoogleFonts.quicksand(fontWeight: FontWeight.w600),
+                    dividerColor: Colors.transparent, // Remove divider
+                    padding: const EdgeInsets.all(6), // Add padding for pill effect
+                    tabs: const [
+                      Tab(text: 'Paid', icon: Icon(Icons.payment, size: 20)),
+                      Tab(text: 'Cooking', icon: Icon(Icons.restaurant, size: 20)),
+                      Tab(text: 'Completed', icon: Icon(Icons.check_circle, size: 20)),
+                    ],
+                  ),
                 ),
-              );
-            },
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (_) => _onTabChanged(),
-          tabs: const [
-            Tab(text: 'Paid', icon: Icon(Icons.payment)),
-            Tab(text: 'Cooking', icon: Icon(Icons.restaurant)),
-            Tab(text: 'Completed', icon: Icon(Icons.check_circle)),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
+                const SizedBox(height: 16),
           // Date Filter Indicator Banner
           if (_isFilterActive)
             Container(
@@ -487,217 +628,259 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
           Expanded(
             child: BlocConsumer<HistoryBloc, HistoryState>(
               listener: (context, state) {
-                state.maybeWhen(
-                  statusUpdated: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('✅ Order status updated successfully!'),
-                        backgroundColor: Colors.green,
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                    _onTabChanged();
-                  },
-                  error: (message) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('❌ Error: $message'),
-                        backgroundColor: Colors.red,
-                        duration: const Duration(seconds: 3),
-                      ),
-                    );
-                  },
-                  orElse: () {},
-                );
+                if (state.isStatusUpdated) {
+                  NotificationHelper.showSuccess(context, 'Order status updated successfully!');
+                  // Refresh all tabs to ensure consistency
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders(isRefresh: true));
+                  
+                  // Sync Notification Badge (Count of Paid Orders)
+                  context.read<NotificationBloc>().add(const NotificationEvent.checkOrders());
+                }
+                
+                if (state.errorMessage != null) {
+                  NotificationHelper.showError(context, 'Error: ${state.errorMessage}');
+                }
               },
               builder: (context, state) {
                 return TabBarView(
                   controller: _tabController,
                   children: [
-              // Paid Orders Tab - with pull-to-refresh
-              RefreshIndicator(
-                onRefresh: () async {
-                  context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders());
-                  await Future.delayed(const Duration(seconds: 1));
-                },
-                child: _buildOrdersList(context, state, 'paid'),
-              ),
-              
-              // Cooking Orders Tab - with pull-to-refresh
-              RefreshIndicator(
-                onRefresh: () async {
-                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders());
-                  await Future.delayed(const Duration(seconds: 1));
-                },
-                child: _buildOrdersList(context, state, 'cooking'),
-              ),
-              
-              // Completed Orders Tab - with pull-to-refresh
-              RefreshIndicator(
-                onRefresh: () async {
-                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders());
-                  await Future.delayed(const Duration(seconds: 1));
-                },
-                child: _buildOrdersList(context, state, 'complete'),
-              ),
-            ],
-          );
-        },
-      ),
-        ),
-      ],
-    ),
-    );
-  }
-
-  Widget _buildOrdersList(BuildContext context, HistoryState state, String statusFilter) {
-    return state.when(
-      initial: () => const Center(child: Text('Pull to refresh')),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      loaded: (orders) {
-        // CLIENT-SIDE DATE FILTERING
-        var filteredOrders = orders;
-        
-        if (_isFilterActive && _startDate != null && _endDate != null) {
-          filteredOrders = orders.where((order) {
-            if (order.placedAt == null) return false;
-            
-            try {
-              final orderDate = DateTime.parse(order.placedAt!);
-              
-              // Set start date to beginning of day (00:00:00)
-              final startOfDay = DateTime(_startDate!.year, _startDate!.month, _startDate!.day, 0, 0, 0);
-              
-              // Set end date to end of day (23:59:59)
-              final endOfDay = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
-              
-              // Check if order date is within range
-              return orderDate.isAfter(startOfDay.subtract(const Duration(seconds: 1))) &&
-                     orderDate.isBefore(endOfDay.add(const Duration(seconds: 1)));
-            } catch (e) {
-              print('Error parsing date for order ${order.id}: $e');
-              return false;
-            }
-          }).toList();
-        }
-        
-        if (filteredOrders.isEmpty) {
-          return RefreshIndicator(
-            onRefresh: _refreshOrders,
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 100),
-                      Icon(
-                        statusFilter == 'paid'
-                            ? Icons.payment
-                            : statusFilter == 'cooking'
-                                ? Icons.restaurant
-                                : Icons.check_circle,
-                        size: 80,
-                        color: Colors.grey[300],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        _isFilterActive 
-                            ? 'No orders in date range' 
-                            : 'No ${statusFilter} orders',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _isFilterActive
-                            ? 'No orders found between\n${_startDate!.day}/${_startDate!.month}/${_startDate!.year} - ${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
-                            : statusFilter == 'paid'
-                                ? 'New orders will appear here'
-                                : statusFilter == 'cooking'
-                                    ? 'Orders being prepared will appear here'
-                                    : 'Completed orders will appear here',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[500],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
+                    // Paid Orders Tab
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
+                      },
+                      child: _buildOrdersList(context, state.paidOrders, state.isLoading, state.errorMessage, 'paid'),
+                    ),
+                    
+                    // Cooking Orders Tab
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
+                      },
+                      child: _buildOrdersList(context, state.cookingOrders, state.isLoading, state.errorMessage, 'cooking'),
+                    ),
+                    
+                    // Completed Orders Tab
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders(isRefresh: true));
+                      },
+                      child: _buildOrdersList(context, state.completedOrders, state.isLoading, state.errorMessage, 'complete'),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
               ],
             ),
           );
-        }
-
-        return RefreshIndicator(
-          onRefresh: _refreshOrders,
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: filteredOrders.length,
-            itemBuilder: (context, index) {
-              final order = filteredOrders[index];
-              return OrderCard(
-                order: order,
-                onStatusUpdate: () => _showStatusUpdateDialog(context, order),
-                onPrint: () => _handlePrintReceipt(order), // NEW
-                onShare: () => _handleShareReceipt(order), // NEW
-              );
-            },
+        },
+      ),
+          
+          // Floating Header
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: FloatingHeader(
+              title: 'History Orders',
+              onToggleSidebar: widget.onToggleSidebar ?? () {},
+              isSidebarVisible: true,
+              actions: [
+                // Date Filter Button
+                IconButton(
+                  icon: Stack(
+                    children: [
+                      const Icon(Icons.filter_list_rounded, size: 20),
+                      if (_isFilterActive)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              color: Colors.orange,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 6,
+                              minHeight: 6,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  tooltip: _isFilterActive 
+                      ? 'Filter Active'
+                      : 'Filter by Date',
+                  onPressed: _showDateFilterDialog,
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(8),
+                  ),
+                  color: AppColors.primary,
+                ),
+                
+                const SizedBox(width: 8),
+                
+                // Refresh Button
+                BlocBuilder<HistoryBloc, HistoryState>(
+                  builder: (context, state) {
+                    final isLoading = state.isLoading;
+                    return ModernRefreshButton(
+                      isLoading: isLoading,
+                      onPressed: () {
+                        _refreshOrders();
+                        NotificationHelper.showInfo(context, 'Memuat data terbaru...');
+                      },
+                      tooltip: 'Refresh Orders',
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrdersList(
+    BuildContext context, 
+    List<OrderResponseModel> orders, 
+    bool isLoading, 
+    String? errorMessage, 
+    String statusFilter
+  ) {
+    // Show loading only if list is empty and loading is true (initial load)
+    if (isLoading && orders.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    // Show error if list is empty and error exists
+    if (errorMessage != null && orders.isEmpty) {
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 100),
+                const Icon(Icons.error_outline, size: 80, color: Colors.red),
+                const SizedBox(height: 16),
+                const Text(
+                  'Error loading orders',
+                  style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  errorMessage,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: _refreshOrders,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    // CLIENT-SIDE DATE FILTERING
+    var filteredOrders = orders;
+    
+    if (_isFilterActive && _startDate != null && _endDate != null) {
+      filteredOrders = orders.where((order) {
+        if (order.placedAt == null) return false;
+        
+        try {
+          final orderDate = DateTime.parse(order.placedAt!);
+          final startOfDay = DateTime(_startDate!.year, _startDate!.month, _startDate!.day, 0, 0, 0);
+          final endOfDay = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
+          
+          return orderDate.isAfter(startOfDay.subtract(const Duration(seconds: 1))) &&
+                 orderDate.isBefore(endOfDay.add(const Duration(seconds: 1)));
+        } catch (e) {
+          print('Error parsing date for order ${order.id}: $e');
+          return false;
+        }
+      }).toList();
+    }
+    
+    if (filteredOrders.isEmpty) {
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 100),
+                Icon(
+                  statusFilter == 'paid'
+                      ? Icons.payment
+                      : statusFilter == 'cooking'
+                          ? Icons.restaurant
+                          : Icons.check_circle,
+                  size: 80,
+                  color: Colors.grey[300],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  _isFilterActive 
+                      ? 'No orders in date range' 
+                      : 'No ${statusFilter} orders',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _isFilterActive
+                      ? 'No orders found between\n${_startDate!.day}/${_startDate!.month}/${_startDate!.year} - ${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
+                      : statusFilter == 'paid'
+                          ? 'New orders will appear here'
+                          : statusFilter == 'cooking'
+                              ? 'Orders being prepared will appear here'
+                              : 'Completed orders will appear here',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[500],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: filteredOrders.length,
+      itemBuilder: (context, index) {
+        final order = filteredOrders[index];
+        return OrderCard(
+          order: order,
+          onStatusUpdate: () => _showStatusUpdateDialog(context, order),
+          onPrint: () => _handlePrintReceipt(order),
+          onShare: () => _handleShareReceipt(order),
         );
       },
-      error: (message) => RefreshIndicator(
-        onRefresh: _refreshOrders,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 100),
-                  const Icon(
-                    Icons.error_outline,
-                    size: 80,
-                    color: Colors.red,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error loading orders',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[800],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    message,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: _refreshOrders,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      statusUpdated: () => const Center(child: CircularProgressIndicator()),
     );
   }
 }

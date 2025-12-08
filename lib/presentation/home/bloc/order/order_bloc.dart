@@ -24,6 +24,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<_Order>((event, emit) async {
       emit(const _Loading());
       log("Start 1");
+      log("📝 OrderBloc Received Note: '${event.note}'"); // NEW: Debug log
 
       final subTotal = event.items.fold<int>(
           0,
@@ -57,33 +58,22 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         orderType: event.orderType, // Added: dine_in or takeaway
         taxPercentage: event.taxPercentage, // NEW
         serviceChargePercentage: event.serviceChargePercentage, // NEW
+        note: event.note, // NEW
         isSync: 0,
         orderItems: event.items,
       );
       log("Start 2");
 
-      //check state online or offline
+      // check state online or offline
       
       // Save to remote datasource (backend API)
       final value = await orderRemoteDatasource.saveOrder(dataInput);
       
       int id = 0;
       
-      // Only save to local database if NOT web (SQLite not supported in web)
-      if (!kIsWeb) {
-        log("📱 Mobile: Saving to local SQLite database...");
-        if (value) {
-          id = await ProductLocalDatasource.instance
-              .saveOrder(dataInput.copyWith(isSync: 1));
-        } else {
-          id = await ProductLocalDatasource.instance
-              .saveOrder(dataInput.copyWith(isSync: 1));
-        }
-        log("✅ Saved to local database with ID: $id");
-      } else {
-        log("🌐 Web: Skipping local database save (SQLite not supported)");
-        id = 0; // Use 0 for web since we don't have local ID
-      }
+      // ONLINE ONLY: Skip local DB saving
+      log("🌐 Online Only Mode: Skipping local database save");
+      id = 0; 
 
       emit(_Loaded(
         dataInput,
@@ -125,23 +115,16 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         orderType: event.orderType,
         taxPercentage: event.taxPercentage,
         serviceChargePercentage: event.serviceChargePercentage,
+        note: event.note, // NEW
         isSync: 1, // Already synced (created on backend)
         orderItems: event.items,
       );
 
       int id = 0;
       
-      // Only save to local database if NOT web
-      if (!kIsWeb) {
-        log("📱 Mobile: Saving to local SQLite database (Payment Success)...");
-        // Save as synced since it exists on backend
-        id = await ProductLocalDatasource.instance
-            .saveOrder(dataInput.copyWith(isSync: 1));
-        log("✅ Saved to local database with ID: $id");
-      } else {
-        log("🌐 Web: Skipping local database save");
-        id = 0;
-      }
+      // ONLINE ONLY: Skip local DB saving
+      log("🌐 Online Only Mode: Skipping local database save (Payment Success)");
+      id = 0;
 
       emit(_Loaded(
         dataInput,

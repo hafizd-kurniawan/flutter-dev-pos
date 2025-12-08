@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posresto_app/data/models/response/table_model.dart';
@@ -15,17 +15,18 @@ import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart
 import 'package:flutter_posresto_app/presentation/auth/login_page.dart';
 import 'package:flutter_posresto_app/presentation/dashboard/pages/simple_dashboard_page.dart';
 import 'package:flutter_posresto_app/presentation/sales/pages/sales_page.dart';
-import 'package:flutter_posresto_app/presentation/setting/bloc/sync_order/sync_order_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/printer_configuration_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/settings_page.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/new_table_management_page.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/table_page.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/table_management_api_page.dart';
 import 'package:flutter_posresto_app/presentation/history/pages/history_page.dart';
+import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW IMPORT
+import 'package:flutter_posresto_app/presentation/home/bloc/notification/notification_bloc.dart'; // NEW IMPORT
+import 'package:flutter_posresto_app/presentation/history/bloc/history/history_bloc.dart'; // NEW IMPORT
 
 import '../../../core/assets/assets.gen.dart';
 import '../../auth/bloc/logout/logout_bloc.dart';
-import '../bloc/online_checker/online_checker_bloc.dart';
 import '../widgets/nav_item.dart';
 import '../widgets/enhanced_nav_item.dart';
 import '../widgets/collapsed_nav_item.dart';
@@ -33,6 +34,8 @@ import '../widgets/nav_user_info_card.dart';
 import 'home_page.dart';
 
 import 'package:flutter_posresto_app/core/services/notification_service.dart';
+import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 class DashboardPage extends StatefulWidget {
   final int? index;
@@ -47,10 +50,10 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   TableModel? _selectedTable; // Shared table state
-  bool _isSidebarExpanded = false; // Sidebar collapse/expand state
+  bool _isSidebarVisible = true; // Sidebar visible (Rail) or hidden
 
   void _onItemTapped(int index) {
     _selectedIndex = index;
@@ -59,7 +62,7 @@ class _DashboardPageState extends State<DashboardPage> {
   
   void _toggleSidebar() {
     setState(() {
-      _isSidebarExpanded = !_isSidebarExpanded;
+      _isSidebarVisible = !_isSidebarVisible;
     });
   }
   
@@ -78,6 +81,7 @@ class _DashboardPageState extends State<DashboardPage> {
         isTable: false,
         table: _selectedTable,
         onNavigateToTables: () => _onItemTapped(1),
+        onToggleSidebar: _toggleSidebar, // Pass callback to HomePage
         onPaymentSuccess: () {
           // Reset table selection after successful payment
           setState(() {
@@ -88,46 +92,69 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       TableManagementApiPage(
         onTableSelected: _onTableSelected,
+        onToggleSidebar: _toggleSidebar,
       ),
-      const HistoryPage(),
-      const SimpleDashboardPage(), // ← CHANGED from ReportPage!
-      const PrinterConfigurationPage(),
-      const SettingsPage(),
+      HistoryPage(onToggleSidebar: _toggleSidebar),
+      SimpleDashboardPage(onToggleSidebar: _toggleSidebar), // ← CHANGED from ReportPage!
+      PrinterConfigurationPage(onToggleSidebar: _toggleSidebar),
+      SettingsPage(onToggleSidebar: _toggleSidebar),
     ];
   }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this); // Add observer
+    
     // Initialize Notification Service
     NotificationService().init();
     
+    // Start polling for new orders
+    context.read<NotificationBloc>().add(const NotificationEvent.startPolling());
+    
     _selectedIndex = widget.index!;
     _selectedTable = widget.table;
-    
-    StreamSubscription<List<ConnectivityResult>> subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> connectivityResult) {
-      // Received changes in available connectivity types!
-      if (connectivityResult.contains(ConnectivityResult.mobile)) {
-        // Mobile network available.
-        context
-            .read<OnlineCheckerBloc>()
-            .add(const OnlineCheckerEvent.check(true));
-      } else if (connectivityResult.contains(ConnectivityResult.wifi)) {
-        // Wi-fi is available.
-        context
-            .read<OnlineCheckerBloc>()
-            .add(const OnlineCheckerEvent.check(true));
-        // Note for Android:
-        // When both mobile and Wi-Fi are turned on system will return Wi-Fi only as active network type
-      } else {
-        // Neither mobile network nor Wi-fi available.
-        context
-            .read<OnlineCheckerBloc>()
-            .add(const OnlineCheckerEvent.check(false));
-      }
-    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Remove observer
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // App is visible/active -> Start Polling
+      print('📱 App Resumed: Starting Polling');
+      context.read<NotificationBloc>().add(const NotificationEvent.startPolling());
+      
+      // Also refresh settings or other critical data if needed
+      // context.read<SettingsBloc>().add(const SettingsEvent.fetchSettings());
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      // App is background/inactive -> Stop Polling
+      print('zzz App Paused: Stopping Polling');
+      context.read<NotificationBloc>().add(const NotificationEvent.stopPolling());
+    }
+  }
+
+  String _getPageTitle() {
+    switch (_selectedIndex) {
+      case 0:
+        return 'Menu Order';
+      case 1:
+        return 'Table Management';
+      case 2:
+        return 'History';
+      case 3:
+        return 'Dashboard';
+      case 4:
+        return 'Printer';
+      case 5:
+        return 'Settings';
+      default:
+        return 'POS Resto';
+    }
   }
 
   @override
@@ -135,13 +162,14 @@ class _DashboardPageState extends State<DashboardPage> {
     return SafeArea(
       child: Scaffold(
         body: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Animated Sidebar
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
-              width: _isSidebarExpanded ? 250 : 80,
-              height: context.deviceHeight - 20.0,
+              width: _isSidebarVisible ? 80 : 0,
+              // Removed fixed height calculation that caused negative values
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -155,105 +183,7 @@ class _DashboardPageState extends State<DashboardPage> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 children: [
-                  // Hamburger Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                    child: InkWell(
-                      onTap: _toggleSidebar,
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AnimatedRotation(
-                              turns: _isSidebarExpanded ? 0.5 : 0,
-                              duration: const Duration(milliseconds: 300),
-                              child: const Icon(
-                                Icons.menu,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ),
-                            if (_isSidebarExpanded) ...[
-                              const SizedBox(width: 12),
-                              const Expanded(
-                                child: Text(
-                                  'Menu',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 8),
-                  
-                  // User Info Card (only when expanded)
-                  if (_isSidebarExpanded) ...[
-                    const NavUserInfoCard(),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: Divider(
-                        color: Colors.white.withOpacity(0.2),
-                        thickness: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  
-                  // Navigation Items (conditional rendering)
-                  if (_isSidebarExpanded) ...[
-                    EnhancedNavItem(
-                      iconPath: Assets.icons.homeResto.path,
-                      label: 'POS',
-                      isActive: _selectedIndex == 0,
-                      onTap: () => _onItemTapped(0),
-                    ),
-                    EnhancedNavItem(
-                      icon: Icons.table_restaurant,
-                      label: 'Tables',
-                      isActive: _selectedIndex == 1,
-                      onTap: () => _onItemTapped(1),
-                    ),
-                    EnhancedNavItem(
-                      iconPath: Assets.icons.history.path,
-                      label: 'History',
-                      isActive: _selectedIndex == 2,
-                      onTap: () => _onItemTapped(2),
-                      badgeCount: 0,
-                    ),
-                    EnhancedNavItem(
-                      iconPath: Assets.icons.dashboard.path,
-                      label: 'Dashboard',
-                      isActive: _selectedIndex == 3,
-                      onTap: () => _onItemTapped(3),
-                    ),
-                    EnhancedNavItem(
-                      iconPath: Assets.icons.print.path,
-                      label: 'Printer',
-                      isActive: _selectedIndex == 4,
-                      onTap: () => _onItemTapped(4),
-                    ),
-                    EnhancedNavItem(
-                      iconPath: Assets.icons.setting.path,
-                      label: 'Settings',
-                      isActive: _selectedIndex == 5,
-                      onTap: () => _onItemTapped(5),
-                    ),
-                  ] else ...[
+                  // Navigation Items (Always Collapsed/Rail)
                     CollapsedNavItem(
                       iconPath: Assets.icons.homeResto.path,
                       isActive: _selectedIndex == 0,
@@ -264,11 +194,15 @@ class _DashboardPageState extends State<DashboardPage> {
                       isActive: _selectedIndex == 1,
                       onTap: () => _onItemTapped(1),
                     ),
-                    CollapsedNavItem(
-                      iconPath: Assets.icons.history.path,
-                      isActive: _selectedIndex == 2,
-                      onTap: () => _onItemTapped(2),
-                      badgeCount: 0,
+                    BlocBuilder<NotificationBloc, NotificationState>(
+                      builder: (context, state) {
+                        return CollapsedNavItem(
+                          iconPath: Assets.icons.history.path,
+                          isActive: _selectedIndex == 2,
+                          onTap: () => _onItemTapped(2),
+                          badgeCount: state.orderCount,
+                        );
+                      },
                     ),
                     CollapsedNavItem(
                       iconPath: Assets.icons.dashboard.path,
@@ -285,7 +219,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       isActive: _selectedIndex == 5,
                       onTap: () => _onItemTapped(5),
                     ),
-                  ],
                   
                   const SizedBox(height: 16),
                       
@@ -299,134 +232,23 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                       
                       //container flag online/offline
-                      BlocBuilder<OnlineCheckerBloc, OnlineCheckerState>(
-                        builder: (context, state) {
-                          return state.maybeWhen(
-                            orElse: () => Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              padding: _isSidebarExpanded
-                                  ? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)
-                                  : const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12.0),
-                                border: Border.all(
-                                  color: Colors.red.withOpacity(0.5),
-                                  width: 1,
-                                ),
-                              ),
-                              child: _isSidebarExpanded
-                                  ? Row(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.red.withOpacity(0.2),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: const Icon(
-                                            Icons.signal_wifi_off,
-                                            color: Colors.white,
-                                            size: 20,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        const Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Offline',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                              Text(
-                                                'No connection',
-                                                style: TextStyle(
-                                                  color: Colors.white70,
-                                                  fontSize: 11,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : const Icon(
-                                      Icons.signal_wifi_off,
-                                      color: Colors.white,
-                                      size: 24,
-                                    ),
-                            ),
-                            online: () {
-                              context.read<SyncOrderBloc>().add(
-                                    const SyncOrderEvent.syncOrder(),
-                                  );
-                              return Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                padding: _isSidebarExpanded
-                                    ? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)
-                                    : const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  border: Border.all(
-                                    color: Colors.green.withOpacity(0.5),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: _isSidebarExpanded
-                                    ? Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.green.withOpacity(0.2),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: const Icon(
-                                              Icons.wifi,
-                                              color: Colors.white,
-                                              size: 20,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          const Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Online',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  'Connected',
-                                                  style: TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: 11,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : const Icon(
-                                        Icons.wifi,
-                                        color: Colors.white,
-                                        size: 24,
-                                      ),
-                              );
-                            },
-                          );
-                        },
+                      // Online Indicator (Static)
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12.0),
+                          border: Border.all(
+                            color: Colors.green.withOpacity(0.5),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.cloud_done,
+                          color: Colors.green,
+                          size: 24,
+                        ),
                       ),
 
                       BlocListener<LogoutBloc, LogoutState>(
@@ -434,46 +256,57 @@ class _DashboardPageState extends State<DashboardPage> {
                           state.maybeMap(
                             orElse: () {},
                             error: (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(e.message),
-                                  backgroundColor: AppColors.red,
-                                ),
-                              );
+                              if (mounted) {
+                                NotificationHelper.showError(context, e.message);
+                              }
                             },
                             success: (value) {
                               AuthLocalDataSource().removeAuthData();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Logout success'),
-                                  backgroundColor: AppColors.primary,
-                                ),
-                              );
-                              Navigator.pushReplacement(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return const LoginPage();
-                              }));
+                              if (mounted) {
+                                NotificationHelper.showSuccess(context, 'Logout success');
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return const LoginPage();
+                                }));
+                              }
                             },
                           );
                         },
-                        child: _isSidebarExpanded
-                            ? EnhancedNavItem(
-                                icon: Icons.logout,
-                                label: 'Logout',
+                        child: CollapsedNavItem(
+                          iconPath: Assets.icons.logout.path,
+                          isActive: false,
+                          onTap: () {
+                            context.read<LogoutBloc>().add(const LogoutEvent.logout());
+                          },
+                        ),
+                      ),
+                      
+                      // SYNC SETTINGS BUTTON (NEW)
+                      BlocListener<SettingsBloc, SettingsState>(
+                        listener: (context, state) {
+                          state.maybeWhen(
+                            loaded: (response) {
+                              if (mounted) {
+                                NotificationHelper.showSuccess(context, 'Sync settings success');
+                              }
+                            },
+                            error: (message) {
+                              if (mounted) {
+                                NotificationHelper.showError(context, 'Sync settings failed');
+                              
+                              }
+                            },
+                            orElse: () {},
+                          );
+                        },
+                        child: CollapsedNavItem(
+                                icon: Icons.sync,
                                 isActive: false,
                                 onTap: () {
+                                  NotificationHelper.showInfo(context, 'Syncing settings...');
                                   context
-                                      .read<LogoutBloc>()
-                                      .add(const LogoutEvent.logout());
-                                },
-                              )
-                            : CollapsedNavItem(
-                                icon: Icons.logout,
-                                isActive: false,
-                                onTap: () {
-                                  context
-                                      .read<LogoutBloc>()
-                                      .add(const LogoutEvent.logout());
+                                      .read<SettingsBloc>()
+                                      .add(const SettingsEvent.fetchSettings());
                                 },
                               ),
                       ),
@@ -482,9 +315,23 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             Expanded(
               flex: 10,
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: _getPages(),
+              child: BlocListener<NotificationBloc, NotificationState>(
+                listenWhen: (previous, current) => previous.orderCount != current.orderCount,
+                listener: (context, state) {
+                  // Trigger History Refresh when order count changes
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
+                  context.read<HistoryBloc>().add(const HistoryEvent.fetchCompletedOrders(isRefresh: true));
+                  
+                  // Optional: Show snackbar or toast
+                  if (mounted) {
+                    NotificationHelper.showSuccess(context, 'New Order Received! History Updated.');
+                  }
+                },
+                child: IndexedStack(
+                  index: _selectedIndex,
+                  children: _getPages(),
+                ),
               ),
             ),
           ],

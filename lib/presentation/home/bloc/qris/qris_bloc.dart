@@ -26,23 +26,34 @@ class QrisBloc extends Bloc<QrisEvent, QrisState> {
           event.items,
           event.customerName,
           event.tableNumber,
+          event.orderType,
+          event.discount,
+          event.tax,
+          event.serviceCharge,
+          event.notes,
         );
         log("response: ${response}");
         emit(_QrisResponse(response));
       } catch (e) {
         log("Error generating QR: $e");
-        // emit error state if possible, or just log for now
+        emit(QrisState.error(e.toString()));
       }
     });
 
     on<_CheckPaymentStatus>((event, emit) async {
-      // emit(const QrisState.loading());
-      final response = await datasource.checkPaymentStatus(event.orderId);
-      log(" OrderID: ${event.orderId} | response: ${response}");
-      // Future.delayed(const Duration(seconds: 5));
-      // emit(QrisState.statusCheck(response));
-      if (response.transactionStatus == 'settlement') {
-        emit(_Success('Pembayaran Berhasil'));
+      log("QRIS BLOC: Checking status for Order ID: ${event.orderId}");
+      try {
+        final response = await datasource.checkPaymentStatus(event.orderId);
+        log("QRIS BLOC: Response Status: ${response.transactionStatus}");
+        
+        if (response.transactionStatus == 'settlement') {
+          log("QRIS BLOC: Payment Settled! Emitting Success State.");
+          emit(_Success('Pembayaran Berhasil'));
+        } else {
+          log("QRIS BLOC: Payment not settled yet (${response.transactionStatus})");
+        }
+      } catch (e) {
+        log("QRIS BLOC: Error checking status: $e");
       }
     });
   }

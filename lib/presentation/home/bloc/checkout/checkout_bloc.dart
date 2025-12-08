@@ -17,7 +17,7 @@ part 'checkout_state.dart';
 part 'checkout_bloc.freezed.dart';
 
 class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
-  CheckoutBloc() : super(const _Loaded([], null, 0, 0, 0, 0, 0, 0, '')) {
+  CheckoutBloc() : super(const _Loaded([], null, 0, 0, 0, 0, 0, 0, '', '')) {
     on<_AddItem>((event, emit) {
       var currentState = state as _Loaded;
       List<ProductQuantity> items = [...currentState.items];
@@ -39,7 +39,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           currentState.serviceCharge,
           currentState.totalQuantity,
           currentState.totalPrice,
-          currentState.draftName));
+          currentState.draftName,
+          currentState.orderNote));
     });
 
     on<_RemoveItem>((event, emit) {
@@ -65,13 +66,14 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           currentState.serviceCharge,
           currentState.totalQuantity,
           currentState.totalPrice,
-          currentState.draftName));
+          currentState.draftName,
+          currentState.orderNote));
     });
 
     on<_Started>((event, emit) {
       // Reset cart completely (all items and settings to 0)
       log('🔄 [CheckoutBloc] Reset all (started event)');
-      emit(const _Loaded([], null, 0, 0, 0, 0, 0, 0, ''));
+      emit(const _Loaded([], null, 0, 0, 0, 0, 0, 0, '', ''));
     });
     
     on<_ClearItems>((event, emit) {
@@ -89,6 +91,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
         0, // Reset quantity
         0, // Reset price
         '', // Clear draft name
+        '', // Clear order note (NEW: Clear note on clear items)
       ));
       log('✅ [CheckoutBloc] Items cleared, settings preserved');
     });
@@ -105,6 +108,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
         currentState.totalQuantity,
         currentState.totalPrice,
         currentState.draftName,
+        currentState.orderNote,
       ));
     });
 
@@ -119,7 +123,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           currentState.serviceCharge,
           currentState.totalQuantity,
           currentState.totalPrice,
-          currentState.draftName));
+          currentState.draftName,
+          currentState.orderNote));
     });
 
     on<_AddTax>((event, emit) {
@@ -135,7 +140,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           currentState.serviceCharge,
           currentState.totalQuantity,
           currentState.totalPrice,
-          currentState.draftName));
+          currentState.draftName,
+          currentState.orderNote));
       log('✅ [CheckoutBloc] New state emitted with Tax: ${event.tax}%');
     });
 
@@ -153,6 +159,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
         currentState.totalQuantity,
         currentState.totalPrice,
         currentState.draftName,
+        currentState.orderNote,
       ));
       log('✅ [CheckoutBloc] New state emitted with Service: ${event.serviceCharge}%');
     });
@@ -168,7 +175,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           currentState.serviceCharge,
           currentState.totalQuantity,
           currentState.totalPrice,
-          currentState.draftName));
+          currentState.draftName,
+          currentState.orderNote));
     });
 
     on<_RemoveServiceCharge>((event, emit) {
@@ -182,7 +190,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           0,
           currentState.totalQuantity,
           currentState.totalPrice,
-          currentState.draftName));
+          currentState.draftName,
+          currentState.orderNote));
     });
 
     on<_SaveDraftOrder>((event, emit) async {
@@ -207,6 +216,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
         draftName: event.draftName,
         transactionTime:
             DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+        note: currentStates.orderNote, // NEW
       );
       log("draftOrder12: ${draftOrder.toMapForLocal()}");
       final orderDraftId =
@@ -231,7 +241,48 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           draftOrder.serviceCharge,
           draftOrder.totalQuantity,
           draftOrder.totalPrice,
-          draftOrder.draftName));
+          draftOrder.draftName,
+          draftOrder.note)); // Restore note
+    });
+
+    on<_AddNoteToItem>((event, emit) {
+      var currentState = state as _Loaded;
+      List<ProductQuantity> items = [...currentState.items];
+      var index =
+          items.indexWhere((element) => element.product.id == event.product.id);
+      emit(_Loading());
+      if (index != -1) {
+        items[index] = ProductQuantity(
+            product: event.product,
+            quantity: items[index].quantity,
+            note: event.note);
+      }
+      emit(_Loaded(
+          items,
+          currentState.discountModel,
+          currentState.discount,
+          currentState.discountAmount,
+          currentState.tax,
+          currentState.serviceCharge,
+          currentState.totalQuantity,
+          currentState.totalPrice,
+          currentState.draftName,
+          currentState.orderNote));
+    });
+
+    on<_AddOrderNote>((event, emit) {
+      var currentState = state as _Loaded;
+      emit(_Loaded(
+          currentState.items,
+          currentState.discountModel,
+          currentState.discount,
+          currentState.discountAmount,
+          currentState.tax,
+          currentState.serviceCharge,
+          currentState.totalQuantity,
+          currentState.totalPrice,
+          currentState.draftName,
+          event.note));
     });
   }
 }

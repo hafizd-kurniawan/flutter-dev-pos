@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_posresto_app/core/constants/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class NotificationsSettingsPage extends StatefulWidget {
   const NotificationsSettingsPage({Key? key}) : super(key: key);
@@ -53,7 +54,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(message, style: GoogleFonts.quicksand()),
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 2),
       ),
@@ -63,7 +64,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(message, style: GoogleFonts.quicksand()),
         backgroundColor: Colors.red,
         duration: const Duration(seconds: 2),
       ),
@@ -71,14 +72,12 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
   }
 
   void _testNotification() {
-    // Show a test notification (simple snackbar for now)
-    // In production, this would trigger an actual FCM notification
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.notifications_active, color: Colors.white),
-            SizedBox(width: 12),
+            const Icon(Icons.notifications_active, color: Colors.white),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -86,9 +85,9 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                 children: [
                   Text(
                     'Test Notification',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
                   ),
-                  Text('This is how notifications will appear'),
+                  Text('This is how notifications will appear', style: GoogleFonts.quicksand()),
                 ],
               ),
             ),
@@ -108,145 +107,132 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications Settings'),
-        centerTitle: true,
-        backgroundColor: AppColors.white,
-        foregroundColor: AppColors.primary,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Page Title
-            Text(
-              'Notification Preferences',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(0), // Padding is handled by parent container
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Page Title (Only for Mobile if needed, but usually redundant with Header)
+          // We'll keep a section title
+          Text(
+            'Notification Preferences',
+            style: GoogleFonts.quicksand(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Manage how you receive notifications',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Manage how you receive notifications',
+            style: GoogleFonts.quicksand(
+              fontSize: 14,
+              color: Colors.grey[600],
             ),
-            const SizedBox(height: 32),
+          ),
+          const SizedBox(height: 24),
 
-            // FCM Enabled Card
-            _buildSettingCard(
-              icon: Icons.cloud,
-              title: 'Push Notifications',
-              subtitle: 'Enable or disable all push notifications',
-              value: _fcmEnabled,
-              onChanged: (value) {
-                setState(() {
-                  _fcmEnabled = value;
-                });
-                _saveSetting('fcm_enabled', value);
-              },
+          // FCM Enabled Card
+          _buildSettingCard(
+            icon: Icons.cloud,
+            title: 'Push Notifications',
+            subtitle: 'Enable or disable all push notifications',
+            value: _fcmEnabled,
+            onChanged: (value) {
+              setState(() {
+                _fcmEnabled = value;
+              });
+              _saveSetting('fcm_enabled', value);
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          // Sound Enabled Card
+          _buildSettingCard(
+            icon: Icons.volume_up,
+            title: 'Notification Sound',
+            subtitle: 'Play sound when notifications arrive',
+            value: _soundEnabled,
+            onChanged: (value) {
+              setState(() {
+                _soundEnabled = value;
+              });
+              _saveSetting('sound_enabled', value);
+            },
+          ),
+
+          const SizedBox(height: 32),
+
+          // Section Header
+          Text(
+            'Alert Types',
+            style: GoogleFonts.quicksand(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
             ),
+          ),
+          const SizedBox(height: 16),
 
-            const SizedBox(height: 16),
+          // New Order Alerts Card
+          _buildSettingCard(
+            icon: Icons.shopping_cart,
+            title: 'New Order Alerts',
+            subtitle: 'Get notified when new orders arrive',
+            value: _newOrderAlerts,
+            onChanged: (value) {
+              setState(() {
+                _newOrderAlerts = value;
+              });
+              _saveSetting('new_order_alerts', value);
+            },
+          ),
 
-            // Sound Enabled Card
-            _buildSettingCard(
-              icon: Icons.volume_up,
-              title: 'Notification Sound',
-              subtitle: 'Play sound when notifications arrive',
-              value: _soundEnabled,
-              onChanged: (value) {
-                setState(() {
-                  _soundEnabled = value;
-                });
-                _saveSetting('sound_enabled', value);
-              },
-            ),
+          const SizedBox(height: 16),
 
-            const SizedBox(height: 32),
+          // Low Stock Alerts Card
+          _buildSettingCard(
+            icon: Icons.inventory_2,
+            title: 'Low Stock Alerts',
+            subtitle: 'Get notified when products are running low',
+            value: _lowStockAlerts,
+            onChanged: (value) {
+              setState(() {
+                _lowStockAlerts = value;
+              });
+              _saveSetting('low_stock_alerts', value);
+            },
+          ),
 
-            // Section Header
-            Text(
-              'Alert Types',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 16),
+          const SizedBox(height: 32),
 
-            // New Order Alerts Card
-            _buildSettingCard(
-              icon: Icons.shopping_cart,
-              title: 'New Order Alerts',
-              subtitle: 'Get notified when new orders arrive',
-              value: _newOrderAlerts,
-              onChanged: (value) {
-                setState(() {
-                  _newOrderAlerts = value;
-                });
-                _saveSetting('new_order_alerts', value);
-              },
-            ),
-
-            const SizedBox(height: 16),
-
-            // Low Stock Alerts Card
-            _buildSettingCard(
-              icon: Icons.inventory_2,
-              title: 'Low Stock Alerts',
-              subtitle: 'Get notified when products are running low',
-              value: _lowStockAlerts,
-              onChanged: (value) {
-                setState(() {
-                  _lowStockAlerts = value;
-                });
-                _saveSetting('low_stock_alerts', value);
-              },
-            ),
-
-            const SizedBox(height: 32),
-
-            // Test Notification Button
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: _testNotification,
-                icon: const Icon(Icons.notifications_active),
-                label: const Text('Test Notification'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+          // Test Notification Button
+          Center(
+            child: ElevatedButton.icon(
+              onPressed: _testNotification,
+              icon: const Icon(Icons.notifications_active),
+              label: Text('Test Notification', style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 2,
               ),
             ),
-
-            const SizedBox(height: 32),
-
-            // Info Card removed as per user request
-          ],
-        ),
+          ),
+          
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }
@@ -258,10 +244,18 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -272,7 +266,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
@@ -288,15 +282,16 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: GoogleFonts.quicksand(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: GoogleFonts.quicksand(
                       fontSize: 13,
                       color: Colors.grey[600],
                     ),

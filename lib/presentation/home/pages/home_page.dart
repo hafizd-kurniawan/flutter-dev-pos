@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart'; // NEW: Google Fonts
 
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
@@ -28,16 +29,21 @@ import '../../../core/components/buttons.dart';
 import '../../../core/components/spaces.dart';
 import '../../../core/constants/colors.dart';
 import '../bloc/checkout/checkout_bloc.dart';
+import '../widgets/action_card_button.dart';
 import '../widgets/column_button.dart';
 import '../widgets/custom_tab_bar.dart';
 import '../widgets/home_title.dart';
 import '../widgets/order_menu.dart';
 import '../widgets/product_card.dart';
+import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
+import 'package:flutter_posresto_app/core/components/modern_refresh_button.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 class HomePage extends StatefulWidget {
   final bool isTable;
   final TableModel? table;
   final VoidCallback? onNavigateToTables;
+  final VoidCallback? onToggleSidebar; // Callback to toggle sidebar
   final VoidCallback? onPaymentSuccess;
   
   const HomePage({
@@ -45,6 +51,7 @@ class HomePage extends StatefulWidget {
     required this.isTable,
     this.table,
     this.onNavigateToTables,
+    this.onToggleSidebar,
     this.onPaymentSuccess,
   }) : super(key: key);
 
@@ -57,8 +64,10 @@ class _HomePageState extends State<HomePage> {
   Timer? _debounce;
   String _searchQuery = '';
   bool _isRefreshing = false;
+  bool _isSearchActive = false; // NEW: Track search bar visibility on mobile
   String _orderType = 'dine_in'; // dine_in or takeaway
   TableModel? _selectedTable;
+  int _selectedTabIndex = 0; // 0: Menu, 1: Cart (For Mobile)
 
   // 🎯 RESPONSIVE UTILITIES (based on available width after sidebar)
   
@@ -82,7 +91,8 @@ class _HomePageState extends State<HomePage> {
   int _getCartFlex(double availableWidth) {
     if (availableWidth < 600) return 1;      // Mobile
     if (availableWidth < 800) return 2;      // Tablet: 3:2 ratio
-    return 2;                                // Desktop: 4:2 (2:1) ratio
+    if (availableWidth < 1200) return 2;     // Desktop: 4:2 (2:1) ratio
+    return 3;                                // Large Desktop: 5:3 ratio (Wider cart)
   }
   
   /// Grid spacing
@@ -93,12 +103,13 @@ class _HomePageState extends State<HomePage> {
   
   /// Cart padding
   EdgeInsets _getCartPadding(double availableWidth) {
-    return const EdgeInsets.all(16.0); // Consistent padding
+    if (availableWidth > 1000) return const EdgeInsets.all(24.0); // Spacious padding
+    return const EdgeInsets.all(16.0); // Standard padding
   }
   
   /// Products section padding
   EdgeInsets _getProductsPadding(double availableWidth) {
-    return const EdgeInsets.all(16.0); // Consistent padding
+    return const EdgeInsets.symmetric(vertical: 16.0); // Vertical only, horizontal handled by children
   }
   
   /// Cart font size
@@ -122,17 +133,35 @@ class _HomePageState extends State<HomePage> {
     _orderType = widget.isTable ? 'dine_in' : 'takeaway';
     print('🏠 Init: orderType=$_orderType, table=${_selectedTable?.name}');
     
-    // Fetch categories from API
-    context.read<CategoryBloc>().add(const CategoryEvent.getCategories());
-    print('📂 CategoryBloc event triggered');
+    // Fetch categories from API if not loaded
+    final categoryState = context.read<CategoryBloc>().state;
+    categoryState.maybeWhen(
+      loaded: (_) => print('📂 Categories already loaded, skipping fetch'),
+      orElse: () {
+        context.read<CategoryBloc>().add(const CategoryEvent.getCategories());
+        print('📂 CategoryBloc event triggered');
+      },
+    );
     
-    // Fetch products from local storage
-    context.read<LocalProductBloc>().add(const LocalProductEvent.getLocalProduct());
-    print('📦 LocalProductBloc event triggered');
+    // Fetch products from local storage if not loaded
+    final productState = context.read<LocalProductBloc>().state;
+    productState.maybeWhen(
+      loaded: (_) => print('📦 Products already loaded, skipping fetch'),
+      orElse: () {
+        context.read<LocalProductBloc>().add(const LocalProductEvent.getLocalProduct());
+        print('📦 LocalProductBloc event triggered');
+      },
+    );
     
-    // Fetch POS settings (discounts, taxes, services)
-    context.read<PosSettingsBloc>().add(const PosSettingsEvent.getSettings());
-    print('🔧 PosSettingsBloc event triggered');
+    // Fetch POS settings (discounts, taxes, services) if not loaded
+    final settingsState = context.read<PosSettingsBloc>().state;
+    settingsState.maybeWhen(
+      loaded: (_) => print('🔧 Settings already loaded, skipping fetch'),
+      orElse: () {
+        context.read<PosSettingsBloc>().add(const PosSettingsEvent.getSettings());
+        print('🔧 PosSettingsBloc event triggered');
+      },
+    );
     
     // Setup search listener with debounce
     searchController.addListener(_onSearchChanged);
@@ -300,9 +329,8 @@ class _HomePageState extends State<HomePage> {
           if (kIsWeb) {
             await ProductStorageHelper.saveProducts(productResponse.data ?? []);
           } else {
-            // Mobile: SQLite
-            await context.read<LocalProductBloc>().productLocalDatasource.deleteAllProducts();
-            await context.read<LocalProductBloc>().productLocalDatasource.insertProducts(productResponse.data ?? []);
+            // Mobile: Online Only - Skip SQLite
+            print('🌐 Online Only Mode: Skipping local DB save');
           }
           
           // Reload products
@@ -327,39 +355,27 @@ class _HomePageState extends State<HomePage> {
       // Show result
       if (mounted) {
         if (errors.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('✅ Semua data berhasil diperbarui! ($successCount/$totalCount)'),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
-            ),
+          NotificationHelper.showSuccess(
+            context, 
+            'Semua data berhasil diperbarui!'
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('⚠️ Refresh selesai dengan ${errors.length} error:\n${errors.join('\n')}'),
-              backgroundColor: Colors.orange,
-              duration: const Duration(seconds: 3),
-            ),
+          NotificationHelper.showWarning(
+            context,
+            'Refresh selesai dengan ${errors.length} error:\n${errors.join('\n')}'
           );
         }
       }
     } catch (e) {
       print('❌ Refresh error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Gagal refresh data: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        NotificationHelper.showError(context, 'Gagal refresh data: $e');
       }
     } finally {
       setState(() => _isRefreshing = false);
     }
   }
-
+  
   void onCategoryTap(int index) {
     searchController.clear();
     setState(() {});
@@ -373,607 +389,867 @@ class _HomePageState extends State<HomePage> {
         body: LayoutBuilder(
           builder: (context, constraints) {
             final availableWidth = constraints.maxWidth;
-            
-            return Row(
-              children: [
-                // LEFT SIDE: Products Grid
-                Expanded(
-                  flex: _getProductFlex(availableWidth),
-                  child: Align(
-                    alignment: AlignmentDirectional.topStart,
-                    child: Padding(
-                      padding: _getProductsPadding(availableWidth),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        // Search Bar with Refresh Button
-                        Row(
-                          children: [
-                            Expanded(
-                              child: HomeTitle(
-                                controller: searchController,
-                                onChanged: (value) {
-                                  // Debounce handled by listener
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Refresh Button (All Data)
-                            IconButton(
-                              onPressed: _isRefreshing ? null : _refreshAllData,
-                              icon: _isRefreshing
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
-                                    )
-                                  : const Icon(Icons.refresh, size: 28),
-                              color: AppColors.primary,
-                              tooltip: 'Refresh semua data (Produk, Kategori, Settings)',
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        
-                        // DYNAMIC CATEGORIES WITH TABS
-                        BlocBuilder<CategoryBloc, CategoryState>(
-                          builder: (context, categoryState) {
-                            return categoryState.maybeWhen(
-                              orElse: () => const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              loading: () => const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              error: (message) => Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Error loading categories',
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      message,
-                                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              loaded: (categories) {
-                                // Build dynamic tab titles
-                                final tabTitles = [
-                                  'Semua',
-                                  ...categories.map((c) => c.name ?? 'Category')
-                                ];
-                                
-                                // Build dynamic tab views
-                                final tabViews = [
-                                  // "Semua" tab - show all products
-                                  _buildProductGrid(null, availableWidth),
-                                  
-                                  // Dynamic category tabs - filter by category ID
-                                  ...categories.map((category) => 
-                                    _buildProductGrid(category.id, availableWidth)
+            final isMobile = availableWidth < 800;
+
+            // 📱 MOBILE LAYOUT (Tab View)
+            if (isMobile) {
+              return Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 100.0),
+                    child: Scaffold(
+                      body: IndexedStack(
+                        index: _selectedTabIndex,
+                        children: [
+                          // Tab 0: Menu
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: _buildMenuSection(context, availableWidth),
+                          ),
+                          
+                          // Tab 1: Cart
+                          _buildCartSection(context, availableWidth),
+                        ],
+                      ),
+                      bottomNavigationBar: NavigationBar(
+                        selectedIndex: _selectedTabIndex,
+                        onDestinationSelected: (index) {
+                          setState(() => _selectedTabIndex = index);
+                        },
+                        destinations: [
+                          const NavigationDestination(
+                            icon: Icon(Icons.restaurant_menu),
+                            label: 'Menu',
+                          ),
+                          NavigationDestination(
+                            icon: BlocBuilder<CheckoutBloc, CheckoutState>(
+                              builder: (context, state) {
+                                return Badge(
+                                  label: state.maybeWhen(
+                                    orElse: () => null,
+                                    loaded: (products, _, __, ___, ____, _____, totalQty, _______, ________, _________) {
+                                      return totalQty > 0 ? Text('$totalQty') : null;
+                                    },
                                   ),
-                                ];
-                                
-                                return CustomTabBar(
-                                  tabTitles: tabTitles,
-                                  initialTabIndex: 0,
-                                  tabViews: tabViews,
+                                  isLabelVisible: state.maybeWhen(
+                                    orElse: () => false,
+                                    loaded: (products, _, __, ___, ____, _____, totalQty, _______, ________, _________) {
+                                      return totalQty > 0;
+                                    },
+                                  ),
+                                  child: const Icon(Icons.shopping_cart),
                                 );
                               },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            
-            // RIGHT SIDE: Cart with responsive constraints
-            Expanded(
-              flex: _getCartFlex(availableWidth),
-              child: Container(
-                constraints: BoxConstraints(
-                  minWidth: 280,
-                  maxWidth: availableWidth > 1100 ? 450 : double.infinity,
-                ),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Stack(
-                    children: [
-                      SingleChildScrollView(
-                        padding: _getCartPadding(availableWidth),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                          // Table Selection - Professional Design
-                          _buildTableSelector(),
-                          const SpaceHeight(8.0),
-                          
-                          // Order Number & Type Selector
-                          Row(
-                            children: [
-                              Button.filled(
-                                width: 120.0,
-                                height: 40,
-                                onPressed: () {},
-                                label: 'Pesanan#',
-                              ),
-                              const SpaceWidth(12),
-                              Expanded(
-                                child: _buildOrderTypeSelector(),
-                              ),
-                            ],
+                            ),
+                            label: 'Pesanan',
                           ),
-                          const SpaceHeight(16.0),
-                          
-                          // Cart Header
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Item',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              SizedBox(width: 130),
-                              SizedBox(
-                                width: 50.0,
-                                child: Text(
-                                  'Qty',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                child: Text(
-                                  'Price',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SpaceHeight(8),
-                          const Divider(),
-                          const SpaceHeight(8),
-                          
-                          // Cart Items List
-                          BlocBuilder<CheckoutBloc, CheckoutState>(
-                            builder: (context, state) {
-                              return state.maybeWhen(
-                                orElse: () => const Center(
-                                  child: Text('No Items'),
-                                ),
-                                loaded: (products,
-                                    discountModel,
-                                    discount,
-                                    discountAmount,
-                                    tax,
-                                    serviceCharge,
-                                    totalQuantity,
-                                    totalPrice,
-                                    draftName) {
-                                  if (products.isEmpty) {
-                                    return const Center(
-                                      child: Text('No Items'),
-                                    );
-                                  }
-                                  return ListView.separated(
-                                    shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) => OrderMenu(data: products[index]),
-                                    separatorBuilder: (context, index) => const SpaceHeight(1.0),
-                                    itemCount: products.length,
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                          const SpaceHeight(8.0),
-                          
-                          // Discount, Tax, Service Buttons (DYNAMIC from API)
-                          BlocBuilder<PosSettingsBloc, PosSettingsState>(
-                            builder: (context, settingsState) {
-                              return settingsState.maybeWhen(
-                                orElse: () => const SizedBox.shrink(), // Loading or error
-                                loaded: (settings) {
-                                  // Build button list dynamically
-                                  final buttons = <Widget>[];
-                                  
-                                  // Add Discount button if available
-                                  if (settings.discounts.isNotEmpty) {
-                                    buttons.add(
-                                      ColumnButton(
-                                        label: 'Diskon',
-                                        svgGenImage: Assets.icons.diskon,
-                                        onPressed: () => showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (context) => const DynamicDiscountDialog(),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  
-                                  // Add Tax button if available
-                                  if (settings.taxes.isNotEmpty) {
-                                    buttons.add(
-                                      ColumnButton(
-                                        label: 'Pajak',
-                                        svgGenImage: Assets.icons.pajak,
-                                        onPressed: () => showDialog(
-                                          context: context,
-                                          builder: (context) => const DynamicTaxDialog(),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  
-                                  // Add Service button if available
-                                  if (settings.services.isNotEmpty) {
-                                    buttons.add(
-                                      ColumnButton(
-                                        label: 'Layanan',
-                                        svgGenImage: Assets.icons.layanan,
-                                        onPressed: () => showDialog(
-                                          context: context,
-                                          builder: (context) => const DynamicServiceDialog(),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  
-                                  // If no buttons, return empty
-                                  if (buttons.isEmpty) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  
-                                  // Return button row
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: buttons,
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                          const SpaceHeight(8.0),
-                          const Divider(),
-                          const SpaceHeight(8.0),
-                          
-                          // Tax Row - Only show if enabled in PosSettings
-                          BlocBuilder<PosSettingsBloc, PosSettingsState>(
-                            builder: (context, settingsState) {
-                              return settingsState.maybeWhen(
-                                orElse: () => const SizedBox.shrink(),
-                                loaded: (settings) {
-                                  // Hide if taxes disabled (empty)
-                                  if (settings.taxes.isEmpty) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  
-                                  // Show tax row
-                                  return Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text('Pajak', style: TextStyle(color: AppColors.grey)),
-                                          BlocBuilder<CheckoutBloc, CheckoutState>(
-                                            builder: (context, state) {
-                                              final tax = state.maybeWhen(
-                                                orElse: () => 0,
-                                                loaded: (_, __, ___, ____, tax, _____, ______, _______, ________) {
-                                                  return tax;
-                                                },
-                                              );
-                                              return Text(
-                                                '$tax %',
-                                                style: const TextStyle(
-                                                  color: AppColors.primary,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      const SpaceHeight(8.0),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                          
-                          // Service Charge Row - Only show if enabled in PosSettings
-                          BlocBuilder<PosSettingsBloc, PosSettingsState>(
-                            builder: (context, settingsState) {
-                              return settingsState.maybeWhen(
-                                orElse: () => const SizedBox.shrink(),
-                                loaded: (settings) {
-                                  // Hide if services disabled (empty)
-                                  if (settings.services.isEmpty) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  
-                                  // Show service charge row
-                                  return Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text('Layanan', style: TextStyle(color: AppColors.grey)),
-                                          BlocBuilder<CheckoutBloc, CheckoutState>(
-                                            builder: (context, state) {
-                                              final serviceCharge = state.maybeWhen(
-                                                orElse: () => 0,
-                                                loaded: (_, __, ___, ____, _____, serviceCharge, ______, _______, ________) {
-                                                  return serviceCharge;
-                                                },
-                                              );
-                                              return Text(
-                                                '$serviceCharge %',
-                                                style: const TextStyle(
-                                                  color: AppColors.primary,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      const SpaceHeight(8.0),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                          
-                          // Discount Row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Diskon', style: TextStyle(color: AppColors.grey)),
-                              BlocBuilder<CheckoutBloc, CheckoutState>(
-                                builder: (context, state) {
-                                  return state.maybeWhen(
-                                    orElse: () => const Text(
-                                      '-',
-                                      style: TextStyle(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    loaded: (products, discountModel, discount, discountAmount,
-                                        tax, serviceCharge, totalQuantity, totalPrice, draftName) {
-                                      if (discountModel == null) {
-                                        return const Text(
-                                          '-',
-                                          style: TextStyle(
-                                            color: AppColors.primary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        );
-                                      }
-                                      
-                                      final value = discountModel.value!.replaceAll('.00', '').toIntegerFromText;
-                                      final displayText = discountModel.type == 'percentage'
-                                          ? '$value %'
-                                          : 'Rp ${value.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}';
-                                      
-                                      return Text(
-                                        displayText,
-                                        style: const TextStyle(
-                                          color: AppColors.primary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          const SpaceHeight(8.0),
-                          
-                          // Subtotal Row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Sub total',
-                                style: TextStyle(
-                                  color: AppColors.grey,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              BlocBuilder<CheckoutBloc, CheckoutState>(
-                                builder: (context, state) {
-                                  final price = state.maybeWhen(
-                                    orElse: () => 0,
-                                    loaded: (products, discountModel, discount, discountAmount,
-                                        tax, serviceCharge, totalQuantity, totalPrice, draftName) {
-                                      if (products.isEmpty) return 0;
-                                      return products
-                                          .map((e) => (e.product.price ?? '0').toIntegerFromText * e.quantity)
-                                          .reduce((value, element) => value + element);
-                                    },
-                                  );
-                                  return Text(
-                                    price.currencyFormatRp,
-                                    style: const TextStyle(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          const SpaceHeight(100.0),
                         ],
                       ),
                     ),
-                    
-                    // Payment Button (Fixed at bottom)
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ColoredBox(
-                        color: AppColors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                          child: BlocBuilder<CheckoutBloc, CheckoutState>(
-                            builder: (context, state) {
-                              return state.maybeWhen(
-                                orElse: () => Button.filled(
-                                  onPressed: () {},
-                                  label: 'Lanjutkan Pembayaran',
+                  ),
+                  
+                  // Floating Header (Mobile)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: FloatingHeader(
+                      title: 'Menu',
+                      onToggleSidebar: widget.onToggleSidebar ?? () {},
+                      isSidebarVisible: true,
+                      titleWidget: _isSearchActive
+                          ? SizedBox(
+                              height: 40,
+                              child: TextField(
+                                controller: searchController,
+                                autofocus: true,
+                                style: const TextStyle(fontSize: 14),
+                                decoration: InputDecoration(
+                                  hintText: 'Cari produk...',
+                                  hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 14),
+                                  prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 20),
+                                  filled: true,
+                                  fillColor: Colors.grey[100],
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                                  isDense: true,
                                 ),
-                                loaded: (products, discountModel, discount, discountAmount,
-                                    tax, serviceCharge, totalQuantity, totalPrice, draftName) {
-                                  if (products.isEmpty) {
-                                    return Button.filled(
-                                      onPressed: () {},
-                                      label: 'Lanjutkan Pembayaran',
-                                    );
-                                  }
-                                  
-                                  return Button.filled(
-                                    onPressed: () async {
-                                            // Show loading
-                                            showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder: (_) => const Center(
-                                                child: CircularProgressIndicator(),
-                                              ),
-                                            );
-                                            
-                                            // Validate stock for all cart items
-                                            final items = products.map((item) => {
-                                              'product_id': item.product.id,
-                                              'quantity': item.quantity,
-                                            }).toList();
-                                            
-                                            final result = await StockRemoteDatasource().validateOrder(items);
-                                            
-                                            if (!context.mounted) return;
-                                            Navigator.pop(context); // Close loading
-                                            
-                                            result.fold(
-                                              (error) {
-                                                // Network error
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text('Gagal validasi stok: $error'),
-                                                    backgroundColor: Colors.red,
-                                                  ),
-                                                );
-                                              },
-                                              (validation) async { // ADDED: async for await
-                                                final isValid = validation['is_valid'] ?? false;
-                                                
-                                                if (isValid) {
-                                                  // Validate: Dine-in must have table selected
-                                                  if (_orderType == 'dine_in' && _selectedTable == null && widget.table == null) {
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text('⚠️ Pilih meja terlebih dahulu untuk Dine In'),
-                                                        backgroundColor: Colors.orange,
-                                                      ),
-                                                    );
-                                                    return;
-                                                  }
-                                                  
-                                                  // Stock validated, proceed to payment
-                                                  // Stock validated, proceed to payment
-                                                  await context.push(ConfirmPaymentPage(
-                                                    isTable: _orderType == 'dine_in',
-                                                    table: _selectedTable ?? widget.table,
-                                                    orderType: _orderType,
-                                                    onPaymentSuccess: () {
-                                                      // Reset local state
-                                                      setState(() {
-                                                        _selectedTable = null;
-                                                        print('✅ HomePage: Table selection reset after payment (via callback)');
-                                                      });
-                                                      
-                                                      // Also reset DashboardPage state
-                                                      if (widget.onPaymentSuccess != null) {
-                                                        widget.onPaymentSuccess!();
-                                                        print('✅ Notified DashboardPage to reset table');
-                                                      }
-                                                    },
-                                                  ));
-                                                  
-                                                  // NOTE: Result check removed because popToRoot() returns null
-                                                  // The callback above handles the reset logic.
-                                                } else {
-                                                  // Stock insufficient
-                                                  final errors = validation['errors'] as Map<String, dynamic>?;
-                                                  final errorMessages = errors?.values.join('\n') ?? 'Stok tidak cukup';
-                                                  
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) => AlertDialog(
-                                                      title: const Text('❌ Stok Tidak Cukup'),
-                                                      content: Text(errorMessages),
-                                                      actions: [
-                                                        TextButton(
-                                                          onPressed: () => Navigator.pop(context),
-                                                          child: const Text('OK'),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                            );
-                                          },
-                                    label: 'Lanjutkan Pembayaran',
-                                  );
+                                onChanged: (value) {
+                                  if (_debounce?.isActive ?? false) _debounce!.cancel();
+                                  _debounce = Timer(const Duration(milliseconds: 500), () {
+                                    setState(() {
+                                      _searchQuery = value.toLowerCase();
+                                    });
+                                  });
                                 },
-                              );
+                              ),
+                            )
+                          : null,
+                      actions: [
+                        if (_isSearchActive)
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () {
+                              setState(() {
+                                _isSearchActive = false;
+                                searchController.clear();
+                                _searchQuery = '';
+                              });
                             },
+                          )
+                        else ...[
+                          IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed: () {
+                              setState(() {
+                                _isSearchActive = true;
+                              });
+                            },
+                          ),
+                          const SizedBox(width: 4),
+                          ModernRefreshButton(
+                            isLoading: _isRefreshing,
+                            onPressed: _refreshAllData,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            // 🖥️ DESKTOP LAYOUT (Split View)
+            return Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 100.0, left: 24.0, right: 24.0),
+                  child: Row(
+                    children: [
+                      // LEFT SIDE: Products Grid
+                      Expanded(
+                        flex: _getProductFlex(availableWidth),
+                        child: Align(
+                          alignment: AlignmentDirectional.topStart,
+                          child: Padding(
+                            padding: _getProductsPadding(availableWidth),
+                            child: _buildMenuSection(context, availableWidth),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      
+                      // RIGHT SIDE: Cart with responsive constraints
+                      Expanded(
+                        flex: _getCartFlex(availableWidth),
+                        child: Container(
+                          margin: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: _buildCartSection(context, availableWidth),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                
+                // Floating Header
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0, // Stretch full width
+                  child: FloatingHeader(
+                    title: 'Menu',
+                    onToggleSidebar: widget.onToggleSidebar ?? () {},
+                    isSidebarVisible: true,
+                    titleWidget: _isSearchActive
+                        ? SizedBox(
+                            height: 40,
+                            child: TextField(
+                              controller: searchController,
+                              autofocus: true,
+                              style: const TextStyle(fontSize: 14),
+                              decoration: InputDecoration(
+                                hintText: 'Cari produk...',
+                                hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 14),
+                                prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 20),
+                                filled: true,
+                                fillColor: Colors.grey[100],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                                isDense: true,
+                              ),
+                              onChanged: (value) {
+                                if (_debounce?.isActive ?? false) _debounce!.cancel();
+                                _debounce = Timer(const Duration(milliseconds: 500), () {
+                                  setState(() {
+                                    _searchQuery = value.toLowerCase();
+                                  });
+                                });
+                              },
+                            ),
+                          )
+                        : null,
+                    actions: [
+                      if (_isSearchActive)
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            setState(() {
+                              _isSearchActive = false;
+                              searchController.clear();
+                              _searchQuery = '';
+                            });
+                          },
+                        )
+                      else ...[
+                        IconButton(
+                          icon: const Icon(Icons.search),
+                          onPressed: () {
+                            setState(() {
+                              _isSearchActive = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 4),
+                        ModernRefreshButton(
+                          isLoading: _isRefreshing,
+                          onPressed: _refreshAllData,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // 📦 EXTRACTED MENU SECTION
+  Widget _buildMenuSection(BuildContext context, double availableWidth) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // DYNAMIC CATEGORIES WITH TABS
+          BlocBuilder<CategoryBloc, CategoryState>(
+            builder: (context, categoryState) {
+              return categoryState.maybeWhen(
+                orElse: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                error: (message) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Error loading categories',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        message,
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                loaded: (categories) {
+                  // Build dynamic tab titles
+                  final tabTitles = [
+                    'Semua',
+                    ...categories.map((c) => c.name ?? 'Category')
+                  ];
+                  
+                  // Build dynamic tab views
+                  final tabViews = [
+                    // "Semua" tab - show all products
+                    _buildProductGrid(null, availableWidth),
+                    
+                    // Dynamic category tabs - filter by category ID
+                    ...categories.map((category) => 
+                      _buildProductGrid(category.id, availableWidth)
+                    ),
+                  ];
+                  
+                  return CustomTabBar(
+                    tabTitles: tabTitles,
+                    initialTabIndex: 0,
+                    tabViews: tabViews,
+                    padding: EdgeInsets.zero, // Aligns with parent padding
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🛒 EXTRACTED CART SECTION
+  Widget _buildCartSection(BuildContext context, double availableWidth) {
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: _getCartPadding(availableWidth),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            // Table Selection - Professional Design
+            _buildTableSelector(),
+            const SpaceHeight(8.0),
+            
+            // Order Number & Type Selector
+            Row(
+              children: [
+                Button.filled(
+                  width: 120.0,
+                  height: 40,
+                  onPressed: () {},
+                  label: 'Pesanan#',
+                ),
+                const SpaceWidth(12),
+                Expanded(
+                  child: _buildOrderTypeSelector(),
+                ),
+              ],
+            ),
+            const SpaceHeight(12.0),
+            
+            // Global Order Note Input
+            BlocBuilder<CheckoutBloc, CheckoutState>(
+              builder: (context, state) {
+                final currentNote = state.maybeWhen(
+                  orElse: () => '',
+                  loaded: (_, __, ___, ____, _____, ______, _______, ________, _________, note) => note,
+                );
+                
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(color: Colors.grey[200]!),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: TextEditingController(text: currentNote)
+                      ..selection = TextSelection.fromPosition(
+                          TextPosition(offset: currentNote.length)),
+                    maxLength: 100, // Limit to 100 chars
+                    keyboardType: TextInputType.text,
+                    scrollPadding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom + 20),
+                    decoration: const InputDecoration(
+                      labelText: 'Catatan Pesanan (Opsional)',
+                      hintText: 'Contoh: Meja pojok, Bungkus dipisah',
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      prefixIcon: Icon(Icons.note_alt_outlined, color: AppColors.primary),
+                      contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      counterText: "", // Hide default counter to keep it clean
+                    ),
+                    onChanged: (value) {
+                      context.read<CheckoutBloc>().add(CheckoutEvent.addOrderNote(value));
+                    },
+                  ),
+                );
+              },
+            ),
+            const SpaceHeight(16.0),
+            
+            // Cart Header
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Item',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Spacer(),
+                SizedBox(
+                  width: 50.0,
+                  child: Text(
+                    'Qty',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  child: Text(
+                    'Price',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SpaceHeight(8),
+            const Divider(),
+            const SpaceHeight(8),
+            
+            // Cart Items List
+            BlocBuilder<CheckoutBloc, CheckoutState>(
+              builder: (context, state) {
+                return state.maybeWhen(
+                  orElse: () => const Center(
+                    child: Text('No Items'),
+                  ),
+                  loaded: (products,
+                      discountModel,
+                      discount,
+                      discountAmount,
+                      tax,
+                      serviceCharge,
+                      totalQuantity,
+                      totalPrice,
+                      draftName,
+                      orderNote) {
+                    if (products.isEmpty) {
+                      return const Center(
+                        child: Text('No Items'),
+                      );
+                    }
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) => OrderMenu(data: products[index]),
+                      // Use wider spacing on large screens
+                      separatorBuilder: (context, index) => SpaceHeight(availableWidth > 1000 ? 12.0 : 1.0),
+                      itemCount: products.length,
+                    );
+                  },
+                );
+              },
+            ),
+            const SpaceHeight(8.0),
+            
+            // Discount, Tax, Service Buttons (DYNAMIC from API)
+            BlocBuilder<PosSettingsBloc, PosSettingsState>(
+              builder: (context, settingsState) {
+                return settingsState.maybeWhen(
+                  orElse: () => const SizedBox.shrink(), // Loading or error
+                  loaded: (settings) {
+                    // Build button list dynamically
+                    final buttons = <Widget>[];
+                    
+                    // Add Discount button if available
+                    if (settings.discounts.isNotEmpty) {
+                      buttons.add(
+                        Expanded(
+                          child: ActionCardButton(
+                            label: 'Diskon',
+                            svgGenImage: Assets.icons.diskon,
+                            onPressed: () => showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => const DynamicDiscountDialog(),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    
+                    // Add Tax button if available
+                    if (settings.taxes.isNotEmpty) {
+                      buttons.add(
+                        Expanded(
+                          child: ActionCardButton(
+                            label: 'Pajak',
+                            svgGenImage: Assets.icons.pajak,
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (context) => const DynamicTaxDialog(),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    
+                    // Add Service button if available
+                    if (settings.services.isNotEmpty) {
+                      buttons.add(
+                        Expanded(
+                          child: ActionCardButton(
+                            label: 'Layanan',
+                            svgGenImage: Assets.icons.layanan,
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (context) => const DynamicServiceDialog(),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    
+                    // If no buttons, return empty
+                    if (buttons.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    
+                    // Add spacing
+                    final spacedButtons = <Widget>[];
+                    for (var i = 0; i < buttons.length; i++) {
+                      spacedButtons.add(buttons[i]);
+                      if (i < buttons.length - 1) {
+                        spacedButtons.add(const SizedBox(width: 12));
+                      }
+                    }
+                    
+                    // Return button row
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: spacedButtons,
+                    );
+                  },
+                );
+              },
+            ),
+            const SpaceHeight(8.0),
+            const Divider(),
+            const SpaceHeight(8.0),
+            
+            // Tax Row - Only show if enabled in PosSettings
+            BlocBuilder<PosSettingsBloc, PosSettingsState>(
+              builder: (context, settingsState) {
+                return settingsState.maybeWhen(
+                  orElse: () => const SizedBox.shrink(),
+                  loaded: (settings) {
+                    // Hide if taxes disabled (empty)
+                    if (settings.taxes.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    
+                    // Show tax row
+                    return Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Pajak', style: TextStyle(color: AppColors.grey)),
+                            BlocBuilder<CheckoutBloc, CheckoutState>(
+                              builder: (context, state) {
+                                final tax = state.maybeWhen(
+                                  orElse: () => 0,
+                                  loaded: (_, __, ___, ____, tax, _____, ______, _______, ________, _________) {
+                                    return tax;
+                                  },
+                                );
+                                return Text(
+                                  '$tax %',
+                                  style: const TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SpaceHeight(8.0),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+            
+            // Service Charge Row - Only show if enabled in PosSettings
+            BlocBuilder<PosSettingsBloc, PosSettingsState>(
+              builder: (context, settingsState) {
+                return settingsState.maybeWhen(
+                  orElse: () => const SizedBox.shrink(),
+                  loaded: (settings) {
+                    // Hide if services disabled (empty)
+                    if (settings.services.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    
+                    // Show service charge row
+                    return Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Layanan', style: TextStyle(color: AppColors.grey)),
+                            BlocBuilder<CheckoutBloc, CheckoutState>(
+                              builder: (context, state) {
+                                final serviceCharge = state.maybeWhen(
+                                  orElse: () => 0,
+                                  loaded: (_, __, ___, ____, _____, serviceCharge, ______, _______, ________, _________) {
+                                    return serviceCharge;
+                                  },
+                                );
+                                return Text(
+                                  '$serviceCharge %',
+                                  style: const TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SpaceHeight(8.0),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+            
+            // Discount Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Diskon', style: TextStyle(color: AppColors.grey)),
+                BlocBuilder<CheckoutBloc, CheckoutState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      orElse: () => const Text(
+                        '-',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      loaded: (products, discountModel, discount, discountAmount,
+                          tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
+                        if (discountModel == null) {
+                          return const Text(
+                            '-',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        }
+                        
+                        final value = discountModel.value!.replaceAll('.00', '').toIntegerFromText;
+                        final displayText = discountModel.type == 'percentage'
+                            ? '$value %'
+                            : 'Rp ${value.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}';
+                        
+                        return Text(
+                          displayText,
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SpaceHeight(8.0),
+            
+            // Subtotal Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Sub total',
+                  style: TextStyle(
+                    color: AppColors.grey,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                BlocBuilder<CheckoutBloc, CheckoutState>(
+                  builder: (context, state) {
+                    final price = state.maybeWhen(
+                      orElse: () => 0,
+                      loaded: (products, discountModel, discount, discountAmount,
+                          tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
+                        if (products.isEmpty) return 0;
+                        return products
+                            .map((e) => (e.product.price ?? '0').toIntegerFromText * e.quantity)
+                            .reduce((value, element) => value + element);
+                      },
+                    );
+                    return Text(
+                      price.currencyFormatRp,
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SpaceHeight(100.0),
+            ],
+          ),
+        ),
+        
+        // Payment Button (Fixed at bottom)
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: ColoredBox(
+            color: AppColors.white,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: BlocBuilder<CheckoutBloc, CheckoutState>(
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    orElse: () => Button.filled(
+                      onPressed: () {},
+                      label: 'Lanjutkan Pembayaran',
+                    ),
+                    loaded: (products, discountModel, discount, discountAmount,
+                        tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
+                      if (products.isEmpty) {
+                        return Button.filled(
+                          onPressed: () {},
+                          label: 'Lanjutkan Pembayaran',
+                        );
+                      }
+                      
+                      return Button.filled(
+                        onPressed: () async {
+                                // Show loading
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (_) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                                
+                                // Validate stock for all cart items
+                                final items = products.map((item) => {
+                                  'product_id': item.product.id,
+                                  'quantity': item.quantity,
+                                }).toList();
+                                
+                                final result = await StockRemoteDatasource().validateOrder(items);
+                                
+                                if (!context.mounted) return;
+                                Navigator.pop(context); // Close loading
+                                
+                                result.fold(
+                                  (error) {
+                                    // Network error
+                                    NotificationHelper.showError(context, 'Gagal validasi stok: $error');
+                                  },
+                                  (validation) async { // ADDED: async for await
+                                    final isValid = validation['is_valid'] ?? false;
+                                    
+                                    if (isValid) {
+                                      // Validate: Dine-in must have table selected
+                                      if (_orderType == 'dine_in' && _selectedTable == null && widget.table == null) {
+                                        NotificationHelper.showWarning(context, 'Pilih meja terlebih dahulu untuk Dine In');
+                                        return;
+                                      }
+                                      
+                                      // Stock validated, proceed to payment
+                                      // Stock validated, proceed to payment
+                                      await context.push(ConfirmPaymentPage(
+                                        isTable: _orderType == 'dine_in',
+                                        table: _selectedTable ?? widget.table,
+                                        orderType: _orderType,
+                                        onPaymentSuccess: () {
+                                          // Reset local state
+                                          setState(() {
+                                            _selectedTable = null;
+                                            print('✅ HomePage: Table selection reset after payment (via callback)');
+                                          });
+                                          
+                                          // Refresh products and stock
+                                          print('🔄 Refreshing data after payment...');
+                                          _refreshAllData();
+                                          
+                                          // Also reset DashboardPage state
+                                          if (widget.onPaymentSuccess != null) {
+                                            widget.onPaymentSuccess!();
+                                            print('✅ Notified DashboardPage to reset table');
+                                          }
+                                        },
+                                      ));
+                                      
+                                      // NOTE: Result check removed because popToRoot() returns null
+                                      // The callback above handles the reset logic.
+                                    } else {
+                                      // Stock insufficient
+                                      final errors = validation['errors'] as Map<String, dynamic>?;
+                                      final errorMessages = errors?.values.join('\n') ?? 'Stok tidak cukup';
+                                      
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text('❌ Stok Tidak Cukup'),
+                                          content: Text(errorMessages),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(context),
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
+                              },
+                        label: 'Lanjutkan Pembayaran',
+                      );
+                    },
+                  );
+                },
               ),
             ),
-            ),
-          ],
-        );
-      },
-    ),
-  ),
-);
-}
+          ),
+        ),
+      ],
+    );
+  }
   
   // Professional Table Selector
   Widget _buildTableSelector() {
@@ -1061,7 +1337,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     isTakeaway 
                         ? 'Takeaway (No Table)'
-                        : (hasTable ? _selectedTable!.name! : 'Tap untuk memilih meja'),
+                        : (hasTable ? _selectedTable!.name : 'Tap untuk memilih meja'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1249,15 +1525,35 @@ class _HomePageState extends State<HomePage> {
               );
             }
             
+            // Dynamic aspect ratio based on width
+            // Wider screen = wider cards (higher ratio)
+            // Narrow screen = taller cards (lower ratio)
+            double aspectRatio = 0.6; // Default for narrow
+            if (availableWidth > 1000) {
+              aspectRatio = 0.8;
+            } else if (availableWidth > 600) {
+              aspectRatio = 0.7;
+            }
+
+            // Calculate maxCrossAxisExtent to ensure at least 2 columns
+            // If availableWidth is small (e.g. sidebar open on tablet), 200 might force 1 column
+            // We want min 2 columns, so maxExtent should be at least availableWidth / 2
+            // But we also don't want it too small.
+            double maxExtent = 200;
+            if (availableWidth < 450) { // Threshold for very narrow spaces
+               maxExtent = (availableWidth / 2) - 24; // Force 2 columns minus spacing
+            }
+
             return GridView.builder(
               shrinkWrap: true,
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
               itemCount: filteredProducts.length,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: 0.75,  // ✅ Taller cards to prevent overflow
-                crossAxisCount: _getGridCrossAxisCount(availableWidth),
-                crossAxisSpacing: _getGridSpacing(availableWidth),
-                mainAxisSpacing: _getGridSpacing(availableWidth),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: maxExtent < 160 ? 160 : maxExtent, // Min width 160
+                childAspectRatio: aspectRatio,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
               ),
               itemBuilder: (context, index) => ProductCard(
                 data: filteredProducts[index],
@@ -1269,25 +1565,8 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+  // 🔝 NEW HEADER WIDGET
+
 }
 
-class _IsEmpty extends StatelessWidget {
-  const _IsEmpty();
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SpaceHeight(40),
-        Assets.icons.noProduct.svg(),
-        const SizedBox(height: 40.0),
-        const Text(
-          'Belum Ada Produk',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16),
-        ),
-      ],
-    );
-  }
-}
