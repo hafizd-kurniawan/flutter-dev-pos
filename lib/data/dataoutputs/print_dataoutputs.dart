@@ -670,11 +670,7 @@ class PrintDataoutputs {
             : '--------------------------------',
         styles: const PosStyles(bold: false, align: PosAlign.center));
 
-    final subTotalPrice = products.fold<int>(
-        0,
-        (previousValue, element) =>
-            previousValue +
-            (element.product.price!.toIntegerFromText * element.quantity));
+    // Use passed subTotal instead of recalculating
     bytes += generator.row([
       PosColumn(
         text: 'Subtotal $totalQuantity Product',
@@ -682,7 +678,7 @@ class PrintDataoutputs {
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: subTotalPrice.currencyFormatRpV2,
+        text: subTotal.currencyFormatRpV2,
         width: 6,
         styles: const PosStyles(align: PosAlign.right),
       ),

@@ -22,6 +22,7 @@ import 'package:flutter_posresto_app/core/constants/colors.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
 import 'package:flutter_posresto_app/core/components/modern_refresh_button.dart';
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
+import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
 
 class HistoryPage extends StatefulWidget {
   final VoidCallback? onToggleSidebar;
@@ -444,8 +445,8 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         totalItem,
         order.totalAmount,
         order.paymentMethod,
-        order.totalAmount, // Assuming exact payment for history
-        0, // No change info in history
+        order.paymentAmount ?? order.totalAmount, // Use actual paid amount
+        order.changeAmount ?? 0, // Use actual change amount
         order.subtotal,
         order.discountAmount ?? 0,
         order.taxAmount ?? 0,
@@ -498,19 +499,22 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
       // Calculate total items
       final totalItem = order.orderItems.fold(0, (sum, item) => sum + item.quantity);
 
+      // Get current user for Cashier Name (Fallback)
+      final authData = await AuthLocalDataSource().getAuthData();
+      final currentCashier = authData?.user?.name ?? 'Cashier';
+
       final xFile = await PrintDataoutputs.instance.generateReceiptPdf(
         products,
         totalItem,
         order.totalAmount,
         order.paymentMethod,
-        order.totalAmount,
-        0,
+        order.paymentAmount ?? order.totalAmount, // Use actual paid amount
+        order.changeAmount ?? 0, // Use actual change amount
         order.subtotal,
         order.discountAmount ?? 0,
         order.taxAmount ?? 0,
-
         order.serviceChargeAmount ?? 0,
-        order.cashierName ?? 'Cashier',
+        order.cashierName ?? currentCashier, // Use order cashier or current user
         order.customerName ?? 'Guest',
         order.orderType ?? 'Dine In',
         order.tableNumber ?? '', // NEW

@@ -334,13 +334,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
   }
 
   Widget _buildPrintButton() {
-    return BlocBuilder<OrderBloc, OrderState>(
-      builder: (context, state) {
-        final paymentAmount = state.maybeWhen(
-          orElse: () => 0,
-          loaded: (model, orderId) => model.paymentAmount,
-        );
-
+        final paymentAmount = widget.paymentAmount ?? widget.totalPrice;
         final kembalian = paymentAmount - widget.totalPrice;
         return Button.filled(
           onPressed: () async {
@@ -368,10 +362,10 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 widget.paymentMethod,
                 paymentAmount,
                 kembalian,
-                widget.totalTax,
-                widget.totalDiscount,
                 widget.subTotal,
-                1,
+                widget.totalDiscount,
+                widget.totalTax,
+                widget.totalService,
                 'HayoPOS',
                 widget.draftName,
                 receiptPrinter.paper.toIntegerFromText,
@@ -460,8 +454,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
           },
           label: 'Print',
         );
-      },
-    );
+
   }
 
   Widget _buildShareButton(BuildContext context) {

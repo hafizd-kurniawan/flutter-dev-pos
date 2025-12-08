@@ -21,6 +21,8 @@ class OrderResponseModel {
   final String? orderType; // NEW: 'dine_in', 'takeaway', or 'self_order'
   final String? cashierName; // NEW
   final String? note; // NEW: Global Order Note
+  final int? paymentAmount; // NEW: Actual paid amount
+  final int? changeAmount; // NEW: Change amount
   final List<OrderItemResponseModel> orderItems;
 
   OrderResponseModel({
@@ -44,6 +46,8 @@ class OrderResponseModel {
     this.orderType, // NEW
     this.cashierName, // NEW
     this.note, // NEW: Global Order Note
+    this.paymentAmount, // NEW
+    this.changeAmount, // NEW
     required this.orderItems,
   });
 
@@ -77,6 +81,8 @@ class OrderResponseModel {
       orderType: json['order_type'], // NEW: Parse from backend
       cashierName: json['cashier_name'], // NEW: Parse from backend
       note: json['notes'], // NEW: Parse from backend (mapped to 'notes' in Laravel)
+      paymentAmount: _parseToInt(json['payment_amount']), // NEW
+      changeAmount: _parseToInt(json['change_amount']), // NEW
       orderItems: json['order_items'] != null
           ? (json['order_items'] as List)
               .map((item) => OrderItemResponseModel.fromJson(item))
@@ -118,6 +124,8 @@ class OrderResponseModel {
       'order_type': orderType, // NEW
       'cashier_name': cashierName, // NEW
       'notes': note, // NEW
+      'payment_amount': paymentAmount, // NEW
+      'change_amount': changeAmount, // NEW
       'order_items': orderItems.map((item) => item.toJson()).toList(),
     };
   }

@@ -30,8 +30,11 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
     on<_CheckOrders>((event, emit) async {
       final result = await _orderRemoteDatasource.getPaidOrders();
-      result.fold(
-        (error) => null, // Ignore errors during silent polling
+      await result.fold(
+        (error) async {
+           // Ignore errors during silent polling
+           return;
+        }, 
         (orders) async {
           // Sort by ID descending to get the latest
           orders.sort((a, b) => b.id.compareTo(a.id));
@@ -45,29 +48,42 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
           final latestOrder = orders.first;
           final currentLastId = state.lastId;
+          
+          // Debugging
+          print('🔔 [NOTIF_BLOC] Check: LatestID=${latestOrder.id}, CurrentLastID=$currentLastId');
+          print('🔔 [NOTIF_BLOC] State BEFORE: Count=${state.orderCount}, LastID=${state.lastId}');
 
           // Check if we have a new order
           if (currentLastId != 0 && latestOrder.id > currentLastId) {
-             // New order detected!
-             print('🔔 [NOTIF_BLOC] New Order Detected! ID: ${latestOrder.id}');
+             print('🔔 [NOTIF_BLOC] CONDITION MET: ${latestOrder.id} > $currentLastId');
              
              // Check settings before playing sound
              final isSoundEnabled = await NotificationLocalDatasource().isSoundEnabled();
              final isNewOrderAlertEnabled = await NotificationLocalDatasource().isNewOrderAlertEnabled();
              
              if (isNewOrderAlertEnabled && isSoundEnabled) {
-                await LocalNotificationService().showNotification(
-                  id: DateTime.now().millisecond,
-                  title: 'New Order Received!',
-                  body: 'You have ${orders.length} paid orders.',
-                  payload: 'new_order',
-                );
+                try {
+                  print('🔔 [NOTIF_BLOC] Playing Sound...');
+                  await LocalNotificationService().showNotification(
+                    id: DateTime.now().millisecond,
+                    title: 'New Order Received!',
+                    body: 'You have ${orders.length} paid orders.',
+                    payload: 'new_order',
+                  );
+                } catch (e) {
+                  print('❌ [NOTIF_BLOC] Error playing sound: $e');
+                }
              }
+          } else {
+             print('🔔 [NOTIF_BLOC] Condition NOT met. Sound skipped.');
           }
           
           // Always update state if count or lastId changed
           if (state.orderCount != orders.length || state.lastId != latestOrder.id) {
+            print('🔔 [NOTIF_BLOC] EMITTING NEW STATE: Count=${orders.length}, LastID=${latestOrder.id}');
             emit(state.copyWith(orderCount: orders.length, lastId: latestOrder.id));
+          } else {
+            print('🔔 [NOTIF_BLOC] State unchanged. No emit.');
           }
         },
       );
