@@ -419,19 +419,20 @@ abstract class _CheckOrders implements NotificationEvent {
 /// @nodoc
 mixin _$NotificationState {
   int get orderCount => throw _privateConstructorUsedError;
+  int get lastId => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int orderCount) initial,
+    required TResult Function(int orderCount, int lastId) initial,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int orderCount)? initial,
+    TResult? Function(int orderCount, int lastId)? initial,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int orderCount)? initial,
+    TResult Function(int orderCount, int lastId)? initial,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -465,7 +466,7 @@ abstract class $NotificationStateCopyWith<$Res> {
           NotificationState value, $Res Function(NotificationState) then) =
       _$NotificationStateCopyWithImpl<$Res, NotificationState>;
   @useResult
-  $Res call({int orderCount});
+  $Res call({int orderCount, int lastId});
 }
 
 /// @nodoc
@@ -484,11 +485,16 @@ class _$NotificationStateCopyWithImpl<$Res, $Val extends NotificationState>
   @override
   $Res call({
     Object? orderCount = null,
+    Object? lastId = null,
   }) {
     return _then(_value.copyWith(
       orderCount: null == orderCount
           ? _value.orderCount
           : orderCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      lastId: null == lastId
+          ? _value.lastId
+          : lastId // ignore: cast_nullable_to_non_nullable
               as int,
     ) as $Val);
   }
@@ -502,7 +508,7 @@ abstract class _$$InitialImplCopyWith<$Res>
       __$$InitialImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int orderCount});
+  $Res call({int orderCount, int lastId});
 }
 
 /// @nodoc
@@ -519,11 +525,16 @@ class __$$InitialImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? orderCount = null,
+    Object? lastId = null,
   }) {
     return _then(_$InitialImpl(
       orderCount: null == orderCount
           ? _value.orderCount
           : orderCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      lastId: null == lastId
+          ? _value.lastId
+          : lastId // ignore: cast_nullable_to_non_nullable
               as int,
     ));
   }
@@ -532,15 +543,18 @@ class __$$InitialImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$InitialImpl implements _Initial {
-  const _$InitialImpl({this.orderCount = 0});
+  const _$InitialImpl({this.orderCount = 0, this.lastId = 0});
 
   @override
   @JsonKey()
   final int orderCount;
+  @override
+  @JsonKey()
+  final int lastId;
 
   @override
   String toString() {
-    return 'NotificationState.initial(orderCount: $orderCount)';
+    return 'NotificationState.initial(orderCount: $orderCount, lastId: $lastId)';
   }
 
   @override
@@ -549,11 +563,12 @@ class _$InitialImpl implements _Initial {
         (other.runtimeType == runtimeType &&
             other is _$InitialImpl &&
             (identical(other.orderCount, orderCount) ||
-                other.orderCount == orderCount));
+                other.orderCount == orderCount) &&
+            (identical(other.lastId, lastId) || other.lastId == lastId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, orderCount);
+  int get hashCode => Object.hash(runtimeType, orderCount, lastId);
 
   /// Create a copy of NotificationState
   /// with the given fields replaced by the non-null parameter values.
@@ -566,27 +581,27 @@ class _$InitialImpl implements _Initial {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int orderCount) initial,
+    required TResult Function(int orderCount, int lastId) initial,
   }) {
-    return initial(orderCount);
+    return initial(orderCount, lastId);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int orderCount)? initial,
+    TResult? Function(int orderCount, int lastId)? initial,
   }) {
-    return initial?.call(orderCount);
+    return initial?.call(orderCount, lastId);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int orderCount)? initial,
+    TResult Function(int orderCount, int lastId)? initial,
     required TResult orElse(),
   }) {
     if (initial != null) {
-      return initial(orderCount);
+      return initial(orderCount, lastId);
     }
     return orElse();
   }
@@ -621,10 +636,13 @@ class _$InitialImpl implements _Initial {
 }
 
 abstract class _Initial implements NotificationState {
-  const factory _Initial({final int orderCount}) = _$InitialImpl;
+  const factory _Initial({final int orderCount, final int lastId}) =
+      _$InitialImpl;
 
   @override
   int get orderCount;
+  @override
+  int get lastId;
 
   /// Create a copy of NotificationState
   /// with the given fields replaced by the non-null parameter values.
