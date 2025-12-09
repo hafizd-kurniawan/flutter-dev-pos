@@ -13,6 +13,7 @@ import 'package:flutter_posresto_app/presentation/table/widgets/table_widget.dar
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class TableManagementScreen extends StatefulWidget {
   const TableManagementScreen({super.key});
@@ -44,7 +45,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     // final tables = ref.watch(tableProvider);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Table Layout',
+        title: Text(AppLocalizations.of(context)!.table_layout,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
         // leading: Icon(Icons.arrow_back),
         backgroundColor: AppColors.white,
@@ -67,7 +68,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                          title: Text('Add Table'),
+                          title: Text(AppLocalizations.of(context)!.add_table),
                           content: SingleChildScrollView(
                             child: ConstrainedBox(
                               constraints: BoxConstraints(
@@ -78,7 +79,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                                 children: [
                                   CustomTextField(
                                     controller: tableNameController!,
-                                    label: 'Table Name',
+                                    label: AppLocalizations.of(context)!.table_name_input,
                                   ),
                                   SpaceHeight(16),
                                   Row(
@@ -88,7 +89,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                                           onPressed: () {
                                             context.pop();
                                           },
-                                          label: 'close',
+                                          label: AppLocalizations.of(context)!.close,
                                         ),
                                       ),
                                       SpaceWidth(16),
@@ -102,7 +103,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                                             context
                                                 .pop(); // close dialog after adding
                                           },
-                                          label: 'Add',
+                                          label: AppLocalizations.of(context)!.add,
                                         ),
                                       ),
                                     ],

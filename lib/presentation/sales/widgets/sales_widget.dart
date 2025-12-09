@@ -4,6 +4,7 @@ import 'package:flutter_posresto_app/core/extensions/date_time_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/presentation/home/models/order_model.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class SalesWidget extends StatelessWidget {
   final List<OrderModel> orders;
@@ -70,8 +71,8 @@ class SalesWidget extends StatelessWidget {
                         child: Center(
                             child: Text(
                           orders[index].isSync == 0
-                              ? 'Belum' //belum sync
-                              : 'Sudah', //sudah sync
+                              ? AppLocalizations.of(context)!.not_synced //belum sync
+                              : AppLocalizations.of(context)!.synced, //sudah sync
                         )),
                       ),
                       Container(

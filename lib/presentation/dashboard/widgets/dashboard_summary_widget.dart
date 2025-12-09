@@ -6,6 +6,7 @@ import 'package:flutter_posresto_app/core/constants/variables.dart';
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/data/models/response/dashboard_summary_model.dart';
 import 'package:flutter_posresto_app/presentation/dashboard/bloc/dashboard_summary_bloc.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
@@ -27,7 +28,7 @@ class DashboardSummaryWidget extends StatelessWidget {
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SpaceHeight(16),
-                Text('Error: ${state.message}'),
+                Text(AppLocalizations.of(context)!.error_message(state.message)),
                 const SpaceHeight(16),
                 ElevatedButton.icon(
                   onPressed: () {
@@ -36,7 +37,7 @@ class DashboardSummaryWidget extends StatelessWidget {
                     );
                   },
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Retry'),
+                  label: Text(AppLocalizations.of(context)!.retry),
                 ),
               ],
             ),
@@ -64,14 +65,14 @@ class DashboardSummaryWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header removed as requested
-            _buildTodayPerformance(data.today),
+            _buildTodayPerformance(context, data.today),
             const SpaceHeight(16),
-            _buildOrderTypes(data.orderTypes),
+            _buildOrderTypes(context, data.orderTypes),
             const SpaceHeight(16),
-            if (data.topProducts.isNotEmpty) _buildTopProducts(data.topProducts),
+            if (data.topProducts.isNotEmpty) _buildTopProducts(context, data.topProducts),
             const SpaceHeight(16),
             if (data.alerts.lowStockCount > 0 || data.alerts.pendingOrders > 0)
-              _buildAlerts(data.alerts),
+              _buildAlerts(context, data.alerts),
             const SpaceHeight(16),
             if (data.subscription.tier == 'free' || 
                 data.subscription.tier == '' || 
@@ -83,7 +84,7 @@ class DashboardSummaryWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTodayPerformance(TodayStats stats) {
+  Widget _buildTodayPerformance(BuildContext context, TodayStats stats) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -101,12 +102,12 @@ class DashboardSummaryWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(Icons.calendar_today, color: AppColors.primary, size: 20),
                 SpaceWidth(8),
                 Text(
-                  'TODAY\'S PERFORMANCE',
+                  AppLocalizations.of(context)!.todays_performance,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -126,7 +127,7 @@ class DashboardSummaryWidget extends StatelessWidget {
                       const SpaceWidth(8),
                       Flexible(
                         child: Text(
-                          'Total Sales',
+                          AppLocalizations.of(context)!.total_sales,
                           style: const TextStyle(fontSize: 14, color: Colors.grey),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -148,27 +149,30 @@ class DashboardSummaryWidget extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _buildSmallStat(
-                    icon: Icons.shopping_cart,
-                    label: 'Orders',
-                    value: stats.totalOrders.toString(),
-                    color: Colors.blue,
-                  ),
+                    child: _buildSmallStat(
+                      context: context,
+                      icon: Icons.shopping_cart,
+                      label: AppLocalizations.of(context)!.orders,
+                      value: stats.totalOrders.toString(),
+                      color: Colors.blue,
+                    ),
                 ),
                 Expanded(
-                  child: _buildSmallStat(
-                    icon: Icons.trending_up,
-                    label: 'Avg Order',
-                    value: stats.averageOrder.currencyFormatRp,
-                    color: Colors.orange,
-                  ),
+                    child: _buildSmallStat(
+                      context: context,
+                      icon: Icons.trending_up,
+                      label: AppLocalizations.of(context)!.avg_order,
+                      value: stats.averageOrder.currencyFormatRp,
+                      color: Colors.orange,
+                    ),
                 ),
               ],
             ),
             const SpaceHeight(12),
             _buildSmallStat(
+              context: context,
               icon: Icons.people,
-              label: 'Customers',
+              label: AppLocalizations.of(context)!.customers,
               value: stats.uniqueCustomers.toString(),
               color: Colors.green,
             ),
@@ -179,6 +183,7 @@ class DashboardSummaryWidget extends StatelessWidget {
   }
 
   Widget _buildSmallStat({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String value,
@@ -207,7 +212,7 @@ class DashboardSummaryWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderTypes(OrderTypesStats stats) {
+  Widget _buildOrderTypes(BuildContext context, OrderTypesStats stats) {
     final total = stats.dineIn + stats.takeaway + stats.delivery;
     if (total == 0) return const SizedBox();
     
@@ -228,12 +233,12 @@ class DashboardSummaryWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(Icons.bar_chart, color: AppColors.primary, size: 20),
                 SpaceWidth(8),
                 Text(
-                  'ORDER TYPES',
+                  AppLocalizations.of(context)!.order_types,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -247,7 +252,8 @@ class DashboardSummaryWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildOrderTypeColumn(
-                    label: 'Dine-In',
+                    context: context,
+                    label: AppLocalizations.of(context)!.dine_in,
                     count: stats.dineIn,
                     total: total,
                     color: Colors.blue,
@@ -255,7 +261,8 @@ class DashboardSummaryWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: _buildOrderTypeColumn(
-                    label: 'Takeaway',
+                    context: context,
+                    label: AppLocalizations.of(context)!.takeaway,
                     count: stats.takeaway,
                     total: total,
                     color: Colors.orange,
@@ -263,7 +270,8 @@ class DashboardSummaryWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: _buildOrderTypeColumn(
-                    label: 'Delivery',
+                    context: context,
+                    label: AppLocalizations.of(context)!.delivery,
                     count: stats.delivery,
                     total: total,
                     color: Colors.green,
@@ -278,6 +286,7 @@ class DashboardSummaryWidget extends StatelessWidget {
   }
 
   Widget _buildOrderTypeColumn({
+    required BuildContext context,
     required String label,
     required int count,
     required int total,
@@ -299,7 +308,7 @@ class DashboardSummaryWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTopProducts(List<TopProduct> products) {
+  Widget _buildTopProducts(BuildContext context, List<TopProduct> products) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -317,12 +326,12 @@ class DashboardSummaryWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(Icons.emoji_events, color: Colors.amber, size: 20),
                 SpaceWidth(8),
                 Text(
-                  'TOP 3 PRODUCTS',
+                  AppLocalizations.of(context)!.top_3_products,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -374,7 +383,7 @@ class DashboardSummaryWidget extends StatelessWidget {
                             ),
                             const SpaceHeight(4),
                             Text(
-                              '${product.totalSold} sold',
+                              AppLocalizations.of(context)!.sold_count(product.totalSold),
                               style: const TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ],
@@ -400,7 +409,7 @@ class DashboardSummaryWidget extends StatelessWidget {
     }
   }
 
-  Widget _buildAlerts(AlertsData alerts) {
+  Widget _buildAlerts(BuildContext context, AlertsData alerts) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.orange.shade50,
@@ -423,14 +432,14 @@ class DashboardSummaryWidget extends StatelessWidget {
               children: [
                 Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
                 const SpaceWidth(8),
-                const Text('ALERTS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(AppLocalizations.of(context)!.alerts, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               ],
             ),
             const SpaceHeight(12),
             if (alerts.lowStockCount > 0)
-              Text('• ${alerts.lowStockCount} products low stock'),
+              Text('• ${AppLocalizations.of(context)!.low_stock_count(alerts.lowStockCount)}'),
             if (alerts.pendingOrders > 0)
-              Text('• ${alerts.pendingOrders} pending orders'),
+              Text('• ${AppLocalizations.of(context)!.pending_orders_count(alerts.pendingOrders)}'),
           ],
         ),
       ),
@@ -451,8 +460,8 @@ class DashboardSummaryWidget extends StatelessWidget {
           children: [
             const Icon(Icons.lock_outline, size: 48, color: AppColors.primary),
             const SpaceHeight(16),
-            const Text(
-              'UNLOCK FULL ANALYTICS',
+            Text(
+              AppLocalizations.of(context)!.unlock_full_analytics,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -461,14 +470,14 @@ class DashboardSummaryWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SpaceHeight(12),
-            const Text('Upgrade to Premium to get:', style: TextStyle(fontSize: 13)),
+            Text(AppLocalizations.of(context)!.upgrade_premium_desc, style: const TextStyle(fontSize: 13)),
             const SpaceHeight(12),
             ...[
-              '✅ Profit Analysis',
-              '✅ Customer Insights',
-              '✅ Sales Trends (7-30 days)',
-              '✅ Export PDF/Excel',
-              '✅ Advanced Reports',
+              AppLocalizations.of(context)!.feature_profit_analysis,
+              AppLocalizations.of(context)!.feature_customer_insights,
+              AppLocalizations.of(context)!.feature_sales_trends,
+              AppLocalizations.of(context)!.feature_export,
+              AppLocalizations.of(context)!.feature_advanced_reports,
             ].map((text) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Align(
@@ -483,7 +492,7 @@ class DashboardSummaryWidget extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: () => _openWebDashboard(context),
                     icon: const Icon(Icons.open_in_browser),
-                    label: const Text('View Dashboard'),
+                    label: Text(AppLocalizations.of(context)!.view_dashboard),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -495,7 +504,7 @@ class DashboardSummaryWidget extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: () => _openUpgradePage(context),
                     icon: const Icon(Icons.star),
-                    label: const Text('Upgrade'),
+                    label: Text(AppLocalizations.of(context)!.upgrade),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AppColors.primary),
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -506,21 +515,21 @@ class DashboardSummaryWidget extends StatelessWidget {
             ),
             if (subscription.canAccessFullReports) ...[
               const SpaceHeight(12),
-              Container(
+                Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.green.shade50,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.green.shade200),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.check_circle, color: Colors.green, size: 16),
                     SpaceWidth(8),
                     Flexible(
                       child: Text(
-                        'You have 1 FREE trial view remaining!',
+                        AppLocalizations.of(context)!.free_trial_remaining,
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.green,
@@ -545,7 +554,7 @@ class DashboardSummaryWidget extends StatelessWidget {
     if (await canLaunchUrl(webUrl)) {
       await launchUrl(webUrl, mode: LaunchMode.externalApplication);
     } else {
-      NotificationHelper.showError(context, 'Could not open web dashboard');
+      NotificationHelper.showError(context, AppLocalizations.of(context)!.error_open_web);
     }
   }
 
@@ -555,7 +564,7 @@ class DashboardSummaryWidget extends StatelessWidget {
     if (await canLaunchUrl(upgradeUrl)) {
       await launchUrl(upgradeUrl, mode: LaunchMode.externalApplication);
     } else {
-      NotificationHelper.showError(context, 'Could not open upgrade page');
+      NotificationHelper.showError(context, AppLocalizations.of(context)!.error_open_upgrade);
     }
   }
 }

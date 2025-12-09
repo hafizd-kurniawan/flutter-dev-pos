@@ -23,6 +23,7 @@ import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.d
 import 'package:flutter_posresto_app/core/components/modern_refresh_button.dart';
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class HistoryPage extends StatefulWidget {
   final VoidCallback? onToggleSidebar;
@@ -88,7 +89,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Filter by Date Range'),
+          title: Text(AppLocalizations.of(context)!.filter_date_range),
           content: SizedBox(
             width: 300,
             child: Column(
@@ -97,11 +98,11 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                 // Start Date
                 ListTile(
                   leading: const Icon(Icons.calendar_today, color: Colors.blue),
-                  title: const Text('Start Date'),
+                  title: Text(AppLocalizations.of(context)!.start_date),
                   subtitle: Text(
                     pickedStartDate != null
                         ? '${pickedStartDate!.day}/${pickedStartDate!.month}/${pickedStartDate!.year}'
-                        : 'Select start date',
+                        : AppLocalizations.of(context)!.select_start_date,
                   ),
                   onTap: () async {
                     final date = await showDatePicker(
@@ -119,11 +120,11 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                 // End Date
                 ListTile(
                   leading: const Icon(Icons.event, color: Colors.blue),
-                  title: const Text('End Date'),
+                  title: Text(AppLocalizations.of(context)!.end_date),
                   subtitle: Text(
                     pickedEndDate != null
                         ? '${pickedEndDate!.day}/${pickedEndDate!.month}/${pickedEndDate!.year}'
-                        : 'Select end date',
+                        : AppLocalizations.of(context)!.select_end_date,
                   ),
                   onTap: () async {
                     final date = await showDatePicker(
@@ -152,11 +153,11 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                 Navigator.pop(dialogContext);
                 _onTabChanged(); // Refresh with no filter
               },
-              child: const Text('Clear Filter'),
+              child: Text(AppLocalizations.of(context)!.clear_filter),
             ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -174,10 +175,11 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                     '📅 Filter: ${pickedStartDate!.day}/${pickedStartDate!.month} - ${pickedEndDate!.day}/${pickedEndDate!.month}',
                   );
                 } else {
-                  NotificationHelper.showWarning(context, 'Please select both start and end dates');
+                  NotificationHelper.showWarning(context, AppLocalizations.of(context)!.select_start_date);
                 }
               },
-              child: const Text('Apply Filter'),
+
+              child: Text(AppLocalizations.of(context)!.apply_filter),
             ),
           ],
         ),
@@ -218,7 +220,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Update Status',
+                    AppLocalizations.of(context)!.update_status,
                     style: GoogleFonts.quicksand(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -245,8 +247,8 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                 children: [
                   Text(
                     order.status == 'paid'
-                        ? 'Mulai memasak pesanan ini?'
-                        : 'Tandai pesanan selesai?',
+                        ? AppLocalizations.of(context)!.start_cooking_confirm
+                        : AppLocalizations.of(context)!.mark_complete_confirm,
                     style: GoogleFonts.quicksand(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -317,7 +319,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                               Icon(Icons.note, size: 16, color: Colors.orange[800]),
                               const SizedBox(width: 8),
                               Text(
-                                'Catatan Pesanan:',
+                                AppLocalizations.of(context)!.order_note,
                                 style: GoogleFonts.quicksand(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -358,7 +360,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                         ),
                       ),
                       child: Text(
-                        'Batal',
+                        AppLocalizations.of(context)!.cancel,
                         style: GoogleFonts.quicksand(
                           color: Colors.grey,
                           fontWeight: FontWeight.w600,
@@ -379,7 +381,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                               ),
                             );
                         
-                        NotificationHelper.showInfo(context, 'Updating order status to $newStatus...');
+                        NotificationHelper.showInfo(context, '${AppLocalizations.of(context)!.update_status} $newStatus...');
                         
                         Future.delayed(const Duration(seconds: 1), () {
                           _onTabChanged();
@@ -394,7 +396,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                         ),
                       ),
                       child: Text(
-                        'Konfirmasi',
+                        AppLocalizations.of(context)!.confirm,
                         style: GoogleFonts.quicksand(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -416,11 +418,11 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
   // NEW: Handle Print Receipt
   Future<void> _handlePrintReceipt(OrderResponseModel order) async {
     try {
-      NotificationHelper.showInfo(context, 'Printing receipt...');
+      NotificationHelper.showInfo(context, AppLocalizations.of(context)!.printing_receipt);
 
       final receiptPrinter = await ProductLocalDatasource.instance.getPrinterByCode('receipt');
       if (receiptPrinter == null) {
-        NotificationHelper.showWarning(context, 'No receipt printer found');
+        NotificationHelper.showWarning(context, AppLocalizations.of(context)!.no_printer_found);
         return;
       }
 
@@ -459,6 +461,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         order.orderType ?? 'Dine In', // NEW
         order.tableNumber ?? '', // NEW
         order.note ?? '', // NEW: Global Order Note
+        AppLocalizations.of(context)!, // NEW: Localization
       );
 
       if (receiptPrinter.type == 'Bluetooth') {
@@ -471,12 +474,12 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
           printer.disconnect();
         } else {
           log("Failed to connect to printer");
-            NotificationHelper.showError(context, 'Failed to connect to printer');
+            NotificationHelper.showError(context, AppLocalizations.of(context)!.no_printer_found);
         }
       }
     } catch (e) {
       log('Error printing: $e');
-      NotificationHelper.showError(context, 'Error printing: $e');
+      NotificationHelper.showError(context, AppLocalizations.of(context)!.error_printing(e.toString()));
     }
   }
 
@@ -521,6 +524,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         order.taxPercentage ?? 0,
         order.serviceChargePercentage ?? 0,
         order.note ?? '', // NEW: Pass Global Note
+        AppLocalizations.of(context)!,
       );
 
       // Fetch Settings for Share Text
@@ -530,7 +534,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
       await Share.shareXFiles([xFile], text: 'Receipt from $appName');
     } catch (e) {
       log('Error sharing: $e');
-      NotificationHelper.showError(context, 'Error sharing: $e');
+      NotificationHelper.showError(context, '${AppLocalizations.of(context)!.error_printing(e.toString())}');
     }
   }
 
@@ -577,10 +581,10 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                     unselectedLabelStyle: GoogleFonts.quicksand(fontWeight: FontWeight.w600),
                     dividerColor: Colors.transparent, // Remove divider
                     padding: const EdgeInsets.all(6), // Add padding for pill effect
-                    tabs: const [
-                      Tab(text: 'Paid', icon: Icon(Icons.payment, size: 20)),
-                      Tab(text: 'Cooking', icon: Icon(Icons.restaurant, size: 20)),
-                      Tab(text: 'Completed', icon: Icon(Icons.check_circle, size: 20)),
+                    tabs: [
+                      Tab(text: AppLocalizations.of(context)!.paid_status, icon: Icon(Icons.payment, size: 20)),
+                      Tab(text: AppLocalizations.of(context)!.cooking_status, icon: Icon(Icons.restaurant, size: 20)),
+                      Tab(text: AppLocalizations.of(context)!.completed_status, icon: Icon(Icons.check_circle, size: 20)),
                     ],
                   ),
                 ),
@@ -601,7 +605,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                   Icon(Icons.calendar_today, size: 18, color: Colors.blue.shade700),
                   const SizedBox(width: 8),
                   Text(
-                    'Filter: ${_startDate!.day}/${_startDate!.month}/${_startDate!.year} - ${_endDate!.day}/${_endDate!.month}/${_endDate!.year}',
+                    '${AppLocalizations.of(context)!.filter_active}: ${_startDate!.day}/${_startDate!.month}/${_startDate!.year} - ${_endDate!.day}/${_endDate!.month}/${_endDate!.year}',
                     style: TextStyle(
                       color: Colors.blue.shade900,
                       fontWeight: FontWeight.w600,
@@ -619,7 +623,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                       _onTabChanged();
                     },
                     icon: const Icon(Icons.close, size: 16),
-                    label: const Text('Clear'),
+                    label: Text(AppLocalizations.of(context)!.clear_filter),
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.blue.shade700,
                       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -633,7 +637,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
             child: BlocConsumer<HistoryBloc, HistoryState>(
               listener: (context, state) {
                 if (state.isStatusUpdated) {
-                  NotificationHelper.showSuccess(context, 'Order status updated successfully!');
+                  NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.update_status);
                   // Refresh all tabs to ensure consistency
                   context.read<HistoryBloc>().add(const HistoryEvent.fetchPaidOrders(isRefresh: true));
                   context.read<HistoryBloc>().add(const HistoryEvent.fetchCookingOrders(isRefresh: true));
@@ -691,7 +695,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
             left: 0,
             right: 0,
             child: FloatingHeader(
-              title: 'History Orders',
+              title: AppLocalizations.of(context)!.history_orders,
               onToggleSidebar: widget.onToggleSidebar ?? () {},
               isSidebarVisible: true,
               actions: [
@@ -719,8 +723,8 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                     ],
                   ),
                   tooltip: _isFilterActive 
-                      ? 'Filter Active'
-                      : 'Filter by Date',
+                      ? AppLocalizations.of(context)!.filter_active
+                      : AppLocalizations.of(context)!.filter_by_date,
                   onPressed: _showDateFilterDialog,
                   style: IconButton.styleFrom(
                     backgroundColor: AppColors.primary.withOpacity(0.1),
@@ -740,9 +744,9 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                       isLoading: isLoading,
                       onPressed: () {
                         _refreshOrders();
-                        NotificationHelper.showInfo(context, 'Memuat data terbaru...');
+                        NotificationHelper.showInfo(context, AppLocalizations.of(context)!.loading_data);
                       },
-                      tooltip: 'Refresh Orders',
+                      tooltip: AppLocalizations.of(context)!.tooltip_refresh_orders,
                     );
                   },
                 ),
@@ -778,8 +782,8 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                 const SizedBox(height: 100),
                 const Icon(Icons.error_outline, size: 80, color: Colors.red),
                 const SizedBox(height: 16),
-                const Text(
-                  'Error loading orders',
+                Text(
+                  AppLocalizations.of(context)!.error_loading_orders,
                   style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 8),
@@ -792,7 +796,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
                 ElevatedButton.icon(
                   onPressed: _refreshOrders,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Retry'),
+                  label: Text(AppLocalizations.of(context)!.retry),
                 ),
               ],
             ),

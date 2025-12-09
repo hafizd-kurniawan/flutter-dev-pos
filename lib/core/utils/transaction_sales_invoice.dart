@@ -13,7 +13,7 @@ import 'package:pdf/widgets.dart' as pw;
 class TransactionSalesInvoice {
   static late Font ttf;
   static Future<File> generate(
-      List<ItemOrder> itemOrders, String searchDateFormatted) async {
+      List<ItemOrder> itemOrders, String searchDateFormatted, Map<String, String> strings) async {
     final pdf = Document();
     // var data = await rootBundle.load("assets/fonts/noto-sans.ttf");
     // ttf = Font.ttf(data);
@@ -26,13 +26,13 @@ class TransactionSalesInvoice {
     pdf.addPage(
       MultiPage(
         build: (context) => [
-          buildHeader(image, searchDateFormatted),
+          buildHeader(image, searchDateFormatted, strings),
           SizedBox(height: 1 * PdfPageFormat.cm),
-          buildInvoice(itemOrders),
+          buildInvoice(itemOrders, strings),
           Divider(),
           SizedBox(height: 0.25 * PdfPageFormat.cm),
         ],
-        footer: (context) => buildFooter(),
+        footer: (context) => buildFooter(strings),
       ),
     );
 
@@ -42,23 +42,23 @@ class TransactionSalesInvoice {
         pdf: pdf);
   }
 
-  static Widget buildHeader(MemoryImage image, String searchDateFormatted) =>
+  static Widget buildHeader(MemoryImage image, String searchDateFormatted, Map<String, String> strings) =>
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 1 * PdfPageFormat.cm),
-            Text('HayoPOS | Transaction Sales Report',
+            Text(strings['report_title_transaction'] ?? 'HayoPOS | Transaction Sales Report',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 )),
             SizedBox(height: 0.2 * PdfPageFormat.cm),
             Text(
-              "Data: $searchDateFormatted",
+              strings['data_date']?.replaceAll('{date}', searchDateFormatted) ?? "Data: $searchDateFormatted",
             ),
             Text(
-              'Created At: ${DateTime.now().toFormattedDate3()}',
+              strings['created_at']?.replaceAll('{date}', DateTime.now().toFormattedDate3()) ?? 'Created At: ${DateTime.now().toFormattedDate3()}',
             ),
           ],
         ),
@@ -70,14 +70,14 @@ class TransactionSalesInvoice {
         ),
       ]);
 
-  static Widget buildInvoice(List<ItemOrder> itemOrders) {
+  static Widget buildInvoice(List<ItemOrder> itemOrders, Map<String, String> strings) {
     final headers = [
-      'Total',
-      'Sub Total',
-      'Tax',
-      'Discount',
-      'Service',
-      'Time'
+      strings['total'] ?? 'Total',
+      strings['sub_total'] ?? 'Sub Total',
+      strings['tax'] ?? 'Tax',
+      strings['discount'] ?? 'Discount',
+      strings['service_charge'] ?? 'Service',
+      strings['time'] ?? 'Time'
     ];
     final data = itemOrders.map((item) {
       return [
@@ -109,13 +109,13 @@ class TransactionSalesInvoice {
     );
   }
 
-  static Widget buildFooter() => Column(
+  static Widget buildFooter(Map<String, String> strings) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Divider(),
           SizedBox(height: 2 * PdfPageFormat.mm),
           buildSimpleText(
-              title: 'Address',
+              title: strings['address'] ?? 'Address',
               value:
                   'Jalan Melati No. 12, Mranggen, Demak, Central Java, 89568'),
           SizedBox(height: 1 * PdfPageFormat.mm),

@@ -20,6 +20,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../../core/components/spaces.dart';
 import '../../../core/constants/colors.dart';
 import '../bloc/order/order_bloc.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class PaymentQrisDialog extends StatefulWidget {
   final List<ProductQuantity> items;
@@ -109,10 +110,10 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(12.0),
               child: Text(
-                'Pembayaran QRIS',
+                AppLocalizations.of(context)!.payment_qris,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -216,13 +217,13 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                                 borderRadius: BorderRadius.circular(20.0),
                                 color: Colors.white,
                               ),
-                              child: const Center(
+                              child: Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.check_circle, color: Colors.green, size: 64),
                                     SizedBox(height: 16),
-                                    Text("Pembayaran Berhasil!", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                    Text(AppLocalizations.of(context)!.payment_success, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                               ),
@@ -256,7 +257,7 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
 
                             if (url.isEmpty) {
                                 log("QRIS DIALOG: URL is empty!");
-                                return const Center(child: Text("Error: QR Data is Empty", style: TextStyle(color: Colors.red)));
+                                return Center(child: Text(AppLocalizations.of(context)!.qr_data_empty, style: TextStyle(color: Colors.red)));
                             }
                             
                             return SizedBox(
@@ -326,8 +327,8 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                     ),
                   ),
                   const SpaceHeight(12.0),
-                  const Text(
-                    'Scan QRIS to make payment',
+                  Text(
+                    AppLocalizations.of(context)!.scan_qris,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
@@ -342,7 +343,7 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                       final bytes = await controller.capture();
                       final printValue = await PrintDataoutputs.instance
                           .printQRIS(
-                              widget.price, bytes!, int.parse(sizeReceipt));
+                              widget.price, bytes!, int.parse(sizeReceipt), AppLocalizations.of(context)!);
                       await PrintBluetoothThermal.writeBytes(printValue);
                     },
                     style: ElevatedButton.styleFrom(
@@ -351,8 +352,8 @@ class _PaymentQrisDialogState extends State<PaymentQrisDialog> {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: const Text(
-                      'Print QRIS',
+                    child: Text(
+                      AppLocalizations.of(context)!.print_qris,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

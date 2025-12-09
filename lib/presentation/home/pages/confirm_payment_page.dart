@@ -13,6 +13,8 @@ import 'package:flutter_posresto_app/core/extensions/string_ext.dart';
 import 'package:flutter_posresto_app/data/models/response/table_model.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/get_table_status/get_table_status_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/order/order_bloc.dart';
+import 'package:flutter_posresto_app/presentation/home/bloc/checkout/checkout_bloc.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/pos_settings/pos_settings_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/status_table/status_table_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/dialog/payment_qris_dialog.dart';
@@ -233,7 +235,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
             left: 0,
             right: 0,
             child: FloatingHeader(
-              title: 'Confirm Payment',
+              title: AppLocalizations.of(context)!.confirm_payment,
               onToggleSidebar: () => Navigator.pop(context),
               isSidebarVisible: false, // Back button mode
               useBackIcon: true, // NEW: Force back icon
@@ -262,7 +264,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Order Summary',
+            AppLocalizations.of(context)!.order_summary,
             style: GoogleFonts.quicksand(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -272,8 +274,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
           const SizedBox(height: 4),
           Text(
             widget.isTable
-                ? 'Table ${widget.table?.tableName}'
-                : 'Order #${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
+                ? AppLocalizations.of(context)!.table_name_label(widget.table?.tableName ?? '')
+                : AppLocalizations.of(context)!.order_id_label(DateTime.now().millisecondsSinceEpoch.toString().substring(8)),
             style: GoogleFonts.quicksand(
               fontSize: 14,
               color: Colors.grey[600],
@@ -290,14 +292,14 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
               Expanded(
                 flex: 3,
                 child: Text(
-                  'Item',
+                  AppLocalizations.of(context)!.item,
                   style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black),
                 ),
               ),
               Expanded(
                 flex: 1,
                 child: Text(
-                  'Qty',
+                  AppLocalizations.of(context)!.qty,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black),
                 ),
@@ -305,7 +307,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  'Price',
+                  AppLocalizations.of(context)!.price,
                   textAlign: TextAlign.right,
                   style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, color: Colors.black),
                 ),
@@ -318,7 +320,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
           BlocBuilder<CheckoutBloc, CheckoutState>(
             builder: (context, state) {
               return state.maybeWhen(
-                orElse: () => const Center(child: Text('No Items')),
+                orElse: () => Center(child: Text(AppLocalizations.of(context)!.no_items)),
                 loaded: (products, discountModel, discount, discountAmount, tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
                   return ListView.separated(
                     shrinkWrap: true,
@@ -407,13 +409,13 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                   
                   return Column(
                     children: [
-                      _buildTotalRow('Subtotal', subTotal.currencyFormatRp),
+                      _buildTotalRow(AppLocalizations.of(context)!.subtotal, subTotal.currencyFormatRp),
                       const SizedBox(height: 8),
                       
                       // DISCOUNT
                       if (discountModel != null) ...[
                          _buildTotalRow(
-                          'Discount', 
+                          AppLocalizations.of(context)!.discount, 
                           discountModel.type == 'percentage' 
                               ? '(${discountModel.value}%) -${discAmt.currencyFormatRp}'
                               : '-${discAmt.currencyFormatRp}',
@@ -424,13 +426,13 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
 
                       // TAX
                       if (tax > 0) ...[
-                        _buildTotalRow('Tax', '($tax%) ${taxAmt.currencyFormatRp}'),
+                        _buildTotalRow(AppLocalizations.of(context)!.tax, '($tax%) ${taxAmt.currencyFormatRp}'),
                         const SizedBox(height: 8),
                       ],
 
                       // SERVICE
                       if (serviceCharge > 0) ...[
-                        _buildTotalRow('Service', '($serviceCharge%) ${servAmt.currencyFormatRp}'),
+                        _buildTotalRow(AppLocalizations.of(context)!.service_charge, '($serviceCharge%) ${servAmt.currencyFormatRp}'),
                         const SizedBox(height: 8),
                       ],
                     ],
@@ -448,7 +450,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total',
+                AppLocalizations.of(context)!.total,
                 style: GoogleFonts.quicksand(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -558,7 +560,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Payment Details',
+            AppLocalizations.of(context)!.payment_details,
             style: GoogleFonts.quicksand(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -568,7 +570,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
           const SizedBox(height: 24),
           
           Text(
-            'Customer Name',
+            AppLocalizations.of(context)!.customer_name,
             style: GoogleFonts.quicksand(
               fontWeight: FontWeight.bold,
               color: Colors.black87,
@@ -586,9 +588,9 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
               controller: customerController,
               enabled: widget.orderType == 'takeaway',
               style: GoogleFonts.quicksand(fontWeight: FontWeight.w600),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Enter customer name',
+                hintText: AppLocalizations.of(context)!.enter_customer_name,
               ),
             ),
           ),
@@ -596,7 +598,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
           const SizedBox(height: 24),
           
           Text(
-            'Payment Method',
+            AppLocalizations.of(context)!.payment_method,
             style: GoogleFonts.quicksand(
               fontWeight: FontWeight.bold,
               color: Colors.black87,
@@ -620,7 +622,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'Cash',
+                      AppLocalizations.of(context)!.cash,
                       style: GoogleFonts.quicksand(
                         color: isCash ? Colors.white : Colors.black87,
                         fontWeight: FontWeight.bold,
@@ -645,7 +647,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'QRIS',
+                      AppLocalizations.of(context)!.qris,
                       style: GoogleFonts.quicksand(
                         color: !isCash ? Colors.white : Colors.black87,
                         fontWeight: FontWeight.bold,
@@ -661,7 +663,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
           
           if (isCash) ...[
             Text(
-              'Cash Amount',
+              AppLocalizations.of(context)!.cash_amount,
               style: GoogleFonts.quicksand(
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
@@ -701,7 +703,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _buildQuickAmountButton(uangPas, 'Uang Pas'),
+                _buildQuickAmountButton(uangPas, AppLocalizations.of(context)!.exact_amount),
                 _buildQuickAmountButton(uangPas2, uangPas2.currencyFormatRp),
                 _buildQuickAmountButton(uangPas3, uangPas3.currencyFormatRp),
               ],
@@ -759,8 +761,8 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                           NotificationHelper.showWarning(
                             context,
                             widget.orderType == 'takeaway'
-                                ? 'Nama customer wajib diisi untuk Takeaway!'
-                                : 'Nama customer wajib diisi!',
+                                ? AppLocalizations.of(context)!.customer_name_required_takeaway
+                                : AppLocalizations.of(context)!.customer_name_required,
                           );
                           return;
                         }
@@ -769,7 +771,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                         if (isCash) {
                           final paymentAmountValue = totalPriceController.text.toIntegerFromText;
                           if (paymentAmountValue < totalPriceFinal) {
-                            NotificationHelper.showWarning(context, 'Nominal pembayaran kurang!');
+                            NotificationHelper.showWarning(context, AppLocalizations.of(context)!.payment_amount_insufficient);
                             return;
                           }
                         }
@@ -887,7 +889,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                         shadowColor: AppColors.primary.withOpacity(0.4),
                       ),
                       child: Text(
-                        'Process Payment',
+                        AppLocalizations.of(context)!.process_payment,
                         style: GoogleFonts.quicksand(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

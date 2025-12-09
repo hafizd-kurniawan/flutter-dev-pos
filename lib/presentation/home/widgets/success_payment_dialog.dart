@@ -22,6 +22,7 @@ import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasou
 import 'package:flutter_posresto_app/presentation/home/models/product_quantity.dart';
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/constants/colors.dart';
@@ -129,9 +130,9 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
           children: [
             Center(child: Assets.icons.success.svg()),
             const SpaceHeight(16.0),
-            const Center(
+            Center(
               child: Text(
-                'Pembayaran Sukses',
+                AppLocalizations.of(context)!.payment_success,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -143,12 +144,12 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             const SpaceHeight(24.0),
             
             // Payment Method
-            _buildInfoRow('Metode Bayar', widget.paymentMethod),
+            _buildInfoRow(AppLocalizations.of(context)!.payment_method, widget.paymentMethod),
             const Divider(height: 24),
             
             // Order Type
             _buildInfoRow(
-              'Tipe Order', 
+              AppLocalizations.of(context)!.order_type, 
               widget.orderType == 'dine_in' 
                   ? 'Dine In${widget.tableName != null ? " - ${widget.tableName}" : ""}' 
                   : 'Takeaway'
@@ -156,12 +157,12 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             const Divider(height: 24),
             
             // Total Bill
-            _buildInfoRow('Total Tagihan', widget.totalPrice.currencyFormatRp, isBold: true),
+            _buildInfoRow(AppLocalizations.of(context)!.total_bill, widget.totalPrice.currencyFormatRp, isBold: true),
             const Divider(height: 24),
             
             // Payment Amount
             _buildInfoRow(
-              'Nominal Bayar', 
+              AppLocalizations.of(context)!.payment_amount, 
               (widget.paymentAmount ?? widget.totalPrice).currencyFormatRp, 
               color: Colors.blue,
               isBold: true
@@ -177,8 +178,8 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Kembalian',
+                    Text(
+                      AppLocalizations.of(context)!.change,
                       style: TextStyle(color: AppColors.grey, fontSize: 14),
                     ),
                     const SpaceHeight(4.0),
@@ -193,7 +194,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                     if (kembalian < 0) ...[
                       const SizedBox(height: 4),
                       Text(
-                        '⚠️ Uang kurang!',
+                        AppLocalizations.of(context)!.money_insufficient,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.red.shade700,
@@ -209,7 +210,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             
             // Time
             _buildInfoRow(
-              'Waktu Pembayaran', 
+              AppLocalizations.of(context)!.payment_time, 
               DateFormat('dd MMMM yyyy, HH:mm').format(DateTime.now())
             ),
             
@@ -329,7 +330,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
           log('✅ Successfully returned to HomePage');
         }
       },
-      label: 'Selesai',
+      label: AppLocalizations.of(context)!.done,
     );
   }
 
@@ -374,6 +375,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 widget.orderType ?? 'Dine In', // NEW
                 widget.tableName ?? '', // NEW
                 widget.orderNote ?? '', // NEW: Global Order Note
+                AppLocalizations.of(context)!, // NEW: Localization
               );
               if (receiptPrinter.type == 'Bluetooth') {
                 await PrintBluetoothThermal.writeBytes(
@@ -405,6 +407,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 widget.orderType ?? 'Dine In', // Default for now, or pass from widget
                 widget.tableName ?? '', // Table name if available
                 widget.orderNote ?? '', // Pass Global Note
+                AppLocalizations.of(context)!, // NEW
               );
               if (kitchenPrinter.type == 'Bluetooth') {
                 await PrintBluetoothThermal.writeBytes(
@@ -434,6 +437,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
                 'HayoPOS',
                 barPrinter.paper.toIntegerFromText,
                 widget.orderNote ?? '', // NEW
+                AppLocalizations.of(context)!, // NEW
               );
               if (barPrinter.type == 'Bluetooth') {
                 await PrintBluetoothThermal.writeBytes(
@@ -452,7 +456,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
               }
             }
           },
-          label: 'Print',
+          label: AppLocalizations.of(context)!.print,
         );
 
   }
@@ -461,7 +465,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
     return Button.outlined(
       onPressed: () async {
         try {
-          NotificationHelper.showSuccess(context, 'Generating PDF...');
+          NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.generating_pdf);
 
           final paymentAmountValue = widget.paymentAmount ?? widget.totalPrice;
           final kembalian = paymentAmountValue - widget.totalPrice;
@@ -494,6 +498,7 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
             taxPercentage,
             servicePercentage,
             widget.orderNote ?? '', // NEW
+            AppLocalizations.of(context)!, // NEW
           );
           
           print('PDF generated at: ${xFile.path}');
@@ -502,14 +507,17 @@ class _SuccessPaymentDialogState extends State<SuccessPaymentDialog> {
           final appName = settings['app_name'] ?? 'Self Order POS';
 
           await Share.shareXFiles([xFile], text: 'Receipt from $appName');
-          NotificationHelper.showSuccess(context, 'Receipt shared successfully!');
+          if (!context.mounted) return;
+          NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.receipt_shared_success);
         } catch (e, stackTrace) {
           print('Error sharing receipt: $e');
           print('Stack trace: $stackTrace');
-          NotificationHelper.showError(context, 'Error sharing receipt: $e');
+          if (context.mounted) {
+             NotificationHelper.showError(context, AppLocalizations.of(context)!.error_sharing_receipt(e.toString()));
+          }
         }
       },
-      label: 'Struk',
+      label: AppLocalizations.of(context)!.receipt,
     );
   }
 }

@@ -8,6 +8,7 @@ import '../../../core/components/custom_text_field.dart';
 import '../../../core/components/spaces.dart';
 import '../../../core/constants/colors.dart';
 import '../models/printer_model.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class FormPrinterDialog extends StatelessWidget {
   final PrinterModel? data;
@@ -43,13 +44,13 @@ class FormPrinterDialog extends StatelessWidget {
             children: [
               CustomTextField(
                 controller: nameController,
-                label: 'Nama Printer',
+                label: AppLocalizations.of(context)!.printer_name,
                 onChanged: (value) {},
               ),
               const SpaceHeight(24.0),
               CustomTextField(
                 controller: ipAddressController,
-                label: 'Alamat IP',
+                label: AppLocalizations.of(context)!.ip_address,
                 onChanged: (value) {},
               ),
               const SpaceHeight(24.0),
@@ -58,7 +59,7 @@ class FormPrinterDialog extends StatelessWidget {
                 builder: (context, value, child) => CustomDropdown(
                   value: value,
                   items: const ['58mm', '80mm'],
-                  label: 'Ukuruan Struk',
+                  label: AppLocalizations.of(context)!.paper_size,
                   onChanged: (value) => sizeController.value = value ?? '',
                 ),
               ),
@@ -71,7 +72,7 @@ class FormPrinterDialog extends StatelessWidget {
                     PrinterType.wifi.value,
                     PrinterType.bluetooth.value,
                   ],
-                  label: 'Type',
+                  label: AppLocalizations.of(context)!.printer_type,
                   onChanged: (value) =>
                       typeController.value = PrinterType.fromValue(value ?? ''),
                 ),

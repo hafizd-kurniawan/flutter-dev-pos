@@ -7,6 +7,7 @@ import 'package:flutter_posresto_app/presentation/setting/widgets/bar_printer_pa
 import 'package:flutter_posresto_app/presentation/setting/widgets/checker_printer_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/widgets/kitchen_printer_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/widgets/receipt_printer_page.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/components/spaces.dart';
@@ -71,7 +72,7 @@ class _SettingsPageState extends State<PrinterConfigurationPage> {
             left: 0,
             right: 0,
             child: FloatingHeader(
-              title: 'Printer Configuration',
+              title: AppLocalizations.of(context)!.printer_configuration_title,
               onToggleSidebar: widget.onToggleSidebar ?? () {}, // Use widget.onToggleSidebar
               isSidebarVisible: true,
             ),
@@ -90,11 +91,11 @@ class _SettingsPageState extends State<PrinterConfigurationPage> {
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              _buildTabItem(0, 'Receipt', 'Bill & Receipt'),
+              _buildTabItem(0, AppLocalizations.of(context)!.receipt_tab, AppLocalizations.of(context)!.bill_receipt_desc),
               const SizedBox(width: 12),
-              _buildTabItem(2, 'Kitchen', 'Food Orders'),
+              _buildTabItem(2, AppLocalizations.of(context)!.kitchen_tab, AppLocalizations.of(context)!.food_orders_desc),
               const SizedBox(width: 12),
-              _buildTabItem(3, 'Bar', 'Drink Orders'),
+              _buildTabItem(3, AppLocalizations.of(context)!.bar_tab, AppLocalizations.of(context)!.drink_orders_desc),
             ],
           ),
         ),
@@ -134,7 +135,7 @@ class _SettingsPageState extends State<PrinterConfigurationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Configuration',
+                AppLocalizations.of(context)!.configuration_title,
                 style: GoogleFonts.quicksand(
                   color: AppColors.primary,
                   fontSize: 24,
@@ -142,11 +143,11 @@ class _SettingsPageState extends State<PrinterConfigurationPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildMenuItem(0, 'Receipt Printer', 'To Print bill and receipt'),
+              _buildMenuItem(0, AppLocalizations.of(context)!.receipt_printer_title, AppLocalizations.of(context)!.receipt_printer_desc),
               const SizedBox(height: 12),
-              _buildMenuItem(2, 'Kitchen Printer', 'To print food to kitchen'),
+              _buildMenuItem(2, AppLocalizations.of(context)!.kitchen_printer_title, AppLocalizations.of(context)!.kitchen_printer_desc),
               const SizedBox(height: 12),
-              _buildMenuItem(3, 'Bar Printer', 'To print drink to bar'),
+              _buildMenuItem(3, AppLocalizations.of(context)!.bar_printer_title, AppLocalizations.of(context)!.bar_printer_desc),
             ],
           ),
         ),

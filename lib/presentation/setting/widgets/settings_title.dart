@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/components/search_input.dart';
 import '../../../core/constants/colors.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 
 
@@ -36,7 +37,7 @@ class SettingsTitle extends StatelessWidget {
             child: SearchInput(
               controller: controller!,
               onChanged: onChanged,
-              hintText: 'Search for food, coffe, etc..',
+              hintText: AppLocalizations.of(context)!.search_food_placeholder,
             ),
           ),
       ],

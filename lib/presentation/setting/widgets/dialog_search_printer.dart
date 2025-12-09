@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class DialogSearchPrinter extends StatefulWidget {
   final Function(String) onSelected;
@@ -85,7 +86,7 @@ class _DialogSearchPrinterState extends State<DialogSearchPrinter> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Search Printer'),
+      title: Text(AppLocalizations.of(context)!.search_printer_title),
       content: SizedBox(
         width: context.deviceWidth / 2,
         child: items.isEmpty
@@ -116,7 +117,7 @@ class _DialogSearchPrinterState extends State<DialogSearchPrinter> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
       ],
     );

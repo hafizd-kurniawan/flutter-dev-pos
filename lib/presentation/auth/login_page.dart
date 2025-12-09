@@ -19,6 +19,7 @@ import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 import 'package:flutter_posresto_app/core/services/notification_service.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -64,8 +65,8 @@ class _LoginPageState extends State<LoginPage> {
                       color: AppColors.primary,
                     ),
                     const SpaceHeight(16.0),
-                    const Text(
-                      'HayoPOS',
+                    Text(
+                      AppLocalizations.of(context)!.app_name,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -73,13 +74,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SpaceHeight(8.0),
-                    Text(
-                      'Sign in to manage your restaurant',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                      Text(
+                        AppLocalizations.of(context)!.sign_in_subtitle,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
                       ),
-                    ),
                     const SpaceHeight(32.0),
 
                     // Login Card
@@ -100,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'Welcome Back',
+                            AppLocalizations.of(context)!.welcome_back,
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -112,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                           
                           CustomTextField(
                             controller: emailController,
-                            label: 'Email Address',
+                            label: AppLocalizations.of(context)!.email_address,
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
                             prefixIcon: const Icon(Icons.email_outlined),
@@ -121,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                           
                           CustomTextField(
                             controller: passwordController,
-                            label: 'Password',
+                            label: AppLocalizations.of(context)!.password,
                             obscureText: !isPasswordVisible,
                             textInputAction: TextInputAction.done,
                             prefixIcon: const Icon(Icons.lock_outline),
@@ -165,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                                               ),
                                             );
                                       },
-                                      label: 'Sign In',
+                                      label: AppLocalizations.of(context)!.sign_in,
                                       height: 50,
                                     );
                                   },
@@ -184,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                     
                     const SpaceHeight(24.0),
                     Text(
-                      '© 2025 HayoPOS. All rights reserved.',
+                      AppLocalizations.of(context)!.copyright,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[400],
@@ -220,7 +221,7 @@ class _LoginPageState extends State<LoginPage> {
     print('🌐 Online Only Mode: Skipping product sync');
     
     if (context.mounted) {
-      NotificationHelper.showSuccess(context, 'Login Success');
+      NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.login_success);
       
       // Navigate to Dashboard
       Navigator.pushReplacement(

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_posresto_app/core/utils/helper_pdf_service.dart';
 import 'package:flutter_posresto_app/data/models/response/item_sales_response_model.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 import 'package:pdf/widgets.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -13,7 +14,7 @@ import 'package:pdf/widgets.dart' as pw;
 class ItemSalesInvoice {
   static late Font ttf;
   static Future<File> generate(
-      List<ItemSales> itemSales, String searchDateFormatted) async {
+      List<ItemSales> itemSales, String searchDateFormatted, AppLocalizations localizations) async {
     final pdf = Document();
     // var data = await rootBundle.load("assets/fonts/noto-sans.ttf");
     // ttf = Font.ttf(data);
@@ -26,13 +27,13 @@ class ItemSalesInvoice {
     pdf.addPage(
       MultiPage(
         build: (context) => [
-          buildHeader(image, searchDateFormatted),
+          buildHeader(image, searchDateFormatted, localizations),
           SizedBox(height: 1 * PdfPageFormat.cm),
-          buildInvoice(itemSales),
+          buildInvoice(itemSales, localizations),
           Divider(),
           SizedBox(height: 0.25 * PdfPageFormat.cm),
         ],
-        footer: (context) => buildFooter(),
+        footer: (context) => buildFooter(localizations),
       ),
     );
 
@@ -42,23 +43,23 @@ class ItemSalesInvoice {
         pdf: pdf);
   }
 
-  static Widget buildHeader(MemoryImage image, String searchDateFormatted) =>
+  static Widget buildHeader(MemoryImage image, String searchDateFormatted, AppLocalizations localizations) =>
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 1 * PdfPageFormat.cm),
-            Text('HayoPOS | Item Sales Report',
+            Text('HayoPOS | ${localizations.item_sales_report_title}',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 )),
             SizedBox(height: 0.2 * PdfPageFormat.cm),
             Text(
-              "Data: $searchDateFormatted",
+              localizations.data_date(searchDateFormatted),
             ),
             Text(
-              'Created At: ${DateTime.now().toFormattedDate3()}',
+              localizations.created_at(DateTime.now().toFormattedDate3()),
             ),
           ],
         ),
@@ -70,8 +71,15 @@ class ItemSalesInvoice {
         ),
       ]);
 
-  static Widget buildInvoice(List<ItemSales> itemSales) {
-    final headers = ['Id', 'Order', 'Product', 'Qty', 'Price', 'Total'];
+  static Widget buildInvoice(List<ItemSales> itemSales, AppLocalizations localizations) {
+    final headers = [
+      localizations.id_col,
+      localizations.order_col,
+      localizations.product_col,
+      localizations.qty_col,
+      localizations.price_col,
+      localizations.total_col
+    ];
     final data = itemSales.map((item) {
       return [
         item.id!,
@@ -102,15 +110,15 @@ class ItemSalesInvoice {
     );
   }
 
-  static Widget buildFooter() => Column(
+  static Widget buildFooter(AppLocalizations localizations) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Divider(),
           SizedBox(height: 2 * PdfPageFormat.mm),
           buildSimpleText(
-              title: 'Address',
+              title: localizations.address,
               value:
-                  'Jalan Melati No. 12, Mranggen, Demak, Central Java, 89568'),
+                  localizations.company_address_value),
           SizedBox(height: 1 * PdfPageFormat.mm),
         ],
       );

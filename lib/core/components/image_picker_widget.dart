@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../assets/assets.gen.dart';
 import '../constants/colors.dart';
@@ -90,7 +91,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                   height: 30.0,
                   width: 140.0,
                   onPressed: _pickImage,
-                  label: 'Choose Photo',
+                  label: AppLocalizations.of(context)!.choose_photo,
                   fontSize: 12.0,
                   borderRadius: 5.0,
                 ),

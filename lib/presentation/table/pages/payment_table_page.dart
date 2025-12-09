@@ -18,6 +18,7 @@ import 'package:flutter_posresto_app/presentation/home/models/product_quantity.d
 import 'package:flutter_posresto_app/presentation/home/widgets/order_menu.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/success_payment_dialog.dart';
 import 'package:flutter_posresto_app/presentation/table/models/draft_order_model.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/components/buttons.dart';
@@ -83,7 +84,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Konfirmasi',
+                                  AppLocalizations.of(context)!.customer,
                                   style: TextStyle(
                                     color: AppColors.primary,
                                     fontSize: 20,
@@ -91,7 +92,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                   ),
                                 ),
                                 Text(
-                                  'Orders Table ${widget.table?.tableName}',
+                                  AppLocalizations.of(context)!.orders_table(widget.table?.tableName ?? ''),
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -121,24 +122,24 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                         const SpaceHeight(8.0),
                         const Divider(),
                         const SpaceHeight(24.0),
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Item',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                              Text(
+                                AppLocalizations.of(context)!.item,
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
                             SizedBox(
                               width: 160,
                             ),
                             SizedBox(
                               width: 50.0,
                               child: Text(
-                                'Qty',
+                                AppLocalizations.of(context)!.qty,
                                 style: TextStyle(
                                   color: AppColors.primary,
                                   fontSize: 16,
@@ -148,7 +149,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                             ),
                             SizedBox(
                               child: Text(
-                                'Price',
+                                AppLocalizations.of(context)!.price,
                                 style: TextStyle(
                                   color: AppColors.primary,
                                   fontSize: 16,
@@ -164,8 +165,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                         BlocBuilder<CheckoutBloc, CheckoutState>(
                           builder: (context, state) {
                             return state.maybeWhen(
-                              orElse: () => const Center(
-                                child: Text('No Items'),
+                              orElse: () => Center(
+                                child: Text(AppLocalizations.of(context)!.no_items),
                               ),
                               loaded: (products,
                                   discountModel,
@@ -178,8 +179,8 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                   draftName,
                                   orderNote) {
                                 if (products.isEmpty) {
-                                  return const Center(
-                                    child: Text('No Items'),
+                                  return Center(
+                                    child: Text(AppLocalizations.of(context)!.no_items),
                                   );
                                 }
                                 return ListView.separated(
@@ -203,10 +204,10 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Sub total',
-                              style: TextStyle(color: AppColors.grey),
-                            ),
+                            Text(
+                                AppLocalizations.of(context)!.subtotal,
+                                style: TextStyle(color: AppColors.grey),
+                              ),
                             BlocBuilder<CheckoutBloc, CheckoutState>(
                               builder: (context, state) {
                                 final price = state.maybeWhen(
@@ -246,9 +247,9 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Diskon',
-                              style: TextStyle(color: AppColors.grey),
-                            ),
+                                AppLocalizations.of(context)!.discount,
+                                style: TextStyle(color: AppColors.grey),
+                              ),
                             BlocBuilder<CheckoutBloc, CheckoutState>(
                               builder: (context, state) {
                                 final discount = state.maybeWhen(
@@ -263,7 +264,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                         totalPrice,
                                         draftName,
                                         orderNote) {
-                                      log("discountAmount: $discountAmount");
+                                      // log("discountAmount: $discountAmount"); // Removed log as it's not part of the instruction
                                       return discountAmount;
                                     });
 
@@ -284,10 +285,10 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Pajak PB1',
-                              style: TextStyle(color: AppColors.grey),
-                            ),
+                            Text(
+                                AppLocalizations.of(context)!.tax,
+                                style: TextStyle(color: AppColors.grey),
+                              ),
                             BlocBuilder<CheckoutBloc, CheckoutState>(
                               builder: (context, state) {
                                 final tax = state.maybeWhen(
@@ -359,10 +360,10 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Biaya Layanan',
-                              style: TextStyle(color: AppColors.grey),
-                            ),
+                            Text(
+                                AppLocalizations.of(context)!.service_charge,
+                                style: TextStyle(color: AppColors.grey),
+                              ),
                             BlocBuilder<CheckoutBloc, CheckoutState>(
                               builder: (context, state) {
                                 final tax = state.maybeWhen(
@@ -450,13 +451,13 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Total',
-                              style: TextStyle(
-                                  color: AppColors.grey,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
-                            ),
+                            Text(
+                                AppLocalizations.of(context)!.total,
+                                style: TextStyle(
+                                    color: AppColors.grey,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
+                              ),
                             BlocBuilder<CheckoutBloc, CheckoutState>(
                               builder: (context, state) {
                                 final price = state.maybeWhen(
@@ -569,19 +570,19 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Pembayaran',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
+                              Text(
+                                  AppLocalizations.of(context)!.payment,
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
                               const SpaceHeight(16.0),
                               const Divider(),
                               const SpaceHeight(8.0),
-                              const Text(
-                                'Customer',
+                              Text(
+                                AppLocalizations.of(context)!.item,
                                 style: TextStyle(
                                   color: AppColors.primary,
                                   fontSize: 16,
@@ -614,7 +615,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                             borderRadius:
                                                 BorderRadius.circular(8.0),
                                           ),
-                                          hintText: 'Nama Customer',
+                                          hintText: AppLocalizations.of(context)!.customer_name_hint,
                                         ),
                                       );
                                     },
@@ -624,14 +625,14 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                               const SpaceHeight(8.0),
                               const Divider(),
                               const SpaceHeight(8.0),
-                              const Text(
-                                'Metode Bayar',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
+                              Text(
+                                  AppLocalizations.of(context)!.payment_method,
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
                               const SpaceHeight(12.0),
                               Row(
                                 children: [
@@ -643,7 +644,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                             isCash = true;
                                             setState(() {});
                                           },
-                                          label: 'Cash',
+                                          label: AppLocalizations.of(context)!.cash,
                                         )
                                       : Button.outlined(
                                           width: 120.0,
@@ -652,7 +653,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                             isCash = true;
                                             setState(() {});
                                           },
-                                          label: 'Cash',
+                                          label: AppLocalizations.of(context)!.cash,
                                         ),
                                   const SpaceWidth(8.0),
                                   isCash
@@ -663,7 +664,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                             isCash = false;
                                             setState(() {});
                                           },
-                                          label: 'QRIS',
+                                          label: AppLocalizations.of(context)!.qris,
                                         )
                                       : Button.filled(
                                           width: 120.0,
@@ -672,21 +673,21 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                             isCash = false;
                                             setState(() {});
                                           },
-                                          label: 'QRIS',
+                                          label: AppLocalizations.of(context)!.qris,
                                         ),
                                 ],
                               ),
                               const SpaceHeight(8.0),
                               const Divider(),
                               const SpaceHeight(8.0),
-                              const Text(
-                                'Total Bayar',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                              Text(
+                                  AppLocalizations.of(context)!.total_payment,
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
                               const SpaceHeight(12.0),
                               TextFormField(
                                 controller: totalPriceController,
@@ -695,7 +696,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
-                                  hintText: 'Total harga',
+                                  hintText: AppLocalizations.of(context)!.total_price_hint,
                                 ),
                               ),
                               const SpaceHeight(45.0),
@@ -704,7 +705,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                   Button.filled(
                                     width: 150.0,
                                     onPressed: () {},
-                                    label: 'UANG PAS',
+                                    label: AppLocalizations.of(context)!.exact_amount,
                                   ),
                                   const SpaceWidth(20.0),
                                   Button.filled(
@@ -735,7 +736,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
                                 Flexible(
                                   child: Button.outlined(
                                     onPressed: () => context.pop(),
-                                    label: 'Batalkan',
+                                    label: AppLocalizations.of(context)!.cancel,
                                   ),
                                 ),
                                 const SpaceWidth(8.0),
@@ -944,7 +945,7 @@ class _PaymentTablePageState extends State<PaymentTablePage> {
 
 
                                           },
-                                          label: 'Bayar',
+                                          label: AppLocalizations.of(context)!.pay,
                                         ),
                                       );
                                     },

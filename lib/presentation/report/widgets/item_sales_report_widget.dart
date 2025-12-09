@@ -55,7 +55,7 @@ class ItemSalesReportWidget extends StatelessWidget {
                     final status = await PermessionHelper().checkPermission();
                     if (status) {
                       final pdfFile = await ItemSalesInvoice.generate(
-                          itemSales, searchDateFormatted);
+                          itemSales, searchDateFormatted, AppLocalizations.of(context)!);
                       log("pdfFile: $pdfFile");
                       HelperPdfService.openFile(pdfFile);
                     }
@@ -63,7 +63,7 @@ class ItemSalesReportWidget extends StatelessWidget {
                   child: const Row(
                     children: [
                       Text(
-                        "PDF",
+                        AppLocalizations.of(context)!.pdf_label,
                         style: TextStyle(
                           fontSize: 14.0,
                           fontWeight: FontWeight.bold,

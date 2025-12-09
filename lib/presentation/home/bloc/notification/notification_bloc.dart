@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_posresto_app/data/datasources/order_remote_datasource.dart';
 import 'package:flutter_posresto_app/core/services/local_notification_service.dart';
 import 'package:flutter_posresto_app/data/datasources/notification_local_datasource.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 part 'notification_event.dart';
 part 'notification_state.dart';
@@ -66,8 +67,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
                   print('🔔 [NOTIF_BLOC] Playing Sound...');
                   await LocalNotificationService().showNotification(
                     id: DateTime.now().millisecond,
-                    title: 'New Order Received!',
-                    body: 'You have ${orders.length} paid orders.',
+                    title: 'New Order Received!', // Localized in UI, but this is for system notification which might need static string or different handling
+                    body: 'You have ${orders.length} paid orders.', // Localized in UI
                     payload: 'new_order',
                   );
                 } catch (e) {

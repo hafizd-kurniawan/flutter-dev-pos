@@ -5,6 +5,7 @@ import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/checkout/checkout_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/pos_settings/pos_settings_bloc.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/colors.dart';
 
@@ -44,9 +45,9 @@ class _DynamicTaxDialogState extends State<DynamicTaxDialog> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Pilih Pajak',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.select_tax,
+            style: const TextStyle(
               color: AppColors.black,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -75,15 +76,15 @@ class _DynamicTaxDialogState extends State<DynamicTaxDialog> {
             ),
             error: (message) => SizedBox(
               height: 100,
-              child: Center(child: Text('Error: $message')),
+              child: Center(child: Text(AppLocalizations.of(context)!.error_loading_categories_msg(message))),
             ),
             loaded: (settings) {
               final taxes = settings.taxes;
 
               if (taxes.isEmpty) {
-                return const SizedBox(
+                return SizedBox(
                   height: 100,
-                  child: Center(child: Text('Tidak ada pajak tersedia')),
+                  child: Center(child: Text(AppLocalizations.of(context)!.no_tax_available)),
                 );
               }
 
@@ -97,8 +98,8 @@ class _DynamicTaxDialogState extends State<DynamicTaxDialog> {
                       _buildTaxOption(
                         context,
                         id: null,
-                        name: 'Tanpa Pajak',
-                        description: 'Tidak menggunakan pajak',
+                        name: AppLocalizations.of(context)!.no_tax,
+                        description: AppLocalizations.of(context)!.no_tax_desc,
                         isSelected: _selectedTaxId == null,
                         onTap: () async {
                           await _localDatasource.saveSelectedTax(null);
@@ -130,7 +131,7 @@ class _DynamicTaxDialogState extends State<DynamicTaxDialog> {
                               
                               setState(() => _selectedTaxId = tax.id);
                               
-                              NotificationHelper.showSuccess(context, 'Tax applied successfully');
+                              NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.tax_applied);
                               context.pop();
                             },
                           ),

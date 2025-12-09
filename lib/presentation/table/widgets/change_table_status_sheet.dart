@@ -5,6 +5,7 @@ import 'package:flutter_posresto_app/core/constants/colors.dart';
 import 'package:flutter_posresto_app/data/models/response/table_model.dart';
 import 'package:flutter_posresto_app/presentation/table/blocs/get_table/get_table_bloc.dart';
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class ChangeTableStatusSheet extends StatefulWidget {
   final TableModel table;
@@ -120,7 +121,7 @@ class _ChangeTableStatusSheetState extends State<ChangeTableStatusSheet> {
                         children: [
                           Expanded(
                             child: _buildStatusCard(
-                              label: 'Available',
+                              label: AppLocalizations.of(context)!.status_available,
                               value: 'available',
                               groupValue: _selectedStatus,
                               icon: Icons.check_circle_outline,

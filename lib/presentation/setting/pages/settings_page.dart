@@ -4,6 +4,9 @@ import 'package:flutter_posresto_app/presentation/setting/pages/manage_printer_p
 import 'package:flutter_posresto_app/presentation/setting/pages/sync_data_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/notifications_settings_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/about_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_posresto_app/presentation/setting/bloc/language/language_cubit.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/components/spaces.dart';
@@ -53,7 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
             left: 0,
             right: 0,
             child: FloatingHeader(
-              title: 'Settings',
+              title: AppLocalizations.of(context)!.settings,
               onToggleSidebar: widget.onToggleSidebar ?? () {},
               isSidebarVisible: true,
             ),
@@ -72,11 +75,13 @@ class _SettingsPageState extends State<SettingsPage> {
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              _buildTabItem(0, 'Sync Data', 'Server Sync'),
+              _buildTabItem(0, AppLocalizations.of(context)!.sync_data, AppLocalizations.of(context)!.server_sync),
               const SizedBox(width: 12),
-              _buildTabItem(1, 'Notifications', 'Preferences'),
+              _buildTabItem(1, AppLocalizations.of(context)!.notifications, AppLocalizations.of(context)!.preferences),
               const SizedBox(width: 12),
-              _buildTabItem(2, 'About', 'App Info'),
+              _buildTabItem(2, AppLocalizations.of(context)!.about, AppLocalizations.of(context)!.app_info),
+              const SizedBox(width: 12),
+              _buildTabItem(3, AppLocalizations.of(context)!.language, AppLocalizations.of(context)!.language_settings),
             ],
           ),
         ),
@@ -116,7 +121,7 @@ class _SettingsPageState extends State<SettingsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Settings',
+                AppLocalizations.of(context)!.settings,
                 style: GoogleFonts.quicksand(
                   color: AppColors.primary,
                   fontSize: 24,
@@ -124,11 +129,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildMenuItem(0, 'Sync Data', 'Sinkronisasi data dari dan ke server', Assets.icons.kelolaPajak.svg(width: 24, height: 24, color: currentIndex == 0 ? Colors.white : AppColors.primary)),
+              _buildMenuItem(0, AppLocalizations.of(context)!.sync_data, AppLocalizations.of(context)!.sync_data_desc, Assets.icons.kelolaPajak.svg(width: 24, height: 24, color: currentIndex == 0 ? Colors.white : AppColors.primary)),
               const SizedBox(height: 12),
-              _buildMenuItem(1, 'Notifications', 'Manage notification preferences', Icon(Icons.notifications, color: currentIndex == 1 ? Colors.white : AppColors.primary)),
+              _buildMenuItem(1, AppLocalizations.of(context)!.notifications, AppLocalizations.of(context)!.notifications_desc, Icon(Icons.notifications, color: currentIndex == 1 ? Colors.white : AppColors.primary)),
               const SizedBox(height: 12),
-              _buildMenuItem(2, 'About & Help', 'App info and support', Icon(Icons.info, color: currentIndex == 2 ? Colors.white : AppColors.primary)),
+              _buildMenuItem(2, AppLocalizations.of(context)!.about, AppLocalizations.of(context)!.about_desc, Icon(Icons.info, color: currentIndex == 2 ? Colors.white : AppColors.primary)),
+              const SizedBox(height: 12),
+              _buildMenuItem(3, AppLocalizations.of(context)!.language, AppLocalizations.of(context)!.language_desc, Icon(Icons.language, color: currentIndex == 3 ? Colors.white : AppColors.primary)),
             ],
           ),
         ),
@@ -164,6 +171,7 @@ class _SettingsPageState extends State<SettingsPage> {
         SyncDataPage(),
         NotificationsSettingsPage(),
         AboutPage(),
+        _buildLanguageSettings(),
       ],
     );
   }
@@ -253,6 +261,67 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildLanguageSettings() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context)!.select_language,
+          style: GoogleFonts.quicksand(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildLanguageOption('English', 'en', '🇺🇸'),
+        const SizedBox(height: 12),
+        _buildLanguageOption('Bahasa Indonesia', 'id', '🇮🇩'),
+      ],
+    );
+  }
+
+  Widget _buildLanguageOption(String name, String code, String flag) {
+    return BlocBuilder<LanguageCubit, Locale>(
+      builder: (context, locale) {
+        final isSelected = locale.languageCode == code;
+        return InkWell(
+          onTap: () {
+            context.read<LanguageCubit>().changeLanguage(code);
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected ? AppColors.primary : Colors.grey[300]!,
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(flag, style: const TextStyle(fontSize: 24)),
+                const SizedBox(width: 16),
+                Text(
+                  name,
+                  style: GoogleFonts.quicksand(
+                    fontSize: 16,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected ? AppColors.primary : Colors.black87,
+                  ),
+                ),
+                const Spacer(),
+                if (isSelected)
+                  const Icon(Icons.check_circle, color: AppColors.primary),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

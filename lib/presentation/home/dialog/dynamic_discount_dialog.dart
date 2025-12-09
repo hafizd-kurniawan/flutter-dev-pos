@@ -7,6 +7,7 @@ import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasou
 import 'package:flutter_posresto_app/data/models/response/discount_response_model.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/checkout/checkout_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/pos_settings/pos_settings_bloc.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/colors.dart';
 
@@ -46,9 +47,9 @@ class _DynamicDiscountDialogState extends State<DynamicDiscountDialog> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Pilih Diskon',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.select_discount,
+            style: const TextStyle(
               color: AppColors.black,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -77,15 +78,15 @@ class _DynamicDiscountDialogState extends State<DynamicDiscountDialog> {
             ),
             error: (message) => SizedBox(
               height: 100,
-              child: Center(child: Text('Error: $message')),
+              child: Center(child: Text(AppLocalizations.of(context)!.error_loading_categories_msg(message))),
             ),
             loaded: (settings) {
               final discounts = settings.discounts;
 
               if (discounts.isEmpty) {
-                return const SizedBox(
+                return SizedBox(
                   height: 100,
-                  child: Center(child: Text('Tidak ada diskon tersedia')),
+                  child: Center(child: Text(AppLocalizations.of(context)!.no_discount_available)),
                 );
               }
 
@@ -99,8 +100,8 @@ class _DynamicDiscountDialogState extends State<DynamicDiscountDialog> {
                       _buildDiscountOption(
                         context,
                         id: null,
-                        name: 'Tanpa Diskon',
-                        description: 'Tidak menggunakan diskon',
+                        name: AppLocalizations.of(context)!.no_discount,
+                        description: AppLocalizations.of(context)!.no_discount_desc,
                         isSelected: _selectedDiscountId == null,
                         onTap: () async {
                           await _localDatasource.saveSelectedDiscount(null);
@@ -139,7 +140,7 @@ class _DynamicDiscountDialogState extends State<DynamicDiscountDialog> {
                               
                               setState(() => _selectedDiscountId = discount.id);
                               
-                              NotificationHelper.showSuccess(context, 'Discount applied successfully');
+                              NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.discount_applied);
                               context.pop();
                             },
                           ),

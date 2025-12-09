@@ -15,6 +15,7 @@ import 'package:flutter_posresto_app/presentation/report/widgets/report_menu.dar
 import 'package:flutter_posresto_app/presentation/report/widgets/report_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_posresto_app/presentation/report/widgets/summary_report_widget.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 import 'package:flutter_posresto_app/presentation/report/widgets/transaction_report_widget.dart';
 
 import '../../../core/components/spaces.dart';
@@ -28,7 +29,9 @@ class ReportPage extends StatefulWidget {
 
 class _ReportPageState extends State<ReportPage> {
   int selectedMenu = 0;
-  String title = 'Summary Sales Report';
+  String title = 'Summary Sales Report'; // Initial title, will be updated by localization in build if needed, but state holds the key logic.
+  // Better to initialize in initState or build if we want it localized immediately on first load.
+  // However, for now, let's just ensure the UI uses localized strings.
   DateTime fromDate = DateTime.now().subtract(const Duration(days: 30));
   DateTime toDate = DateTime.now();
 
@@ -54,35 +57,21 @@ class _ReportPageState extends State<ReportPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
+                        Expanded(
                           child: CustomDatePicker(
-                            prefix: const Text('From: '),
+                            prefix: Text('${AppLocalizations.of(context)!.from}: '),
                             initialDate: fromDate,
                             onDateSelected: (selectedDate) {
                               fromDate = selectedDate;
-
                               setState(() {});
                             },
                           ),
                         ),
-                        const SpaceWidth(24.0),
-                        Flexible(
+                        const SizedBox(width: 16),
+                        Expanded(
                           child: CustomDatePicker(
-                            prefix: const Text('To: '),
+                            label: AppLocalizations.of(context)!.end_date,
                             initialDate: toDate,
-                            onDateSelected: (selectedDate) {
-                              toDate = selectedDate;
-                              setState(() {});
-                              // context.read<TransactionReportBloc>().add(
-                              //       TransactionReportEvent.getReport(
-                              //           startDate:
-                              //               DateFormatter.formatDateTime(
-                              //                   fromDate),
-                              //           endDate: DateFormatter.formatDateTime(
-                              //               toDate)),
-                              //     );
-                              // context.read<ItemSalesReportBloc>().add(
-                              //       ItemSalesReportEvent.getItemSales(
-                              //           startDate:
                               //               DateFormatter.formatDateTime(
                               //                   fromDate),
                               //           endDate: DateFormatter.formatDateTime(
@@ -98,10 +87,10 @@ class _ReportPageState extends State<ReportPage> {
                       child: Wrap(
                         children: [
                           ReportMenu(
-                            label: 'Transaction Report',
+                            label: AppLocalizations.of(context)!.transaction_report,
                             onPressed: () {
                               selectedMenu = 0;
-                              title = 'Transaction Report';
+                              title: AppLocalizations.of(context)!.transaction_report;
                               setState(() {});
                               //enddate is 1 month before the current date
                               context.read<TransactionReportBloc>().add(
@@ -115,10 +104,10 @@ class _ReportPageState extends State<ReportPage> {
                             isActive: selectedMenu == 0,
                           ),
                           ReportMenu(
-                            label: 'Item Sales Report',
+                            label: AppLocalizations.of(context)!.item_sales_report,
                             onPressed: () {
                               selectedMenu = 1;
-                              title = 'Item Sales Report';
+                              title: AppLocalizations.of(context)!.item_sales_report;
                               setState(() {});
                               context.read<ItemSalesReportBloc>().add(
                                     ItemSalesReportEvent.getItemSales(
@@ -131,10 +120,10 @@ class _ReportPageState extends State<ReportPage> {
                             isActive: selectedMenu == 1,
                           ),
                           ReportMenu(
-                            label: 'Product Sales Chart',
+                            label: AppLocalizations.of(context)!.product_sales_chart,
                             onPressed: () {
                               selectedMenu = 2;
-                              title = 'Product Sales Chart';
+                              title: AppLocalizations.of(context)!.product_sales_chart;
                               setState(() {});
                               context.read<ProductSalesBloc>().add(
                                     ProductSalesEvent.getProductSales(
@@ -145,10 +134,10 @@ class _ReportPageState extends State<ReportPage> {
                             isActive: selectedMenu == 2,
                           ),
                           ReportMenu(
-                            label: 'Summary Sales Report',
+                            label: AppLocalizations.of(context)!.summary_sales_report,
                             onPressed: () {
                               selectedMenu = 3;
-                              title = 'Summary Sales Report';
+                              title: AppLocalizations.of(context)!.summary_sales_report;
                               setState(() {});
                               context.read<SummaryBloc>().add(
                                     SummaryEvent.getSummary(
@@ -260,26 +249,26 @@ class _ReportPageState extends State<ReportPage> {
 
   List<Widget> _getTitleReportPageWidget() {
     return [
-      _getTitleItemWidget('ID', 120),
-      _getTitleItemWidget('Total', 100),
-      _getTitleItemWidget('Sub Total', 100),
-      _getTitleItemWidget('Tax', 100),
-      _getTitleItemWidget('Disocunt', 100),
-      _getTitleItemWidget('Service', 100),
-      _getTitleItemWidget('Total Item', 100),
-      _getTitleItemWidget('Cashier', 180),
-      _getTitleItemWidget('Time', 200),
+      _getTitleItemWidget(AppLocalizations.of(context)!.id_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.total_col, 100),
+      _getTitleItemWidget(AppLocalizations.of(context)!.sub_total_col, 100),
+      _getTitleItemWidget(AppLocalizations.of(context)!.tax_col, 100),
+      _getTitleItemWidget(AppLocalizations.of(context)!.discount_col, 100),
+      _getTitleItemWidget(AppLocalizations.of(context)!.service_col, 100),
+      _getTitleItemWidget(AppLocalizations.of(context)!.total_item_col, 100),
+      _getTitleItemWidget(AppLocalizations.of(context)!.cashier_col, 180),
+      _getTitleItemWidget(AppLocalizations.of(context)!.time_col, 200),
     ];
   }
 
   List<Widget> _getItemSalesPageWidget() {
     return [
-      _getTitleItemWidget('ID', 80),
-      _getTitleItemWidget('Order', 60),
-      _getTitleItemWidget('Product', 160),
-      _getTitleItemWidget('Qty', 60),
-      _getTitleItemWidget('Price', 140),
-      _getTitleItemWidget('Total Price', 140),
+      _getTitleItemWidget(AppLocalizations.of(context)!.id_col, 80),
+      _getTitleItemWidget(AppLocalizations.of(context)!.order_col, 60),
+      _getTitleItemWidget(AppLocalizations.of(context)!.product_col, 160),
+      _getTitleItemWidget(AppLocalizations.of(context)!.qty_col, 60),
+      _getTitleItemWidget(AppLocalizations.of(context)!.price_col, 140),
+      _getTitleItemWidget(AppLocalizations.of(context)!.total_price_col, 140),
     ];
   }
 
