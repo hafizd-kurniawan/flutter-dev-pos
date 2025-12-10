@@ -905,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @payment_details.
   ///
   /// In en, this message translates to:
-  /// **'💰 Payment Details'**
+  /// **'Payment Details'**
   String get payment_details;
 
   /// No description provided for @customer_name.

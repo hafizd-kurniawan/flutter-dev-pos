@@ -447,7 +447,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         totalItem,
         order.totalAmount,
         order.paymentMethod,
-        order.paymentAmount ?? order.totalAmount, // Use actual paid amount
+        (order.paymentAmount != null && order.paymentAmount! > 0) ? order.paymentAmount! : order.totalAmount, // Use actual paid amount or fallback to total
         order.changeAmount ?? 0, // Use actual change amount
         order.subtotal,
         order.discountAmount ?? 0,
@@ -511,7 +511,7 @@ class _HistoryPageState extends State<HistoryPage> with SingleTickerProviderStat
         totalItem,
         order.totalAmount,
         order.paymentMethod,
-        order.paymentAmount ?? order.totalAmount, // Use actual paid amount
+        (order.paymentAmount != null && order.paymentAmount! > 0) ? order.paymentAmount! : order.totalAmount, // Use actual paid amount or fallback to total
         order.changeAmount ?? 0, // Use actual change amount
         order.subtotal,
         order.discountAmount ?? 0,
