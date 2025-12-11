@@ -451,5 +451,6 @@
     "cooking_status": "Dimasak",
     "added_success": "Berhasil ditambahkan",
     "stock_insufficient_cart": "Stok tidak cukup! Tersedia: {stock}, Di keranjang: {cart}",
-    "stock_verification_failed": "Tidak dapat verifikasi stok online. Ditambahkan berdasarkan stok lokal."
+    "stock_verification_failed": "Tidak dapat memverifikasi stok online. Ditambahkan berdasarkan stok lokal.",
+    "premium_features": "Fitur Premium"
 }

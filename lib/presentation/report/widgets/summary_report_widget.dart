@@ -55,10 +55,10 @@ class SummaryReportWidget extends StatelessWidget {
                     onTap: () async {
                       final status = await PermessionHelper().checkPermission();
                       if (status) {
-                        final strings = {
+                        final Map<String, String> strings = {
                           'report_title_summary': AppLocalizations.of(context)!.report_title_summary,
-                          'data_date': AppLocalizations.of(context)!.data_date,
-                          'created_at': AppLocalizations.of(context)!.created_at,
+                          'data_date': AppLocalizations.of(context)!.data_date(''),
+                          'created_at': AppLocalizations.of(context)!.created_at(''),
                           'revenue': AppLocalizations.of(context)!.revenue,
                           'sub_total': AppLocalizations.of(context)!.sub_total,
                           'discount': AppLocalizations.of(context)!.discount,

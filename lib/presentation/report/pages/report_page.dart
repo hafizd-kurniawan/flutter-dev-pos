@@ -56,7 +56,6 @@ class _ReportPageState extends State<ReportPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(
                         Expanded(
                           child: CustomDatePicker(
                             prefix: Text('${AppLocalizations.of(context)!.from}: '),
@@ -70,13 +69,11 @@ class _ReportPageState extends State<ReportPage> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: CustomDatePicker(
-                            label: AppLocalizations.of(context)!.end_date,
+                            prefix: Text('${AppLocalizations.of(context)!.to}: '),
                             initialDate: toDate,
-                              //               DateFormatter.formatDateTime(
-                              //                   fromDate),
-                              //           endDate: DateFormatter.formatDateTime(
-                              //               toDate)),
-                              //     );
+                            onDateSelected: (selectedDate) {
+                              toDate = selectedDate;
+                              setState(() {});
                             },
                           ),
                         ),
@@ -90,7 +87,7 @@ class _ReportPageState extends State<ReportPage> {
                             label: AppLocalizations.of(context)!.transaction_report,
                             onPressed: () {
                               selectedMenu = 0;
-                              title: AppLocalizations.of(context)!.transaction_report;
+                              title = AppLocalizations.of(context)!.transaction_report;
                               setState(() {});
                               //enddate is 1 month before the current date
                               context.read<TransactionReportBloc>().add(
@@ -107,7 +104,7 @@ class _ReportPageState extends State<ReportPage> {
                             label: AppLocalizations.of(context)!.item_sales_report,
                             onPressed: () {
                               selectedMenu = 1;
-                              title: AppLocalizations.of(context)!.item_sales_report;
+                              title = AppLocalizations.of(context)!.item_sales_report;
                               setState(() {});
                               context.read<ItemSalesReportBloc>().add(
                                     ItemSalesReportEvent.getItemSales(
@@ -123,7 +120,7 @@ class _ReportPageState extends State<ReportPage> {
                             label: AppLocalizations.of(context)!.product_sales_chart,
                             onPressed: () {
                               selectedMenu = 2;
-                              title: AppLocalizations.of(context)!.product_sales_chart;
+                              title = AppLocalizations.of(context)!.product_sales_chart;
                               setState(() {});
                               context.read<ProductSalesBloc>().add(
                                     ProductSalesEvent.getProductSales(
@@ -137,7 +134,7 @@ class _ReportPageState extends State<ReportPage> {
                             label: AppLocalizations.of(context)!.summary_sales_report,
                             onPressed: () {
                               selectedMenu = 3;
-                              title: AppLocalizations.of(context)!.summary_sales_report;
+                              title = AppLocalizations.of(context)!.summary_sales_report;
                               setState(() {});
                               context.read<SummaryBloc>().add(
                                     SummaryEvent.getSummary(

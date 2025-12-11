@@ -6,6 +6,8 @@ import '../../../core/constants/colors.dart';
 
 
 
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
+
 class ReportTitle extends StatelessWidget {
   const ReportTitle({super.key});
 
@@ -14,9 +16,9 @@ class ReportTitle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           AppLocalizations.of(context)!.report_title,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.primary,
             fontSize: 28,
             fontWeight: FontWeight.w600,

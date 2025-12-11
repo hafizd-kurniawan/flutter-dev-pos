@@ -451,5 +451,6 @@
     "cooking_status": "Cooking",
     "added_success": "Successfully added",
     "stock_insufficient_cart": "Stock insufficient! Available: {stock}, In cart: {cart}",
-    "stock_verification_failed": "Cannot verify online stock. Added based on local stock."
+    "stock_verification_failed": "Cannot verify online stock. Added based on local stock.",
+    "premium_features": "Premium Features"
 }

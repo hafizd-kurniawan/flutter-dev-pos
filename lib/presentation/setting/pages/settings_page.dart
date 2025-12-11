@@ -7,6 +7,11 @@ import 'package:flutter_posresto_app/presentation/setting/pages/about_page.dart'
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/bloc/language/language_cubit.dart';
 import 'package:flutter_posresto_app/l10n/app_localizations.dart';
+import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
+import 'package:flutter_posresto_app/data/models/response/auth_response_model.dart';
+import 'package:flutter_posresto_app/core/constants/variables.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/components/spaces.dart';
@@ -23,6 +28,20 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   int currentIndex = 0;
+  AuthResponseModel? _authData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAuthData();
+  }
+
+  Future<void> _fetchAuthData() async {
+    final data = await AuthLocalDataSource().getAuthData();
+    setState(() {
+      _authData = data;
+    });
+  }
 
   void indexValue(int index) {
     currentIndex = index;
@@ -69,6 +88,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildMobileLayout() {
     return Column(
       children: [
+        _buildUserInfo(),
         // Horizontal Tabs
         SizedBox(
           height: 40, // Reduced height
@@ -128,6 +148,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              const SizedBox(height: 16),
+              _buildUserInfo(),
               const SizedBox(height: 16),
               _buildMenuItem(0, AppLocalizations.of(context)!.sync_data, AppLocalizations.of(context)!.sync_data_desc, Assets.icons.kelolaPajak.svg(width: 24, height: 24, color: currentIndex == 0 ? Colors.white : AppColors.primary)),
               const SizedBox(height: 12),
@@ -323,5 +345,183 @@ class _SettingsPageState extends State<SettingsPage> {
         );
       },
     );
+  }
+
+  Widget _buildUserInfo() {
+    if (_authData == null) return const SizedBox.shrink();
+
+    final user = _authData!.user;
+    final tenant = _authData!.tenant;
+    final isTrial = tenant?.status == 'trial';
+    final trialEndsAt = tenant?.trialEndsAt;
+
+    return GestureDetector(
+      onTap: () {
+        if (isTrial) {
+          _showTrialInfoDialog(tenant!);
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: AppColors.primary.withOpacity(0.1),
+              child: Text(
+                user?.name?.substring(0, 1).toUpperCase() ?? 'U',
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user?.name ?? 'User',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  Text(
+                    user?.email ?? '',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isTrial)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.orange),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.timer, size: 14, color: Colors.orange),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Trial',
+                      style: GoogleFonts.quicksand(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showTrialInfoDialog(Tenant tenant) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.star, color: Colors.orange),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context)!.premium_features ?? 'Premium Features'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'You are currently on a Free Trial.',
+              style: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            if (tenant.trialEndsAt != null)
+              Text(
+                'Trial ends on: ${tenant.trialEndsAt!.toLocal().toString().split(' ')[0]}',
+                style: GoogleFonts.quicksand(color: Colors.grey[600]),
+              ),
+            const SizedBox(height: 16),
+            Text(
+              'Enjoy full access to:',
+              style: GoogleFonts.quicksand(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            _buildFeatureItem('Profit Analysis'),
+            _buildFeatureItem('Customer Insights'),
+            _buildFeatureItem('Sales Trends'),
+            _buildFeatureItem('Advanced Reports'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+               // Navigate to upgrade or open web
+               Navigator.pop(context);
+               _openUpgradePage();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text('Upgrade Now'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle, size: 16, color: Colors.green),
+          const SizedBox(width: 8),
+          Text(text, style: GoogleFonts.quicksand(fontSize: 14)),
+        ],
+      ),
+    );
+  }
+
+  void _openUpgradePage() async {
+    final upgradeUrl = Uri.parse('${Variables.baseUrl}/admin/upgrade');
+    if (await canLaunchUrl(upgradeUrl)) {
+      await launchUrl(upgradeUrl, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+         NotificationHelper.showError(context, 'Could not launch upgrade page');
+      }
+    }
   }
 }

@@ -2293,6 +2293,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cannot verify online stock. Added based on local stock.'**
   String get stock_verification_failed;
+
+  /// No description provided for @premium_features.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Features'**
+  String get premium_features;
 }
 
 class _AppLocalizationsDelegate

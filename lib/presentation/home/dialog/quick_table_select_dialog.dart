@@ -138,7 +138,7 @@ class _QuickTableSelectDialogState extends State<QuickTableSelectDialog> {
                       if (filteredTables.isEmpty && _searchQuery.isNotEmpty) {
                         return Center(
                           child: Text(
-                            AppLocalizations.of(context)!.table_not_found,
+                            AppLocalizations.of(context)!.no_table_available,
                             style: const TextStyle(color: Colors.grey),
                           ),
                         );

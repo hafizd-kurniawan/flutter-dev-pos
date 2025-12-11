@@ -15,6 +15,7 @@ import '../../core/components/spaces.dart';
 import '../../core/constants/colors.dart';
 import '../home/pages/dashboard_page.dart';
 import 'bloc/login/login_bloc.dart';
+import 'pages/register_page.dart' as com;
 import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart';
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
@@ -183,6 +184,31 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     
+                    const SpaceHeight(24.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Don\'t have an account? ',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        InkWell(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const com.RegisterPage(),
+                            ),
+                          ),
+                          child: const Text(
+                            'Register',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SpaceHeight(24.0),
                     Text(
                       AppLocalizations.of(context)!.copyright,

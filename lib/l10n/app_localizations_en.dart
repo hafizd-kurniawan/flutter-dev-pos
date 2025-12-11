@@ -1174,4 +1174,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get stock_verification_failed =>
       'Cannot verify online stock. Added based on local stock.';
+
+  @override
+  String get premium_features => 'Premium Features';
 }

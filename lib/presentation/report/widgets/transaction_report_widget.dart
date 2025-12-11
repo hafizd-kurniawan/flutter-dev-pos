@@ -56,10 +56,10 @@ class TransactionReportWidget extends StatelessWidget {
                   onTap: () async {
                     final status = await PermessionHelper().checkPermission();
                     if (status) {
-                      final strings = {
+                      final Map<String, String> strings = {
                         'report_title_transaction': AppLocalizations.of(context)!.report_title_transaction,
-                        'data_date': AppLocalizations.of(context)!.data_date,
-                        'created_at': AppLocalizations.of(context)!.created_at,
+                        'data_date': AppLocalizations.of(context)!.data_date(''),
+                        'created_at': AppLocalizations.of(context)!.created_at(''),
                         'total': AppLocalizations.of(context)!.total,
                         'sub_total': AppLocalizations.of(context)!.sub_total,
                         'tax': AppLocalizations.of(context)!.tax,

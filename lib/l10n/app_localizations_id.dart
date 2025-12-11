@@ -1176,5 +1176,8 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get stock_verification_failed =>
-      'Tidak dapat verifikasi stok online. Ditambahkan berdasarkan stok lokal.';
+      'Tidak dapat memverifikasi stok online. Ditambahkan berdasarkan stok lokal.';
+
+  @override
+  String get premium_features => 'Fitur Premium';
 }

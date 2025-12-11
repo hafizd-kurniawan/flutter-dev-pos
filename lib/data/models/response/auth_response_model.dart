@@ -94,6 +94,7 @@ class Tenant {
     final String? businessName;
     final String? status;
     final String? statusLabel;
+    final DateTime? trialEndsAt;
 
     Tenant({
         this.id,
@@ -101,6 +102,7 @@ class Tenant {
         this.businessName,
         this.status,
         this.statusLabel,
+        this.trialEndsAt,
     });
 
     factory Tenant.fromJson(String str) => Tenant.fromMap(json.decode(str));
@@ -113,6 +115,7 @@ class Tenant {
         businessName: json["business_name"],
         status: json["status"],
         statusLabel: json["status_label"],
+        trialEndsAt: json["trial_ends_at"] == null ? null : DateTime.parse(json["trial_ends_at"]),
     );
 
     Map<String, dynamic> toMap() => {
@@ -121,5 +124,6 @@ class Tenant {
         "business_name": businessName,
         "status": status,
         "status_label": statusLabel,
+        "trial_ends_at": trialEndsAt?.toIso8601String(),
     };
 }

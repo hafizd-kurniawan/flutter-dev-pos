@@ -74,10 +74,7 @@ class DashboardSummaryWidget extends StatelessWidget {
             if (data.alerts.lowStockCount > 0 || data.alerts.pendingOrders > 0)
               _buildAlerts(context, data.alerts),
             const SpaceHeight(16),
-            if (data.subscription.tier == 'free' || 
-                data.subscription.tier == '' || 
-                data.subscription.tier == 'null')
-              _buildUpgradeCTA(context, data.subscription),
+
           ],
         ),
       ),
@@ -445,126 +442,5 @@ class DashboardSummaryWidget extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildUpgradeCTA(BuildContext context, SubscriptionData subscription) {
-    return Card(
-      color: AppColors.primary.withOpacity(0.1),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.primary),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            const Icon(Icons.lock_outline, size: 48, color: AppColors.primary),
-            const SpaceHeight(16),
-            Text(
-              AppLocalizations.of(context)!.unlock_full_analytics,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SpaceHeight(12),
-            Text(AppLocalizations.of(context)!.upgrade_premium_desc, style: const TextStyle(fontSize: 13)),
-            const SpaceHeight(12),
-            ...[
-              AppLocalizations.of(context)!.feature_profit_analysis,
-              AppLocalizations.of(context)!.feature_customer_insights,
-              AppLocalizations.of(context)!.feature_sales_trends,
-              AppLocalizations.of(context)!.feature_export,
-              AppLocalizations.of(context)!.feature_advanced_reports,
-            ].map((text) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(text, style: const TextStyle(fontSize: 13)),
-              ),
-            )).toList(),
-            const SpaceHeight(20),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _openWebDashboard(context),
-                    icon: const Icon(Icons.open_in_browser),
-                    label: Text(AppLocalizations.of(context)!.view_dashboard),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  ),
-                ),
-                const SpaceWidth(12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _openUpgradePage(context),
-                    icon: const Icon(Icons.star),
-                    label: Text(AppLocalizations.of(context)!.upgrade),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.primary),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (subscription.canAccessFullReports) ...[
-              const SpaceHeight(12),
-                Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.shade200),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.check_circle, color: Colors.green, size: 16),
-                    SpaceWidth(8),
-                    Flexible(
-                      child: Text(
-                        AppLocalizations.of(context)!.free_trial_remaining,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.green,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _openWebDashboard(BuildContext context) async {
-    final webUrl = Uri.parse('${Variables.baseUrl}/admin/reports');
-    
-    if (await canLaunchUrl(webUrl)) {
-      await launchUrl(webUrl, mode: LaunchMode.externalApplication);
-    } else {
-      NotificationHelper.showError(context, AppLocalizations.of(context)!.error_open_web);
-    }
-  }
-
-  void _openUpgradePage(BuildContext context) async {
-    final upgradeUrl = Uri.parse('${Variables.baseUrl}/admin/upgrade');
-    
-    if (await canLaunchUrl(upgradeUrl)) {
-      await launchUrl(upgradeUrl, mode: LaunchMode.externalApplication);
-    } else {
-      NotificationHelper.showError(context, AppLocalizations.of(context)!.error_open_upgrade);
-    }
-  }
 }
+
