@@ -11,6 +11,7 @@ import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import '../../../core/constants/colors.dart';
 import '../widgets/menu_printer_button.dart';
 import '../widgets/menu_printer_content.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class ManagePrinterPage extends StatefulWidget {
   const ManagePrinterPage({super.key});
@@ -85,9 +86,9 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
     final bool result = await PrintBluetoothThermal.bluetoothEnabled;
     print("bluetooth enabled: $result");
     if (result) {
-      _msj = "Bluetooth enabled, please search and connect";
+      _msj = AppLocalizations.of(context)!.bluetooth_enabled_msg;
     } else {
-      _msj = "Bluetooth not enabled";
+      _msj = AppLocalizations.of(context)!.bluetooth_not_enabled;
     }
 
     setState(() {
@@ -98,7 +99,7 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
   Future<void> getBluetoots() async {
     setState(() {
       _progress = true;
-      _msjprogress = "Wait";
+      _msjprogress = AppLocalizations.of(context)!.wait;
       items = [];
     });
     var status2 = await Permission.bluetoothScan.status;
@@ -118,9 +119,9 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
 
     if (listResult.isEmpty) {
       _msj =
-          "There are no bluetoohs linked, go to settings and link the printer";
+          AppLocalizations.of(context)!.no_bluetooth_linked;
     } else {
-      _msj = "Touch an item in the list to connect";
+      _msj = AppLocalizations.of(context)!.touch_to_connect;
     }
 
     setState(() {
@@ -131,7 +132,7 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
   Future<void> connect(String mac) async {
     setState(() {
       _progress = true;
-      _msjprogress = "Connecting...";
+      _msjprogress = AppLocalizations.of(context)!.connecting;
       connected = false;
     });
     final bool result =
@@ -250,7 +251,7 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kelola Printer'),
+        title: Text(AppLocalizations.of(context)!.manage_printer),
         centerTitle: true,
       ),
       bottomNavigationBar: SizedBox(
@@ -264,19 +265,19 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
                 await connect(macName);
 
                 // Tampilkan pesan berhasil
-                NotificationHelper.showSuccess(context, 'Pengaturan berhasil disimpan');
+                NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.settings_saved);
               } else {
                 // Tampilkan pesan error jika belum dipilih
-                NotificationHelper.showWarning(context, 'Printer disconnected');
+                NotificationHelper.showWarning(context, AppLocalizations.of(context)!.printer_disconnected);
               }
             },
-            label: 'Simpan'),
+            label: AppLocalizations.of(context)!.save),
       ),
       body: ListView(
         padding: const EdgeInsets.all(24.0),
         children: [
           Text(
-            "Pilih Ukuran",
+            AppLocalizations.of(context)!.choose_size,
             style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -305,7 +306,7 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
                           });
                         },
                       ),
-                      const Text('58 mm'),
+                      Text(AppLocalizations.of(context)!.size_58mm),
                     ],
                   ),
                 ),
@@ -322,7 +323,7 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
                           });
                         },
                       ),
-                      const Text('80 mm'),
+                      Text(AppLocalizations.of(context)!.size_80mm),
                     ],
                   ),
                 ),
@@ -331,7 +332,7 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
           ),
           SpaceHeight(24),
           Text(
-            "Pilih Printer",
+            AppLocalizations.of(context)!.choose_printer,
             style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -349,7 +350,7 @@ class _ManagePrinterPageState extends State<ManagePrinterPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 MenuPrinterButton(
-                  label: 'Search',
+                  label: AppLocalizations.of(context)!.search_generic,
                   onPressed: () {
                     getBluetoots();
                     selectedIndex = 0;
@@ -395,7 +396,7 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (datas.isEmpty) {
-      return const Text('No data available');
+      return Text(AppLocalizations.of(context)!.no_data_available);
     } else {
       return Container(
         padding: const EdgeInsets.all(24.0),

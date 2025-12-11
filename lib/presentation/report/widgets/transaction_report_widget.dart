@@ -11,6 +11,7 @@ import 'package:flutter_posresto_app/core/utils/transaction_sales_invoice.dart';
 import 'package:flutter_posresto_app/data/models/response/order_report_response_model.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class TransactionReportWidget extends StatelessWidget {
   final String title;
@@ -55,16 +56,28 @@ class TransactionReportWidget extends StatelessWidget {
                   onTap: () async {
                     final status = await PermessionHelper().checkPermission();
                     if (status) {
+                      final Map<String, String> strings = {
+                        'report_title_transaction': AppLocalizations.of(context)!.report_title_transaction,
+                        'data_date': AppLocalizations.of(context)!.data_date(''),
+                        'created_at': AppLocalizations.of(context)!.created_at(''),
+                        'total': AppLocalizations.of(context)!.total,
+                        'sub_total': AppLocalizations.of(context)!.sub_total,
+                        'tax': AppLocalizations.of(context)!.tax,
+                        'discount': AppLocalizations.of(context)!.discount,
+                        'service_charge': AppLocalizations.of(context)!.service_charge,
+                        'time': AppLocalizations.of(context)!.time,
+                        'address': AppLocalizations.of(context)!.address,
+                      };
                       final pdfFile = await TransactionSalesInvoice.generate(
-                          transactionReport, searchDateFormatted);
+                          transactionReport, searchDateFormatted, strings);
                       log("pdfFile: $pdfFile");
                       HelperPdfService.openFile(pdfFile);
                     }
                   },
-                  child: const Row(
+                  child: Row(
                     children: [
                       Text(
-                        "PDF",
+                        AppLocalizations.of(context)!.pdf_label,
                         style: TextStyle(
                           fontSize: 14.0,
                           fontWeight: FontWeight.bold,

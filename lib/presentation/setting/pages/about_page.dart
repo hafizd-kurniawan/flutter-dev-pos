@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_posresto_app/core/constants/colors.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({Key? key}) : super(key: key);
@@ -279,13 +280,13 @@ class _AboutPageState extends State<AboutPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Coming Soon', style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
-        content: Text('$feature will be available in the next update.', style: GoogleFonts.quicksand()),
+        title: Text(AppLocalizations.of(context)!.coming_soon, style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
+        content: Text(AppLocalizations.of(context)!.feature_coming_soon(feature), style: GoogleFonts.quicksand()),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('OK', style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
+            child: Text(AppLocalizations.of(context)!.ok, style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -296,17 +297,17 @@ class _AboutPageState extends State<AboutPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Contact Support', style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)!.contact_support, style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Email: support@posrestaurant.com', style: GoogleFonts.quicksand()),
+            Text(AppLocalizations.of(context)!.email_support, style: GoogleFonts.quicksand()),
             const SizedBox(height: 8),
-            Text('Phone: +62 123 4567 890', style: GoogleFonts.quicksand()),
+            Text(AppLocalizations.of(context)!.phone_support, style: GoogleFonts.quicksand()),
             const SizedBox(height: 8),
-            Text('WhatsApp: +62 812 3456 7890', style: GoogleFonts.quicksand()),
+            Text(AppLocalizations.of(context)!.whatsapp_support, style: GoogleFonts.quicksand()),
             const SizedBox(height: 16),
             Text(
               'We\'re available Mon-Fri, 9AM-5PM',
@@ -317,7 +318,7 @@ class _AboutPageState extends State<AboutPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Close', style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
+            child: Text(AppLocalizations.of(context)!.close, style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
           ),
         ],
       ),

@@ -3,6 +3,7 @@ import 'package:flutter_posresto_app/core/extensions/date_time_ext.dart';
 
 import '../../../core/components/search_input.dart';
 import '../../../core/constants/colors.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class HomeTitle extends StatelessWidget {
   final TextEditingController controller;
@@ -45,7 +46,7 @@ class HomeTitle extends StatelessWidget {
           child: SearchInput(
             controller: controller,
             onChanged: onChanged,
-            hintText: 'Search..',
+            hintText: AppLocalizations.of(context)!.search_generic,
           ),
         ),
       ],

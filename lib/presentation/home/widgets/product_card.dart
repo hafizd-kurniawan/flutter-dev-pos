@@ -8,6 +8,7 @@ import 'package:flutter_posresto_app/data/datasources/stock_remote_datasource.da
 import 'package:flutter_posresto_app/data/models/response/product_response_model.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/checkout/checkout_bloc.dart';
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/components/spaces.dart';
@@ -45,7 +46,7 @@ class ProductCard extends StatelessWidget {
         
         if (requestedQty > availableStock) {
           // Stock insufficient
-          NotificationHelper.showError(context, 'Stok tidak cukup! Tersedia: $availableStock, Di keranjang: $currentQtyInCart');
+          NotificationHelper.showError(context, AppLocalizations.of(context)!.stock_insufficient_cart(availableStock, currentQtyInCart));
           return;
         }
         
@@ -66,7 +67,7 @@ class ProductCard extends StatelessWidget {
           (error) {
             // Network error, allow add with local stock check
             context.read<CheckoutBloc>().add(CheckoutEvent.addItem(data));
-            NotificationHelper.showWarning(context, 'Tidak dapat verifikasi stok online. Ditambahkan berdasarkan stok lokal.');
+            NotificationHelper.showWarning(context, AppLocalizations.of(context)!.stock_verification_failed);
           },
           (stockData) {
             final serverStock = stockData['current_stock'] ?? 0;
@@ -74,11 +75,11 @@ class ProductCard extends StatelessWidget {
             
             if (!isAvailable || serverStock < requestedQty) {
               // Stock not available on server
-              NotificationHelper.showError(context, 'Stok tidak mencukupi');
+              NotificationHelper.showError(context, AppLocalizations.of(context)!.stock_insufficient_message);
             } else {
               // Stock available, add to cart
               context.read<CheckoutBloc>().add(CheckoutEvent.addItem(data));
-              NotificationHelper.showSuccess(context, 'Berhasil ditambahkan');
+              NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.added_success);
             }
           },
         );

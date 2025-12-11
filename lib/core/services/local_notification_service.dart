@@ -13,7 +13,7 @@ class LocalNotificationService {
   Future<void> init() async {
     // Android Init
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('ic_launcher');
 
     // iOS/macOS Init
     const DarwinInitializationSettings initializationSettingsDarwin =
@@ -56,7 +56,9 @@ class LocalNotificationService {
   }) async {
     // Play sound manually for Web and iOS (if needed) or as a backup
     // Android handles sound via channel, but we can double up or rely on channel
-    if (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS) {
+    // Play sound manually for Web, iOS, and Android to ensure custom sound plays
+    // Android's default notification sound might be different or silent
+    if (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android) {
        await playSound();
     }
 

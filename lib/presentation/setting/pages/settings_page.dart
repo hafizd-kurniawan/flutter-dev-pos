@@ -4,6 +4,14 @@ import 'package:flutter_posresto_app/presentation/setting/pages/manage_printer_p
 import 'package:flutter_posresto_app/presentation/setting/pages/sync_data_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/notifications_settings_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/about_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_posresto_app/presentation/setting/bloc/language/language_cubit.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
+import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
+import 'package:flutter_posresto_app/data/models/response/auth_response_model.dart';
+import 'package:flutter_posresto_app/core/constants/variables.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 
 import '../../../core/assets/assets.gen.dart';
 import '../../../core/components/spaces.dart';
@@ -20,6 +28,20 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   int currentIndex = 0;
+  AuthResponseModel? _authData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAuthData();
+  }
+
+  Future<void> _fetchAuthData() async {
+    final data = await AuthLocalDataSource().getAuthData();
+    setState(() {
+      _authData = data;
+    });
+  }
 
   void indexValue(int index) {
     currentIndex = index;
@@ -53,7 +75,7 @@ class _SettingsPageState extends State<SettingsPage> {
             left: 0,
             right: 0,
             child: FloatingHeader(
-              title: 'Settings',
+              title: AppLocalizations.of(context)!.settings,
               onToggleSidebar: widget.onToggleSidebar ?? () {},
               isSidebarVisible: true,
             ),
@@ -66,17 +88,20 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildMobileLayout() {
     return Column(
       children: [
+        _buildUserInfo(),
         // Horizontal Tabs
         SizedBox(
           height: 40, // Reduced height
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              _buildTabItem(0, 'Sync Data', 'Server Sync'),
+              _buildTabItem(0, AppLocalizations.of(context)!.sync_data, AppLocalizations.of(context)!.server_sync),
               const SizedBox(width: 12),
-              _buildTabItem(1, 'Notifications', 'Preferences'),
+              _buildTabItem(1, AppLocalizations.of(context)!.notifications, AppLocalizations.of(context)!.preferences),
               const SizedBox(width: 12),
-              _buildTabItem(2, 'About', 'App Info'),
+              _buildTabItem(2, AppLocalizations.of(context)!.about, AppLocalizations.of(context)!.app_info),
+              const SizedBox(width: 12),
+              _buildTabItem(3, AppLocalizations.of(context)!.language, AppLocalizations.of(context)!.language_settings),
             ],
           ),
         ),
@@ -116,7 +141,7 @@ class _SettingsPageState extends State<SettingsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Settings',
+                AppLocalizations.of(context)!.settings,
                 style: GoogleFonts.quicksand(
                   color: AppColors.primary,
                   fontSize: 24,
@@ -124,11 +149,15 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildMenuItem(0, 'Sync Data', 'Sinkronisasi data dari dan ke server', Assets.icons.kelolaPajak.svg(width: 24, height: 24, color: currentIndex == 0 ? Colors.white : AppColors.primary)),
+              _buildUserInfo(),
+              const SizedBox(height: 16),
+              _buildMenuItem(0, AppLocalizations.of(context)!.sync_data, AppLocalizations.of(context)!.sync_data_desc, Assets.icons.kelolaPajak.svg(width: 24, height: 24, color: currentIndex == 0 ? Colors.white : AppColors.primary)),
               const SizedBox(height: 12),
-              _buildMenuItem(1, 'Notifications', 'Manage notification preferences', Icon(Icons.notifications, color: currentIndex == 1 ? Colors.white : AppColors.primary)),
+              _buildMenuItem(1, AppLocalizations.of(context)!.notifications, AppLocalizations.of(context)!.notifications_desc, Icon(Icons.notifications, color: currentIndex == 1 ? Colors.white : AppColors.primary)),
               const SizedBox(height: 12),
-              _buildMenuItem(2, 'About & Help', 'App info and support', Icon(Icons.info, color: currentIndex == 2 ? Colors.white : AppColors.primary)),
+              _buildMenuItem(2, AppLocalizations.of(context)!.about, AppLocalizations.of(context)!.about_desc, Icon(Icons.info, color: currentIndex == 2 ? Colors.white : AppColors.primary)),
+              const SizedBox(height: 12),
+              _buildMenuItem(3, AppLocalizations.of(context)!.language, AppLocalizations.of(context)!.language_desc, Icon(Icons.language, color: currentIndex == 3 ? Colors.white : AppColors.primary)),
             ],
           ),
         ),
@@ -164,6 +193,7 @@ class _SettingsPageState extends State<SettingsPage> {
         SyncDataPage(),
         NotificationsSettingsPage(),
         AboutPage(),
+        _buildLanguageSettings(),
       ],
     );
   }
@@ -254,5 +284,244 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildLanguageSettings() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context)!.select_language,
+          style: GoogleFonts.quicksand(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildLanguageOption('English', 'en', '🇺🇸'),
+        const SizedBox(height: 12),
+        _buildLanguageOption('Bahasa Indonesia', 'id', '🇮🇩'),
+      ],
+    );
+  }
+
+  Widget _buildLanguageOption(String name, String code, String flag) {
+    return BlocBuilder<LanguageCubit, Locale>(
+      builder: (context, locale) {
+        final isSelected = locale.languageCode == code;
+        return InkWell(
+          onTap: () {
+            context.read<LanguageCubit>().changeLanguage(code);
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected ? AppColors.primary : Colors.grey[300]!,
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(flag, style: const TextStyle(fontSize: 24)),
+                const SizedBox(width: 16),
+                Text(
+                  name,
+                  style: GoogleFonts.quicksand(
+                    fontSize: 16,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected ? AppColors.primary : Colors.black87,
+                  ),
+                ),
+                const Spacer(),
+                if (isSelected)
+                  const Icon(Icons.check_circle, color: AppColors.primary),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildUserInfo() {
+    if (_authData == null) return const SizedBox.shrink();
+
+    final user = _authData!.user;
+    final tenant = _authData!.tenant;
+    final isTrial = tenant?.status == 'trial';
+    final trialEndsAt = tenant?.trialEndsAt;
+
+    return GestureDetector(
+      onTap: () {
+        if (isTrial) {
+          _showTrialInfoDialog(tenant!);
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: AppColors.primary.withOpacity(0.1),
+              child: Text(
+                user?.name?.substring(0, 1).toUpperCase() ?? 'U',
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user?.name ?? 'User',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  Text(
+                    user?.email ?? '',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isTrial)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.orange),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.timer, size: 14, color: Colors.orange),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Trial',
+                      style: GoogleFonts.quicksand(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showTrialInfoDialog(Tenant tenant) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.star, color: Colors.orange),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context)!.premium_features ?? 'Premium Features'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'You are currently on a Free Trial.',
+              style: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            if (tenant.trialEndsAt != null)
+              Text(
+                'Trial ends on: ${tenant.trialEndsAt!.toLocal().toString().split(' ')[0]}',
+                style: GoogleFonts.quicksand(color: Colors.grey[600]),
+              ),
+            const SizedBox(height: 16),
+            Text(
+              'Enjoy full access to:',
+              style: GoogleFonts.quicksand(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            _buildFeatureItem('Profit Analysis'),
+            _buildFeatureItem('Customer Insights'),
+            _buildFeatureItem('Sales Trends'),
+            _buildFeatureItem('Advanced Reports'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+               // Navigate to upgrade or open web
+               Navigator.pop(context);
+               _openUpgradePage();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text('Upgrade Now'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle, size: 16, color: Colors.green),
+          const SizedBox(width: 8),
+          Text(text, style: GoogleFonts.quicksand(fontSize: 14)),
+        ],
+      ),
+    );
+  }
+
+  void _openUpgradePage() async {
+    final upgradeUrl = Uri.parse('${Variables.baseUrl}/admin/upgrade');
+    if (await canLaunchUrl(upgradeUrl)) {
+      await launchUrl(upgradeUrl, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+         NotificationHelper.showError(context, 'Could not launch upgrade page');
+      }
+    }
   }
 }

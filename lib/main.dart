@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 import 'package:flutter_posresto_app/data/dataoutputs/laman_print.dart';
 import 'package:flutter_posresto_app/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_posresto_app/data/datasources/auth_remote_datasource.dart';
@@ -46,6 +48,7 @@ import 'package:flutter_posresto_app/presentation/table/blocs/update_table/updat
 import 'package:flutter_posresto_app/presentation/table/pages/new_table_management_page.dart';
 import 'package:flutter_posresto_app/presentation/history/bloc/history/history_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/notification/notification_bloc.dart'; // NEW
+import 'package:flutter_posresto_app/presentation/setting/bloc/language/language_cubit.dart'; // NEW
 import 'package:flutter_posresto_app/presentation/setting/bloc/settings/settings_bloc.dart'; // NEW
 import 'package:flutter_posresto_app/data/datasources/settings_remote_datasource.dart'; // NEW
 import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
@@ -203,29 +206,45 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (context) => NotificationBloc(OrderRemoteDatasource()),
         ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'POS Resto App',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-          useMaterial3: true,
-          textTheme: GoogleFonts.quicksandTextTheme(
-            Theme.of(context).textTheme,
-          ),
-          appBarTheme: AppBarTheme(
-            color: AppColors.white,
-            elevation: 0,
-            titleTextStyle: GoogleFonts.quicksand(
-              color: AppColors.primary,
-              fontSize: 16.0,
-              fontWeight: FontWeight.w500,
-            ),
-            iconTheme: const IconThemeData(
-              color: AppColors.primary,
-            ),
-          ),
+        BlocProvider(
+          create: (context) => LanguageCubit(),
         ),
+      ],
+      child: BlocBuilder<LanguageCubit, Locale>(
+        builder: (context, locale) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            onGenerateTitle: (context) => AppLocalizations.of(context)!.app_title,
+            locale: locale,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+              useMaterial3: true,
+              textTheme: GoogleFonts.quicksandTextTheme(
+                Theme.of(context).textTheme,
+              ),
+              appBarTheme: AppBarTheme(
+                color: AppColors.white,
+                elevation: 0,
+                titleTextStyle: GoogleFonts.quicksand(
+                  color: AppColors.primary,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w500,
+                ),
+                iconTheme: const IconThemeData(
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('id'), // Default to Indonesian
+          Locale('en'),
+        ],
         home: FutureBuilder<bool>(
             future: AuthLocalDataSource().isAuthDataExists(),
             builder: (context, snapshot) {
@@ -249,6 +268,8 @@ class _MyAppState extends State<MyApp> {
                 ),
               );
             }),
+          );
+        },
       ),
     );
   }

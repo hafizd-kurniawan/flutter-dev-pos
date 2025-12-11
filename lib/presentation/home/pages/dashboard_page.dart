@@ -17,6 +17,7 @@ import 'package:flutter_posresto_app/presentation/dashboard/pages/simple_dashboa
 import 'package:flutter_posresto_app/presentation/sales/pages/sales_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/printer_configuration_page.dart';
 import 'package:flutter_posresto_app/presentation/setting/pages/settings_page.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/new_table_management_page.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/table_page.dart';
 import 'package:flutter_posresto_app/presentation/table/pages/table_management_api_page.dart';
@@ -141,19 +142,19 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
   String _getPageTitle() {
     switch (_selectedIndex) {
       case 0:
-        return 'Menu Order';
+        return AppLocalizations.of(context)!.menu_order_title;
       case 1:
-        return 'Table Management';
+        return AppLocalizations.of(context)!.table_management_title;
       case 2:
-        return 'History';
+        return AppLocalizations.of(context)!.history_title;
       case 3:
-        return 'Dashboard';
+        return AppLocalizations.of(context)!.dashboard_title;
       case 4:
-        return 'Printer';
+        return AppLocalizations.of(context)!.printer_title;
       case 5:
-        return 'Settings';
+        return AppLocalizations.of(context)!.settings_title;
       default:
-        return 'POS Resto';
+        return AppLocalizations.of(context)!.pos_resto_title;
     }
   }
 
@@ -263,7 +264,7 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
                             success: (value) {
                               AuthLocalDataSource().removeAuthData();
                               if (mounted) {
-                                NotificationHelper.showSuccess(context, 'Logout success');
+                                NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.logout_success);
                                 Navigator.pushReplacement(context,
                                     MaterialPageRoute(builder: (context) {
                                   return const LoginPage();
@@ -287,12 +288,12 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
                           state.maybeWhen(
                             loaded: (response) {
                               if (mounted) {
-                                NotificationHelper.showSuccess(context, 'Sync settings success');
+                                NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.sync_settings_success);
                               }
                             },
                             error: (message) {
                               if (mounted) {
-                                NotificationHelper.showError(context, 'Sync settings failed');
+                                NotificationHelper.showError(context, AppLocalizations.of(context)!.sync_settings_failed);
                               
                               }
                             },
@@ -303,7 +304,7 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
                                 icon: Icons.sync,
                                 isActive: false,
                                 onTap: () {
-                                  NotificationHelper.showInfo(context, 'Syncing settings...');
+                                  NotificationHelper.showInfo(context, AppLocalizations.of(context)!.syncing_settings);
                                   context
                                       .read<SettingsBloc>()
                                       .add(const SettingsEvent.fetchSettings());
@@ -325,7 +326,7 @@ class _DashboardPageState extends State<DashboardPage> with WidgetsBindingObserv
                   
                   // Optional: Show snackbar or toast
                   if (mounted) {
-                    NotificationHelper.showSuccess(context, 'New Order Received! History Updated.');
+                    NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.new_order_received);
                   }
                 },
                 child: IndexedStack(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_posresto_app/data/models/response/table_model.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/get_table_status/get_table_status_bloc.dart';
+import 'package:flutter_posresto_app/presentation/table/blocs/get_table/get_table_bloc.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../../../core/components/buttons.dart';
 import '../../../core/components/spaces.dart';
@@ -52,10 +54,10 @@ class _QuickTableSelectDialogState extends State<QuickTableSelectDialog> {
                   size: 28,
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Pilih Meja',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.select_table,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -72,7 +74,7 @@ class _QuickTableSelectDialogState extends State<QuickTableSelectDialog> {
             // Search
             TextField(
               decoration: InputDecoration(
-                hintText: 'Cari meja...',
+                hintText: AppLocalizations.of(context)!.search_table,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -95,27 +97,27 @@ class _QuickTableSelectDialogState extends State<QuickTableSelectDialog> {
               child: BlocBuilder<GetTableStatusBloc, GetTableStatusState>(
                 builder: (context, state) {
                   return state.maybeWhen(
-                    orElse: () => const Center(
-                      child: Text('Tidak ada data meja'),
+                    orElse: () => Center(
+                      child: Text(AppLocalizations.of(context)!.no_table_data),
                     ),
                     loading: () => const Center(
                       child: CircularProgressIndicator(),
                     ),
                     success: (tables) {
                       if (tables.isEmpty) {
-                        return const Center(
+                        return Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.table_restaurant_outlined,
                                 size: 64,
                                 color: Colors.grey,
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Text(
-                                'Tidak ada meja tersedia',
-                                style: TextStyle(
+                                AppLocalizations.of(context)!.no_table_available,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey,
                                 ),
@@ -134,10 +136,10 @@ class _QuickTableSelectDialogState extends State<QuickTableSelectDialog> {
                       }).toList();
 
                       if (filteredTables.isEmpty && _searchQuery.isNotEmpty) {
-                        return const Center(
+                        return Center(
                           child: Text(
-                            'Meja tidak ditemukan',
-                            style: TextStyle(color: Colors.grey),
+                            AppLocalizations.of(context)!.no_table_available,
+                            style: const TextStyle(color: Colors.grey),
                           ),
                         );
                       }
@@ -240,7 +242,7 @@ class _QuickTableSelectDialogState extends State<QuickTableSelectDialog> {
                 Expanded(
                   child: Button.outlined(
                     onPressed: () => Navigator.pop(context),
-                    label: 'Batal',
+                    label: AppLocalizations.of(context)!.cancel,
                   ),
                 ),
                 const SpaceWidth(12),
@@ -250,7 +252,7 @@ class _QuickTableSelectDialogState extends State<QuickTableSelectDialog> {
                           opacity: 0.5,
                           child: Button.filled(
                             onPressed: () {},
-                            label: 'Pilih Meja',
+                            label: AppLocalizations.of(context)!.select_table,
                           ),
                         )
                       : Button.filled(
@@ -258,7 +260,7 @@ class _QuickTableSelectDialogState extends State<QuickTableSelectDialog> {
                             // Return selected table
                             Navigator.pop(context, _selectedTable);
                           },
-                          label: 'Pilih Meja',
+                          label: AppLocalizations.of(context)!.select_table,
                         ),
                 ),
               ],

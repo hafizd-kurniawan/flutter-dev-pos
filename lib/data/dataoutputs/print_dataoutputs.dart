@@ -15,6 +15,8 @@ import 'package:flutter/foundation.dart' show kIsWeb; // NEW: Check for Web
 import 'package:flutter_posresto_app/data/datasources/settings_local_datasource.dart'; // NEW
 import 'package:image/image.dart' as img;
 
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
+
 class PrintDataoutputs {
   PrintDataoutputs._init();
 
@@ -33,7 +35,8 @@ class PrintDataoutputs {
       int normalPrice,
       int sizeReceipt,
       int taxPercentage,
-      int servicePercentage) async {
+      int servicePercentage,
+      AppLocalizations loc) async {
     List<int> bytes = [];
 
     final profile = await CapabilityProfile.load();
@@ -65,11 +68,11 @@ class PrintDataoutputs {
           styles: const PosStyles(bold: false, align: PosAlign.center));
     }
     bytes += generator.text(
-        'Date : ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}',
+        '${loc.date} : ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}',
         styles: const PosStyles(bold: false, align: PosAlign.center));
 
     bytes += generator.feed(1);
-    bytes += generator.text('Pesanan:',
+    bytes += generator.text('${loc.orders}:',
         styles: const PosStyles(bold: false, align: PosAlign.center));
 
     for (final product in products) {
@@ -102,7 +105,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Normal price',
+        text: loc.normal_price,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -115,7 +118,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Diskon',
+        text: loc.discount,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -128,7 +131,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Sub total',
+        text: loc.subtotal_products(totalQuantity),
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -141,7 +144,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Pajak PB1 ($taxPercentage%)',
+        text: loc.tax_pb1(taxPercentage),
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -154,7 +157,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Final total',
+        text: loc.final_total,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -167,7 +170,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Bayar',
+        text: loc.total,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -180,7 +183,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Pembayaran',
+        text: loc.payment_method_receipt(paymentMethod),
         width: 8,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -201,11 +204,12 @@ class PrintDataoutputs {
   }
 
   Future<List<int>> printOrderV2(
-      List<ProductQuantity> products, int orderId, int paper
+      List<ProductQuantity> products, int orderId, int paper,
       // OrderModel order,
       // Uint8List logo,
       // StoreModel store,
       // TemplateReceiptModel? template,
+      AppLocalizations loc,
       ) async {
     List<int> bytes = [];
 
@@ -277,7 +281,7 @@ class PrintDataoutputs {
     // }
     bytes += generator.row([
       PosColumn(
-        text: 'ID Transaksi',
+        text: loc.transaction_id,
         width: 5,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -294,7 +298,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Waktu',
+        text: loc.time,
         width: 5,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -311,7 +315,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Order By',
+        text: loc.order_by,
         width: 5,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -328,7 +332,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Kasir',
+        text: loc.cashier,
         width: 5,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -422,7 +426,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Total Tagihan',
+        text: loc.total,
         width: 8,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -441,12 +445,12 @@ class PrintDataoutputs {
         styles: const PosStyles(bold: false, align: PosAlign.center));
     bytes += generator.row([
       PosColumn(
-        text: 'Metode Pembayaran',
+        text: loc.payment_method,
         width: 8,
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: 'Tunai',
+        text: loc.cash,
         width: 4,
         styles: const PosStyles(align: PosAlign.right),
       ),
@@ -454,7 +458,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Total Bayar',
+        text: loc.total,
         width: 8,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -468,7 +472,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Kembalian',
+        text: loc.change,
         width: 8,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -490,12 +494,12 @@ class PrintDataoutputs {
     //     styles: const PosStyles(bold: false, align: PosAlign.center));
     bytes += generator.feed(1);
     bytes += generator.text(
-        'Terbayar: ${DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now())}',
+        loc.paid_at(DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now())),
         styles: const PosStyles(bold: false, align: PosAlign.center));
-    bytes += generator.text('dicetak oleh: Susan',
+    bytes += generator.text(loc.printed_by('Susan'), // TODO: Pass cashier name here too if needed
         styles: const PosStyles(bold: false, align: PosAlign.center));
     bytes += generator.feed(1);
-    bytes += generator.text('Terima kasih',
+    bytes += generator.text(loc.thank_you,
         styles: const PosStyles(bold: false, align: PosAlign.center));
     bytes += generator.feed(3);
     bytes += generator.cut();
@@ -521,6 +525,7 @@ class PrintDataoutputs {
     String orderType, // NEW
     String tableName, // NEW
     String orderNote, // NEW: Global Order Note
+    AppLocalizations loc, // NEW: Localization
   ) async {
     List<int> bytes = [];
 
@@ -582,7 +587,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Receipt Number',
+        text: loc.receipt_number,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -595,7 +600,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Customer',
+        text: loc.customer,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -607,7 +612,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Cashier',
+        text: loc.cashier,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -626,17 +631,19 @@ class PrintDataoutputs {
     // Display Order Type
     String displayOrderType = 'Dine In';
     if (orderType.toLowerCase().contains('takeaway') || orderType.toLowerCase().contains('take_away')) {
-      displayOrderType = 'Take Away';
+      displayOrderType = loc.takeaway;
     } else if (orderType.toLowerCase().contains('self')) {
-      displayOrderType = 'Self Order';
+      displayOrderType = loc.self_order;
+    } else {
+      displayOrderType = loc.dine_in;
     }
     
     bytes += generator.text(displayOrderType,
         styles: const PosStyles(bold: true, align: PosAlign.center));
         
     // Display Table Name if Dine In
-    if ((displayOrderType == 'Dine In' || displayOrderType == 'Self Order') && tableName.isNotEmpty) {
-       bytes += generator.text('Table: $tableName',
+    if ((displayOrderType == loc.dine_in || displayOrderType == loc.self_order) && tableName.isNotEmpty) {
+       bytes += generator.text('${loc.table}: $tableName',
         styles: const PosStyles(bold: true, align: PosAlign.center));
     }
     bytes += generator.text(
@@ -670,19 +677,15 @@ class PrintDataoutputs {
             : '--------------------------------',
         styles: const PosStyles(bold: false, align: PosAlign.center));
 
-    final subTotalPrice = products.fold<int>(
-        0,
-        (previousValue, element) =>
-            previousValue +
-            (element.product.price!.toIntegerFromText * element.quantity));
+    // Use passed subTotal instead of recalculating
     bytes += generator.row([
       PosColumn(
-        text: 'Subtotal $totalQuantity Product',
+        text: loc.subtotal_products(totalQuantity),
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: subTotalPrice.currencyFormatRpV2,
+        text: subTotal.currencyFormatRpV2,
         width: 6,
         styles: const PosStyles(align: PosAlign.right),
       ),
@@ -690,7 +693,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Discount',
+        text: loc.discount,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -703,7 +706,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Tax PB1 ($taxPercentage%)',
+        text: loc.tax_pb1(taxPercentage),
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -715,7 +718,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Service Charge($servicePercentage%)',
+        text: loc.service_charge_receipt(servicePercentage),
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -732,7 +735,7 @@ class PrintDataoutputs {
         styles: const PosStyles(bold: false, align: PosAlign.center));
     bytes += generator.row([
       PosColumn(
-        text: 'Total',
+        text: loc.total,
         width: 6,
         styles: const PosStyles(bold: true, align: PosAlign.left),
       ),
@@ -744,7 +747,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Payment ($paymentMethod)',
+        text: loc.payment_method_receipt(paymentMethod),
         width: 8,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -756,7 +759,7 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Change',
+        text: loc.change,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -774,7 +777,7 @@ class PrintDataoutputs {
     
     // Print Global Order Note
     if (orderNote.isNotEmpty) {
-      bytes += generator.text('Order Note:',
+      bytes += generator.text('${loc.order_note}:',
           styles: const PosStyles(bold: true, align: PosAlign.left));
       bytes += generator.text(orderNote,
           styles: const PosStyles(bold: false, align: PosAlign.left));
@@ -799,7 +802,7 @@ class PrintDataoutputs {
   }
 
   Future<List<int>> printQRIS(
-      int totalPrice, Uint8List imageQris, int paper) async {
+      int totalPrice, Uint8List imageQris, int paper, AppLocalizations loc) async {
     List<int> bytes = [];
 
     final profile = await CapabilityProfile.load();
@@ -813,7 +816,7 @@ class PrintDataoutputs {
     // final img.Image? orginalImage = img.decodeImage(bytesData);
     // bytes += generator.reset();
 
-    bytes += generator.text('Scan QRIS Below for Payment',
+    bytes += generator.text(loc.scan_qris_below,
         styles: const PosStyles(bold: false, align: PosAlign.center));
     bytes += generator.feed(2);
     if (orginalImage != null) {
@@ -824,7 +827,7 @@ class PrintDataoutputs {
       bytes += generator.feed(1);
     }
 
-    bytes += generator.text('Price : ${totalPrice.currencyFormatRp}',
+    bytes += generator.text(loc.price_label(totalPrice.currencyFormatRp),
         styles: const PosStyles(bold: false, align: PosAlign.center));
 
     bytes += generator.feed(4);
@@ -944,6 +947,7 @@ class PrintDataoutputs {
     int taxPercentage, // NEW
     int servicePercentage, // NEW
     String orderNote, // NEW
+    AppLocalizations loc, // NEW
   ) async {
     final pdf = pw.Document();
     final now = DateTime.now();
@@ -977,25 +981,25 @@ class PrintDataoutputs {
                 pw.Center(child: pw.Text(phone, style: const pw.TextStyle(fontSize: 10))),
               pw.Divider(),
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                pw.Text('Date:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(loc.date_label, style: const pw.TextStyle(fontSize: 10)),
                 pw.Text(dateFormat.format(now), style: const pw.TextStyle(fontSize: 10)),
               ]),
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                pw.Text('Receipt:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(loc.receipt_label, style: const pw.TextStyle(fontSize: 10)),
                 pw.Text('JF-${DateFormat('yyyyMMddhhmm').format(now)}', style: const pw.TextStyle(fontSize: 10)),
               ]),
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                pw.Text('Customer:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(loc.customer_label, style: const pw.TextStyle(fontSize: 10)),
                 pw.Text(customerName, style: const pw.TextStyle(fontSize: 10)),
               ]),
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                pw.Text('Cashier:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(loc.cashier_label, style: const pw.TextStyle(fontSize: 10)),
                 pw.Text(namaKasir, style: const pw.TextStyle(fontSize: 10)),
               ]),
               pw.Divider(),
               pw.Center(child: pw.Text(formattedOrderType, style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
               if ((formattedOrderType == 'Dine In' || formattedOrderType == 'Self Order') && tableName.isNotEmpty)
-                pw.Center(child: pw.Text('Table: $tableName', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                pw.Center(child: pw.Text(loc.table_label(tableName), style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
               pw.Divider(),
               ...products.map((item) {
                 return pw.Column(
@@ -1014,41 +1018,41 @@ class PrintDataoutputs {
               }).toList(),
               pw.Divider(),
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                pw.Text('Subtotal:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(loc.subtotal_label, style: const pw.TextStyle(fontSize: 10)),
                 pw.Text(subTotal.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
               ]),
               if (discount > 0)
                 pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                  pw.Text('Discount:', style: const pw.TextStyle(fontSize: 10, color: PdfColors.red)),
+                  pw.Text(loc.discount_label, style: const pw.TextStyle(fontSize: 10, color: PdfColors.red)),
                   pw.Text('-${discount.currencyFormatRp}', style: const pw.TextStyle(fontSize: 10, color: PdfColors.red)),
                 ]),
               if (pajak > 0)
                 pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                  pw.Text('Tax ($taxPercentage%):', style: const pw.TextStyle(fontSize: 10)),
+                  pw.Text(loc.tax_label_receipt(taxPercentage), style: const pw.TextStyle(fontSize: 10)),
                   pw.Text(pajak.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
                 ]),
               if (serviceCharge > 0)
                 pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                  pw.Text('Service ($servicePercentage%):', style: const pw.TextStyle(fontSize: 10)),
+                  pw.Text(loc.service_label_receipt(servicePercentage), style: const pw.TextStyle(fontSize: 10)),
                   pw.Text(serviceCharge.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
                 ]),
               pw.Divider(),
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                pw.Text('TOTAL:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12)),
+                pw.Text(loc.total_label, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12)),
                 pw.Text(totalPrice.currencyFormatRp, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12)),
               ]),
               pw.SizedBox(height: 4),
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                pw.Text('Payment ($paymentMethod):', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(loc.payment_label(paymentMethod), style: const pw.TextStyle(fontSize: 10)),
                 pw.Text(nominalBayar.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
               ]),
               pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-                pw.Text('Change:', style: const pw.TextStyle(fontSize: 10)),
+                pw.Text(loc.change_label, style: const pw.TextStyle(fontSize: 10)),
                 pw.Text(kembalian.currencyFormatRp, style: const pw.TextStyle(fontSize: 10)),
               ]),
               pw.Divider(),
               if (orderNote.isNotEmpty) ...[
-                pw.Text('Order Note:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
+                pw.Text(loc.order_note_label, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
                 pw.Text(orderNote, style: const pw.TextStyle(fontSize: 10)),
                 pw.Divider(),
               ],
@@ -1085,6 +1089,7 @@ class PrintDataoutputs {
       String cashierName,
       int paper,
       String orderNote, // NEW
+      AppLocalizations loc, // NEW
       ) async {
     List<int> bytes = [];
 
@@ -1094,7 +1099,7 @@ class PrintDataoutputs {
 
     bytes += generator.reset();
 
-    bytes += generator.text('Table Checker',
+    bytes += generator.text(loc.table_checker,
         styles: const PosStyles(
           bold: true,
           align: PosAlign.center,
@@ -1113,7 +1118,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Date',
+        text: loc.date_label,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -1129,7 +1134,7 @@ class PrintDataoutputs {
     //reciept number
     bytes += generator.row([
       PosColumn(
-        text: 'Receipt',
+        text: loc.receipt_label,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -1145,7 +1150,7 @@ class PrintDataoutputs {
 //cashier name
     bytes += generator.row([
       PosColumn(
-        text: 'Cashier',
+        text: loc.cashier_label,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -1161,12 +1166,12 @@ class PrintDataoutputs {
     //column 2
     bytes += generator.row([
       PosColumn(
-        text: 'Customer - $draftName',
+        text: '${loc.customer_label} - $draftName',
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: 'DINE IN',
+        text: loc.dine_in.toUpperCase(),
         width: 6,
         styles: const PosStyles(align: PosAlign.right, bold: true),
       ),
@@ -1198,7 +1203,7 @@ class PrintDataoutputs {
 
     // Print Global Order Note
     if (orderNote.isNotEmpty) {
-      bytes += generator.text('Order Note:',
+      bytes += generator.text(loc.order_note_label,
           styles: const PosStyles(bold: true, align: PosAlign.left));
       bytes += generator.text(orderNote,
           styles: const PosStyles(bold: false, align: PosAlign.left));
@@ -1227,6 +1232,7 @@ class PrintDataoutputs {
       String orderType, // NEW
       String tableName, // NEW
       String orderNote, // NEW
+      AppLocalizations loc, // NEW
       ) async {
     List<int> bytes = [];
 
@@ -1236,7 +1242,7 @@ class PrintDataoutputs {
 
     bytes += generator.reset();
 
-    bytes += generator.text('KITCHEN',
+    bytes += generator.text(loc.kitchen_title,
         styles: const PosStyles(
           bold: true,
           align: PosAlign.center,
@@ -1257,7 +1263,7 @@ class PrintDataoutputs {
 
     // Print Table Name if available
     if (tableName.isNotEmpty) {
-      bytes += generator.text('Table: $tableName',
+      bytes += generator.text(loc.table_label(tableName),
           styles: const PosStyles(
             bold: true,
             align: PosAlign.center,
@@ -1279,7 +1285,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Date',
+        text: loc.date_label,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -1295,7 +1301,7 @@ class PrintDataoutputs {
     //reciept number
     bytes += generator.row([
       PosColumn(
-        text: 'Receipt',
+        text: loc.receipt_label,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -1308,7 +1314,7 @@ class PrintDataoutputs {
     //customer name
     bytes += generator.row([
       PosColumn(
-        text: 'Customer - $draftName',
+        text: '${loc.customer_label} - $draftName',
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -1352,7 +1358,7 @@ class PrintDataoutputs {
 
     // Print Global Order Note
     if (orderNote.isNotEmpty) {
-      bytes += generator.text('Order Note:',
+      bytes += generator.text(loc.order_note_label,
           styles: const PosStyles(bold: true, align: PosAlign.left));
       bytes += generator.text(orderNote,
           styles: const PosStyles(bold: false, align: PosAlign.left));
@@ -1379,6 +1385,7 @@ class PrintDataoutputs {
       String cashierName,
       int paper,
       String orderNote, // NEW
+      AppLocalizations loc, // NEW
       ) async {
     List<int> bytes = [];
 
@@ -1388,7 +1395,7 @@ class PrintDataoutputs {
 
     bytes += generator.reset();
 
-    bytes += generator.text('Table Bar',
+    bytes += generator.text(loc.bar_title,
         styles: const PosStyles(
           bold: true,
           align: PosAlign.center,
@@ -1409,7 +1416,7 @@ class PrintDataoutputs {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Date',
+        text: loc.date_label,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -1425,7 +1432,7 @@ class PrintDataoutputs {
     //reciept number
     bytes += generator.row([
       PosColumn(
-        text: 'Receipt',
+        text: loc.receipt_label,
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
@@ -1437,12 +1444,12 @@ class PrintDataoutputs {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Customer - $draftName',
+        text: '${loc.customer_label} - $draftName',
         width: 6,
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: 'DINE IN',
+        text: loc.dine_in.toUpperCase(),
         width: 6,
         styles: const PosStyles(align: PosAlign.right, bold: true),
       ),
@@ -1480,7 +1487,7 @@ class PrintDataoutputs {
 
     // Print Global Order Note
     if (orderNote.isNotEmpty) {
-      bytes += generator.text('Order Note:',
+      bytes += generator.text(loc.order_note_label,
           styles: const PosStyles(bold: true, align: PosAlign.left));
       bytes += generator.text(orderNote,
           styles: const PosStyles(bold: false, align: PosAlign.left));

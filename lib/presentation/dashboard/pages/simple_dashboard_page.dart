@@ -4,6 +4,7 @@ import 'package:flutter_posresto_app/data/datasources/dashboard_remote_datasourc
 import 'package:flutter_posresto_app/presentation/dashboard/bloc/dashboard_summary_bloc.dart';
 import 'package:flutter_posresto_app/presentation/dashboard/widgets/dashboard_summary_widget.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class SimpleDashboardPage extends StatelessWidget {
   final VoidCallback? onToggleSidebar;
@@ -35,7 +36,7 @@ class SimpleDashboardPage extends StatelessWidget {
               child: BlocBuilder<DashboardSummaryBloc, DashboardSummaryState>(
                 builder: (context, state) {
                   return FloatingHeader(
-                    title: 'Dashboard',
+                    title: AppLocalizations.of(context)!.dashboard_title,
                     isSidebarVisible: true, // Assuming sidebar is always visible or handled by parent
                     onToggleSidebar: onToggleSidebar ?? () {},
                     actions: [

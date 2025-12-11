@@ -7,6 +7,7 @@ import 'package:flutter_posresto_app/core/extensions/date_time_ext.dart';
 import 'package:flutter_posresto_app/presentation/sales/blocs/day_sales/day_sales_bloc.dart';
 
 import '../widgets/sales_widget.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class SalesPage extends StatefulWidget {
   const SalesPage({super.key});
@@ -31,8 +32,8 @@ class _SalesPageState extends State<SalesPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'HayoPOS',
+              Text(
+                AppLocalizations.of(context)!.app_name,
                 style: TextStyle(
                   color: AppColors.primary,
                   fontSize: 22,
@@ -63,7 +64,7 @@ class _SalesPageState extends State<SalesPage> {
                     if (orders.isEmpty) {
                       return Center(
                         child: Text(
-                          "Belum ada transaksi saat ini. ",
+                          AppLocalizations.of(context)!.no_transactions,
                           style: TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
@@ -88,23 +89,23 @@ class _SalesPageState extends State<SalesPage> {
 
   List<Widget> _getTitleHeaderWidget() {
     return [
-      _getTitleItemWidget('ID', 40),
-      _getTitleItemWidget('Customer', 120),
-      _getTitleItemWidget('Status', 120),
-      _getTitleItemWidget('Sync', 60),
-      _getTitleItemWidget('Payment Status', 120),
-      _getTitleItemWidget('Payment Method', 120),
-      _getTitleItemWidget('Payment Amount', 120),
-      _getTitleItemWidget('Sub Total', 120),
-      _getTitleItemWidget('Tax', 120),
-      _getTitleItemWidget('Discount', 60),
-      _getTitleItemWidget('Service Charge', 120),
-      _getTitleItemWidget('Total', 120),
-      _getTitleItemWidget('Payment', 60),
-      _getTitleItemWidget('Item', 60),
-      _getTitleItemWidget('Cashier', 150),
-      _getTitleItemWidget('Time', 230),
-      _getTitleItemWidget('Action', 230),
+      _getTitleItemWidget(AppLocalizations.of(context)!.id_col, 40),
+      _getTitleItemWidget(AppLocalizations.of(context)!.customer_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.status_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.sync_col, 60),
+      _getTitleItemWidget(AppLocalizations.of(context)!.payment_status_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.payment_method_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.payment_amount_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.sub_total_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.tax_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.discount_col, 60),
+      _getTitleItemWidget(AppLocalizations.of(context)!.service_charge_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.total_col, 120),
+      _getTitleItemWidget(AppLocalizations.of(context)!.payment_col, 60),
+      _getTitleItemWidget(AppLocalizations.of(context)!.item_col, 60),
+      _getTitleItemWidget(AppLocalizations.of(context)!.cashier_col, 150),
+      _getTitleItemWidget(AppLocalizations.of(context)!.time_col, 230),
+      _getTitleItemWidget(AppLocalizations.of(context)!.action_col, 230),
     ];
   }
 

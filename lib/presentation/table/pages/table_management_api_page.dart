@@ -11,6 +11,7 @@ import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/floating_header.dart';
 import 'package:flutter_posresto_app/presentation/home/widgets/custom_tab_selector.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class TableManagementApiPage extends StatefulWidget {
   final Function(TableModel)? onTableSelected;
@@ -142,7 +143,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                 left: 0,
                 right: 0,
                 child: FloatingHeader(
-                  title: 'Table Management',
+                  title: AppLocalizations.of(context)!.table_management,
                   onToggleSidebar: widget.onToggleSidebar ?? () {},
                   isSidebarVisible: true,
                   titleWidget: _isSearchActive
@@ -153,7 +154,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                             autofocus: true,
                             style: const TextStyle(fontSize: 14),
                             decoration: InputDecoration(
-                              hintText: 'Search tables...',
+                              hintText: AppLocalizations.of(context)!.search_tables,
                               hintStyle: TextStyle(fontSize: 14, color: Colors.grey[500]),
                               prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[500], size: 20),
                               filled: true,
@@ -197,7 +198,7 @@ class _TableManagementApiPageState extends State<TableManagementApiPage>
                         onPressed: () => _loadData(isRefresh: true),
                         icon: const Icon(Icons.refresh_rounded, size: 20),
                         color: AppColors.primary,
-                        tooltip: 'Refresh Data',
+                        tooltip: AppLocalizations.of(context)!.tooltip_refresh_data,
                         style: IconButton.styleFrom(
                           backgroundColor: AppColors.primary.withOpacity(0.1),
                           shape: const CircleBorder(),

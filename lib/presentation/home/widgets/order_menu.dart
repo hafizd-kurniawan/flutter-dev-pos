@@ -10,6 +10,7 @@ import 'package:flutter_posresto_app/presentation/home/models/product_quantity.d
 
 import '../../../core/components/spaces.dart';
 import '../../../core/constants/colors.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class OrderMenu extends StatelessWidget {
   final ProductQuantity data;
@@ -124,7 +125,7 @@ class OrderMenu extends StatelessWidget {
                   InkWell(
                     onTap: () => _showNoteDialog(context),
                     child: Text(
-                      '+ Tambah Catatan',
+                      '+ ${AppLocalizations.of(context)!.add_note}',
                       style: GoogleFonts.quicksand(
                         fontSize: 12,
                         color: Colors.grey[500],
@@ -296,7 +297,7 @@ class OrderMenu extends StatelessWidget {
                   InkWell(
                     onTap: () => _showNoteDialog(context),
                     child: Text(
-                      '+ Catatan',
+                      '+ ${AppLocalizations.of(context)!.add_note}',
                       style: GoogleFonts.quicksand(
                         fontSize: 11,
                         color: Colors.grey[500],
@@ -403,7 +404,7 @@ class OrderMenu extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Catatan Item',
+                AppLocalizations.of(context)!.item_note,
                 style: GoogleFonts.quicksand(
                   color: AppColors.black,
                   fontSize: 20,
@@ -444,7 +445,7 @@ class OrderMenu extends StatelessWidget {
                     maxLines: 3,
                     style: GoogleFonts.quicksand(fontWeight: FontWeight.w500),
                     decoration: InputDecoration(
-                      hintText: 'Contoh: Jangan pedas, Es sedikit',
+                      hintText: AppLocalizations.of(context)!.order_note_example,
                       hintStyle: GoogleFonts.quicksand(color: Colors.grey[400]),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
@@ -458,7 +459,7 @@ class OrderMenu extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                    'Maksimal 100 karakter',
+                    AppLocalizations.of(context)!.max_chars,
                     style: GoogleFonts.quicksand(
                       fontSize: 12,
                       color: Colors.grey[500],
@@ -481,7 +482,7 @@ class OrderMenu extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'Batal',
+                      AppLocalizations.of(context)!.cancel,
                       style: GoogleFonts.quicksand(
                         color: Colors.grey,
                         fontWeight: FontWeight.w600,
@@ -508,7 +509,7 @@ class OrderMenu extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'Simpan',
+                      AppLocalizations.of(context)!.save,
                       style: GoogleFonts.quicksand(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,

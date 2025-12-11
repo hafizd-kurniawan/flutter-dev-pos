@@ -29,6 +29,39 @@ class AuthRemoteDatasource {
     }
   }
 
+  // Register
+  Future<Either<String, AuthResponseModel>> register(
+    String businessName,
+    String email,
+    String phone,
+    String address,
+    String password,
+  ) async {
+    final url = Uri.parse('${Variables.baseUrl}/api/register');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode({
+        'business_name': businessName,
+        'email': email,
+        'phone': phone,
+        'address': address,
+        'password': password,
+        'password_confirmation': password,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return Right(AuthResponseModel.fromJson(response.body));
+    } else {
+      final body = jsonDecode(response.body);
+      return Left(body['message'] ?? 'Failed to register');
+    }
+  }
+
   //logout
   Future<Either<String, bool>> logout() async {
     final headers = await ApiHelper.getHeaders();

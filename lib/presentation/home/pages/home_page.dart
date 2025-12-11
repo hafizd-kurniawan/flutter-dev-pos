@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart'; // NEW: Google Fonts
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import 'package:flutter_posresto_app/core/extensions/build_context_ext.dart';
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
@@ -357,19 +358,19 @@ class _HomePageState extends State<HomePage> {
         if (errors.isEmpty) {
           NotificationHelper.showSuccess(
             context, 
-            'Semua data berhasil diperbarui!'
+            AppLocalizations.of(context)!.success,
           );
         } else {
           NotificationHelper.showWarning(
             context,
-            'Refresh selesai dengan ${errors.length} error:\n${errors.join('\n')}'
+            AppLocalizations.of(context)!.refresh_error(errors.length, errors.join('\n'))
           );
         }
       }
     } catch (e) {
       print('❌ Refresh error: $e');
       if (mounted) {
-        NotificationHelper.showError(context, 'Gagal refresh data: $e');
+        NotificationHelper.showError(context, AppLocalizations.of(context)!.refresh_failed(e.toString()));
       }
     } finally {
       setState(() => _isRefreshing = false);
@@ -417,9 +418,9 @@ class _HomePageState extends State<HomePage> {
                           setState(() => _selectedTabIndex = index);
                         },
                         destinations: [
-                          const NavigationDestination(
+                          NavigationDestination(
                             icon: Icon(Icons.restaurant_menu),
-                            label: 'Menu',
+                            label: AppLocalizations.of(context)!.menu,
                           ),
                           NavigationDestination(
                             icon: BlocBuilder<CheckoutBloc, CheckoutState>(
@@ -441,7 +442,7 @@ class _HomePageState extends State<HomePage> {
                                 );
                               },
                             ),
-                            label: 'Pesanan',
+                            label: AppLocalizations.of(context)!.cart_title,
                           ),
                         ],
                       ),
@@ -454,7 +455,7 @@ class _HomePageState extends State<HomePage> {
                     left: 0,
                     right: 0,
                     child: FloatingHeader(
-                      title: 'Menu',
+                      title: AppLocalizations.of(context)!.menu_title,
                       onToggleSidebar: widget.onToggleSidebar ?? () {},
                       isSidebarVisible: true,
                       titleWidget: _isSearchActive
@@ -465,7 +466,7 @@ class _HomePageState extends State<HomePage> {
                                 autofocus: true,
                                 style: const TextStyle(fontSize: 14),
                                 decoration: InputDecoration(
-                                  hintText: 'Cari produk...',
+                                  hintText: AppLocalizations.of(context)!.search_placeholder,
                                   hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 14),
                                   prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 20),
                                   filled: true,
@@ -573,7 +574,7 @@ class _HomePageState extends State<HomePage> {
                   left: 0,
                   right: 0, // Stretch full width
                   child: FloatingHeader(
-                    title: 'Menu',
+                    title: AppLocalizations.of(context)!.menu,
                     onToggleSidebar: widget.onToggleSidebar ?? () {},
                     isSidebarVisible: true,
                     titleWidget: _isSearchActive
@@ -584,7 +585,7 @@ class _HomePageState extends State<HomePage> {
                               autofocus: true,
                               style: const TextStyle(fontSize: 14),
                               decoration: InputDecoration(
-                                hintText: 'Cari produk...',
+                                hintText: AppLocalizations.of(context)!.search_placeholder,
                                 hintStyle: GoogleFonts.quicksand(color: Colors.grey[500], fontSize: 14),
                                 prefixIcon: Icon(Icons.search, color: Colors.grey[500], size: 20),
                                 filled: true,
@@ -668,7 +669,7 @@ class _HomePageState extends State<HomePage> {
                       const Icon(Icons.error_outline, size: 48, color: Colors.red),
                       const SizedBox(height: 16),
                       Text(
-                        'Error loading categories',
+                        AppLocalizations.of(context)!.error_loading_categories,
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 8),
@@ -682,7 +683,7 @@ class _HomePageState extends State<HomePage> {
                 loaded: (categories) {
                   // Build dynamic tab titles
                   final tabTitles = [
-                    'Semua',
+                    AppLocalizations.of(context)!.all_categories,
                     ...categories.map((c) => c.name ?? 'Category')
                   ];
                   
@@ -732,7 +733,7 @@ class _HomePageState extends State<HomePage> {
                   width: 120.0,
                   height: 40,
                   onPressed: () {},
-                  label: 'Pesanan#',
+                  label: AppLocalizations.of(context)!.order_number,
                 ),
                 const SpaceWidth(12),
                 Expanded(
@@ -771,9 +772,9 @@ class _HomePageState extends State<HomePage> {
                     keyboardType: TextInputType.text,
                     scrollPadding: EdgeInsets.only(
                         bottom: MediaQuery.of(context).viewInsets.bottom + 20),
-                    decoration: const InputDecoration(
-                      labelText: 'Catatan Pesanan (Opsional)',
-                      hintText: 'Contoh: Meja pojok, Bungkus dipisah',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.order_note_label,
+                      hintText: AppLocalizations.of(context)!.order_note_hint,
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -791,11 +792,11 @@ class _HomePageState extends State<HomePage> {
             const SpaceHeight(16.0),
             
             // Cart Header
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Item',
+                  AppLocalizations.of(context)!.items,
                   style: TextStyle(
                     color: AppColors.primary,
                     fontSize: 16,
@@ -806,7 +807,7 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   width: 50.0,
                   child: Text(
-                    'Qty',
+                    AppLocalizations.of(context)!.qty,
                     style: TextStyle(
                       color: AppColors.primary,
                       fontSize: 16,
@@ -816,7 +817,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(
                   child: Text(
-                    'Price',
+                    AppLocalizations.of(context)!.price,
                     style: TextStyle(
                       color: AppColors.primary,
                       fontSize: 16,
@@ -834,8 +835,8 @@ class _HomePageState extends State<HomePage> {
             BlocBuilder<CheckoutBloc, CheckoutState>(
               builder: (context, state) {
                 return state.maybeWhen(
-                  orElse: () => const Center(
-                    child: Text('No Items'),
+                  orElse: () => Center(
+                    child: Text(AppLocalizations.of(context)!.no_items),
                   ),
                   loaded: (products,
                       discountModel,
@@ -848,8 +849,8 @@ class _HomePageState extends State<HomePage> {
                       draftName,
                       orderNote) {
                     if (products.isEmpty) {
-                      return const Center(
-                        child: Text('No Items'),
+                      return Center(
+                        child: Text(AppLocalizations.of(context)!.no_items),
                       );
                     }
                     return ListView.separated(
@@ -880,7 +881,7 @@ class _HomePageState extends State<HomePage> {
                       buttons.add(
                         Expanded(
                           child: ActionCardButton(
-                            label: 'Diskon',
+                            label: AppLocalizations.of(context)!.discount_label,
                             svgGenImage: Assets.icons.diskon,
                             onPressed: () => showDialog(
                               context: context,
@@ -897,7 +898,7 @@ class _HomePageState extends State<HomePage> {
                       buttons.add(
                         Expanded(
                           child: ActionCardButton(
-                            label: 'Pajak',
+                            label: AppLocalizations.of(context)!.tax_label,
                             svgGenImage: Assets.icons.pajak,
                             onPressed: () => showDialog(
                               context: context,
@@ -913,7 +914,7 @@ class _HomePageState extends State<HomePage> {
                       buttons.add(
                         Expanded(
                           child: ActionCardButton(
-                            label: 'Layanan',
+                            label: AppLocalizations.of(context)!.service_label,
                             svgGenImage: Assets.icons.layanan,
                             onPressed: () => showDialog(
                               context: context,
@@ -968,7 +969,7 @@ class _HomePageState extends State<HomePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Pajak', style: TextStyle(color: AppColors.grey)),
+                            Text(AppLocalizations.of(context)!.tax_label, style: const TextStyle(color: AppColors.grey)),
                             BlocBuilder<CheckoutBloc, CheckoutState>(
                               builder: (context, state) {
                                 final tax = state.maybeWhen(
@@ -1013,7 +1014,7 @@ class _HomePageState extends State<HomePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Layanan', style: TextStyle(color: AppColors.grey)),
+                            Text(AppLocalizations.of(context)!.service_label, style: const TextStyle(color: AppColors.grey)),
                             BlocBuilder<CheckoutBloc, CheckoutState>(
                               builder: (context, state) {
                                 final serviceCharge = state.maybeWhen(
@@ -1045,7 +1046,7 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Diskon', style: TextStyle(color: AppColors.grey)),
+                Text(AppLocalizations.of(context)!.discount_label, style: const TextStyle(color: AppColors.grey)),
                 BlocBuilder<CheckoutBloc, CheckoutState>(
                   builder: (context, state) {
                     return state.maybeWhen(
@@ -1092,9 +1093,9 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Sub total',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.sub_total_label,
+                  style: const TextStyle(
                     color: AppColors.grey,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -1141,14 +1142,14 @@ class _HomePageState extends State<HomePage> {
                   return state.maybeWhen(
                     orElse: () => Button.filled(
                       onPressed: () {},
-                      label: 'Lanjutkan Pembayaran',
+                      label: AppLocalizations.of(context)!.proceed_payment,
                     ),
                     loaded: (products, discountModel, discount, discountAmount,
                         tax, serviceCharge, totalQuantity, totalPrice, draftName, orderNote) {
                       if (products.isEmpty) {
                         return Button.filled(
                           onPressed: () {},
-                          label: 'Lanjutkan Pembayaran',
+                          label: AppLocalizations.of(context)!.proceed_payment,
                         );
                       }
                       
@@ -1177,7 +1178,7 @@ class _HomePageState extends State<HomePage> {
                                 result.fold(
                                   (error) {
                                     // Network error
-                                    NotificationHelper.showError(context, 'Gagal validasi stok: $error');
+                                    NotificationHelper.showError(context, AppLocalizations.of(context)!.stock_validation_failed(error.toString()));
                                   },
                                   (validation) async { // ADDED: async for await
                                     final isValid = validation['is_valid'] ?? false;
@@ -1185,7 +1186,7 @@ class _HomePageState extends State<HomePage> {
                                     if (isValid) {
                                       // Validate: Dine-in must have table selected
                                       if (_orderType == 'dine_in' && _selectedTable == null && widget.table == null) {
-                                        NotificationHelper.showWarning(context, 'Pilih meja terlebih dahulu untuk Dine In');
+                                        NotificationHelper.showWarning(context, AppLocalizations.of(context)!.select_table_dine_in);
                                         return;
                                       }
                                       
@@ -1219,17 +1220,17 @@ class _HomePageState extends State<HomePage> {
                                     } else {
                                       // Stock insufficient
                                       final errors = validation['errors'] as Map<String, dynamic>?;
-                                      final errorMessages = errors?.values.join('\n') ?? 'Stok tidak cukup';
+                                      final errorMessages = errors?.values.join('\n') ?? AppLocalizations.of(context)!.stock_insufficient_message;
                                       
                                       showDialog(
                                         context: context,
                                         builder: (context) => AlertDialog(
-                                          title: const Text('❌ Stok Tidak Cukup'),
+                                          title: Text('❌ ${AppLocalizations.of(context)!.stock_insufficient_title}'),
                                           content: Text(errorMessages),
                                           actions: [
                                             TextButton(
                                               onPressed: () => Navigator.pop(context),
-                                              child: const Text('OK'),
+                                              child: Text(AppLocalizations.of(context)!.ok),
                                             ),
                                           ],
                                         ),
@@ -1238,7 +1239,7 @@ class _HomePageState extends State<HomePage> {
                                   },
                                 );
                               },
-                        label: 'Lanjutkan Pembayaran',
+                        label: AppLocalizations.of(context)!.proceed_payment,
                       );
                     },
                   );
@@ -1326,7 +1327,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    hasTable ? 'Meja Dipilih' : 'Pilih Meja',
+                    hasTable ? AppLocalizations.of(context)!.table_selected : AppLocalizations.of(context)!.select_table,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -1336,8 +1337,8 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 2),
                   Text(
                     isTakeaway 
-                        ? 'Takeaway (No Table)'
-                        : (hasTable ? _selectedTable!.name : 'Tap untuk memilih meja'),
+                        ? AppLocalizations.of(context)!.takeaway_no_table
+                        : (hasTable ? _selectedTable!.name : AppLocalizations.of(context)!.tap_to_select_table),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1349,7 +1350,7 @@ class _HomePageState extends State<HomePage> {
                   if (isTakeaway) ...[
                     const SizedBox(height: 2),
                     Text(
-                      'Tidak perlu pilih meja',
+                      AppLocalizations.of(context)!.no_table_needed,
                       style: TextStyle(
                         fontSize: 11,
                         color: Colors.grey[600],
@@ -1396,7 +1397,7 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: _buildTypeButton(
               type: 'dine_in',
-              label: 'Dine In',
+              label: AppLocalizations.of(context)!.dine_in,
               icon: Icons.restaurant_menu_rounded,
             ),
           ),
@@ -1404,7 +1405,7 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: _buildTypeButton(
               type: 'takeaway',
-              label: 'Takeaway',
+              label: AppLocalizations.of(context)!.takeaway,
               icon: Icons.shopping_bag_rounded,
             ),
           ),
@@ -1510,15 +1511,15 @@ class _HomePageState extends State<HomePage> {
             }
             
             if (filteredProducts.isEmpty) {
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.inbox, size: 64, color: Colors.grey),
-                    SizedBox(height: 16),
+                    const Icon(Icons.inbox, size: 64, color: Colors.grey),
+                    const SizedBox(height: 16),
                     Text(
-                      'No Items',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      AppLocalizations.of(context)!.no_items,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ],
                 ),

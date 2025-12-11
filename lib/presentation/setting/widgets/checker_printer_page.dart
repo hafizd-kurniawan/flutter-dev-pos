@@ -10,6 +10,7 @@ import 'package:flutter_posresto_app/presentation/setting/bloc/get_printer_check
 import 'package:flutter_posresto_app/presentation/setting/bloc/update_printer/update_printer_bloc.dart';
 import 'package:flutter_posresto_app/presentation/setting/widgets/dialog_search_printer.dart';
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class CheckerPrinterPage extends StatefulWidget {
   const CheckerPrinterPage({super.key});
@@ -70,9 +71,9 @@ class _CheckerPrinterPageState extends State<CheckerPrinterPage> {
                   color: Colors.white,
                   child: ListView(
                     children: [
-                      const Text(
-                        'Checker Printer',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.checker_printer_title,
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -82,20 +83,20 @@ class _CheckerPrinterPageState extends State<CheckerPrinterPage> {
 
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
-                          labelText: 'Printer Type',
+                          labelText: AppLocalizations.of(context)!.printer_type,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
                         value: selectedPrinter, // nilai default
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'Bluetooth',
-                            child: Text('Bluetooth'),
+                            child: Text(AppLocalizations.of(context)!.bluetooth),
                           ),
                           DropdownMenuItem(
                             value: 'Network',
-                            child: Text('Network'),
+                            child: Text(AppLocalizations.of(context)!.network),
                           ),
                         ],
                         onChanged: (value) {
@@ -118,37 +119,37 @@ class _CheckerPrinterPageState extends State<CheckerPrinterPage> {
                                   ),
                                 );
                               },
-                              label: 'Search')
+                              label: AppLocalizations.of(context)!.search_generic)
                           : CustomTextField(
                               controller: addressController!,
-                              label: 'Address',
+                              label: AppLocalizations.of(context)!.printer_address,
                               showLabel: false,
                             ),
                       SpaceHeight(16),
                       // Textfield for name
                       CustomTextField(
                         controller: printNameController!,
-                        label: 'Print Name',
+                        label: AppLocalizations.of(context)!.printer_name,
                         showLabel: false,
                       ),
                       SpaceHeight(16),
                       // Textfield for width paper
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
-                          labelText: 'Width Paper',
+                          labelText: AppLocalizations.of(context)!.paper_width,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
                         value: paper, // nilai default
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: '58',
-                            child: Text('58 mm'),
+                            child: Text(AppLocalizations.of(context)!.size_58mm),
                           ),
                           DropdownMenuItem(
                             value: '80',
-                            child: Text('80 mm'),
+                            child: Text(AppLocalizations.of(context)!.size_80mm),
                           ),
                         ],
                         onChanged: (value) {
@@ -159,7 +160,7 @@ class _CheckerPrinterPageState extends State<CheckerPrinterPage> {
 
                       SpaceHeight(16),
                       // button test print
-                      Button.outlined(onPressed: () {}, label: 'Test Print'),
+                      Button.outlined(onPressed: () {}, label: AppLocalizations.of(context)!.test_print),
                       SpaceHeight(8),
                       // button save
                       data == null
@@ -193,7 +194,7 @@ class _CheckerPrinterPageState extends State<CheckerPrinterPage> {
                                                   printData),
                                             );
                                       },
-                                      label: 'Save',
+                                      label: AppLocalizations.of(context)!.save,
                                     );
                                   },
                                   loading: () {
@@ -235,7 +236,7 @@ class _CheckerPrinterPageState extends State<CheckerPrinterPage> {
                                               ),
                                             );
                                       },
-                                      label: 'Save',
+                                      label: AppLocalizations.of(context)!.save,
                                     );
                                   },
                                   loading: () {

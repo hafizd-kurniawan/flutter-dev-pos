@@ -7,6 +7,7 @@ import 'package:flutter_posresto_app/presentation/setting/bloc/sync_order/sync_o
 import 'package:flutter_posresto_app/presentation/setting/bloc/sync_product/sync_product_bloc.dart';
 import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class SyncDataPage extends StatefulWidget {
   const SyncDataPage({super.key});
@@ -72,7 +73,7 @@ class _SyncDataPageState extends State<SyncDataPage> {
                           .add(const SyncProductEvent.syncProduct());
                     },
                     icon: Icons.sync,
-                    label: 'Sync Produk Sekarang',
+                    label: AppLocalizations.of(context)!.sync_products_now,
                     color: AppColors.primary,
                   );
                 },
@@ -105,7 +106,7 @@ class _SyncDataPageState extends State<SyncDataPage> {
                           .add(const SyncOrderEvent.syncOrder());
                     },
                     icon: Icons.cloud_upload,
-                    label: 'Sync Order Sekarang',
+                    label: AppLocalizations.of(context)!.sync_orders_now,
                     color: Colors.green,
                   );
                 },

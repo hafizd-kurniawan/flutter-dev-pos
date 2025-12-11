@@ -5,6 +5,7 @@ import 'package:flutter_posresto_app/core/helpers/notification_helper.dart';
 import 'package:flutter_posresto_app/data/datasources/pos_settings_local_datasource.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/checkout/checkout_bloc.dart';
 import 'package:flutter_posresto_app/presentation/home/bloc/pos_settings/pos_settings_bloc.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 import '../../../core/constants/colors.dart';
 
@@ -44,9 +45,9 @@ class _DynamicServiceDialogState extends State<DynamicServiceDialog> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Pilih Layanan',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.select_service,
+            style: const TextStyle(
               color: AppColors.black,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -75,15 +76,15 @@ class _DynamicServiceDialogState extends State<DynamicServiceDialog> {
             ),
             error: (message) => SizedBox(
               height: 100,
-              child: Center(child: Text('Error: $message')),
+              child: Center(child: Text(AppLocalizations.of(context)!.error_loading_categories_msg(message))),
             ),
             loaded: (settings) {
               final services = settings.services;
 
               if (services.isEmpty) {
-                return const SizedBox(
+                return SizedBox(
                   height: 100,
-                  child: Center(child: Text('Tidak ada layanan tersedia')),
+                  child: Center(child: Text(AppLocalizations.of(context)!.no_service_available)),
                 );
               }
 
@@ -97,8 +98,8 @@ class _DynamicServiceDialogState extends State<DynamicServiceDialog> {
                       _buildServiceOption(
                         context,
                         id: null,
-                        name: 'Tanpa Layanan',
-                        description: 'Tidak menggunakan biaya layanan',
+                        name: AppLocalizations.of(context)!.no_service,
+                        description: AppLocalizations.of(context)!.no_service_desc,
                         isSelected: _selectedServiceId == null,
                         onTap: () async {
                           await _localDatasource.saveSelectedService(null);
@@ -130,7 +131,7 @@ class _DynamicServiceDialogState extends State<DynamicServiceDialog> {
                               
                               setState(() => _selectedServiceId = service.id);
                               
-                              NotificationHelper.showSuccess(context, 'Layanan ${service.name} diterapkan');
+                              NotificationHelper.showSuccess(context, AppLocalizations.of(context)!.service_applied(service.name));
                               context.pop();
                             },
                           ),

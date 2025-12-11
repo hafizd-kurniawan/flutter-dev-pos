@@ -8,6 +8,7 @@ import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
 import 'package:flutter_posresto_app/core/utils/helper_pdf_service.dart';
 import 'package:flutter_posresto_app/core/utils/permession_handler.dart';
 import 'package:flutter_posresto_app/data/models/response/summary_response_model.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -54,16 +55,28 @@ class SummaryReportWidget extends StatelessWidget {
                     onTap: () async {
                       final status = await PermessionHelper().checkPermission();
                       if (status) {
+                        final Map<String, String> strings = {
+                          'report_title_summary': AppLocalizations.of(context)!.report_title_summary,
+                          'data_date': AppLocalizations.of(context)!.data_date(''),
+                          'created_at': AppLocalizations.of(context)!.created_at(''),
+                          'revenue': AppLocalizations.of(context)!.revenue,
+                          'sub_total': AppLocalizations.of(context)!.sub_total,
+                          'discount': AppLocalizations.of(context)!.discount,
+                          'tax': AppLocalizations.of(context)!.tax,
+                          'service_charge': AppLocalizations.of(context)!.service_charge,
+                          'total': AppLocalizations.of(context)!.total,
+                          'address': AppLocalizations.of(context)!.address,
+                        };
                         final pdfFile = await RevenueInvoice.generate(
-                            summary, searchDateFormatted);
+                            summary, searchDateFormatted, strings);
                         log("pdfFile: $pdfFile");
                         HelperPdfService.openFile(pdfFile);
                       }
                     },
-                    child: const Row(
+                    child: Row(
                       children: [
                         Text(
-                          "PDF",
+                          AppLocalizations.of(context)!.pdf_label,
                           style: TextStyle(
                             fontSize: 14.0,
                             fontWeight: FontWeight.bold,
@@ -82,7 +95,7 @@ class SummaryReportWidget extends StatelessWidget {
             ),
             const SpaceHeight(16.0),
             Text(
-              'REVENUE : ${int.parse(summary.totalRevenue!).currencyFormatRp}',
+              AppLocalizations.of(context)!.revenue_label(int.parse(summary.totalRevenue!).currencyFormatRp),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SpaceHeight(8.0),
@@ -92,7 +105,7 @@ class SummaryReportWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Subtotal'),
+                Text(AppLocalizations.of(context)!.subtotal),
                 Text(
                   int.parse(summary.totalSubtotal!).currencyFormatRp,
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -103,7 +116,7 @@ class SummaryReportWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Discount'),
+                Text(AppLocalizations.of(context)!.discount),
                 Text(
                   "- ${int.parse(summary.totalDiscount!.replaceAll('.00', '')).currencyFormatRp}",
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -114,7 +127,7 @@ class SummaryReportWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Tax'),
+                Text(AppLocalizations.of(context)!.tax),
                 Text(
                   "- ${int.parse(summary.totalTax!).currencyFormatRp}",
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -125,7 +138,7 @@ class SummaryReportWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Service Charge'),
+                Text(AppLocalizations.of(context)!.service_charge),
                 Text(
                   int.parse(summary.totalServiceCharge!).currencyFormatRp,
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -139,7 +152,7 @@ class SummaryReportWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('TOTAL'),
+                Text(AppLocalizations.of(context)!.total_caps),
                 Text(
                   summary.total!.currencyFormatRp,
                   style: const TextStyle(fontWeight: FontWeight.bold),

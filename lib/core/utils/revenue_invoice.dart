@@ -15,6 +15,7 @@ class RevenueInvoice {
   static Future<File> generate(
     SummaryModel summaryModel,
     String searchDateFormatted,
+    Map<String, String> strings,
   ) async {
     final pdf = Document();
     // var data = await rootBundle.load("assets/fonts/noto-sans.ttf");
@@ -28,11 +29,11 @@ class RevenueInvoice {
     pdf.addPage(
       MultiPage(
         build: (context) => [
-          buildHeader(summaryModel, image, searchDateFormatted),
+          buildHeader(summaryModel, image, searchDateFormatted, strings),
           SizedBox(height: 1 * PdfPageFormat.cm),
-          buildTotal(summaryModel),
+          buildTotal(summaryModel, strings),
         ],
-        footer: (context) => buildFooter(summaryModel),
+        footer: (context) => buildFooter(summaryModel, strings),
       ),
     );
 
@@ -47,23 +48,24 @@ class RevenueInvoice {
     SummaryModel invoice,
     MemoryImage image,
     String searchDateFormatted,
+    Map<String, String> strings,
   ) =>
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 1 * PdfPageFormat.cm),
-            Text('HayoPOS | Summary Sales Report',
+            Text(strings['report_title_summary'] ?? 'HayoPOS | Summary Sales Report',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 )),
             SizedBox(height: 0.2 * PdfPageFormat.cm),
             Text(
-              "Data: $searchDateFormatted",
+              strings['data_date']?.replaceAll('{date}', searchDateFormatted) ?? "Data: $searchDateFormatted",
             ),
             Text(
-              'Created At: ${DateTime.now().toFormattedDate3()}',
+              strings['created_at']?.replaceAll('{date}', DateTime.now().toFormattedDate3()) ?? 'Created At: ${DateTime.now().toFormattedDate3()}',
             ),
           ],
         ),
@@ -75,26 +77,26 @@ class RevenueInvoice {
         ),
       ]);
 
-  static Widget buildTotal(SummaryModel summaryModel) {
+  static Widget buildTotal(SummaryModel summaryModel, Map<String, String> strings) {
     return Container(
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           buildText(
-            title: 'Revenue',
+            title: strings['revenue'] ?? 'Revenue',
             value: int.parse(summaryModel.totalRevenue!).currencyFormatRp,
             unite: true,
           ),
           Divider(),
           buildText(
-            title: 'Sub Total',
+            title: strings['sub_total'] ?? 'Sub Total',
             titleStyle: TextStyle(fontWeight: FontWeight.normal),
             value: int.parse(summaryModel.totalSubtotal!).currencyFormatRp,
             unite: true,
           ),
           buildText(
-            title: 'Discount',
+            title: strings['discount'] ?? 'Discount',
             titleStyle: TextStyle(fontWeight: FontWeight.normal),
             value:
                 "- ${int.parse(summaryModel.totalDiscount!.replaceAll('.00', '')).currencyFormatRp}",
@@ -105,7 +107,7 @@ class RevenueInvoice {
             ),
           ),
           buildText(
-            title: 'Tax',
+            title: strings['tax'] ?? 'Tax',
             titleStyle: TextStyle(fontWeight: FontWeight.normal),
             value: "- ${int.parse(summaryModel.totalTax!).currencyFormatRp}",
             textStyle: TextStyle(
@@ -115,7 +117,7 @@ class RevenueInvoice {
             unite: true,
           ),
           buildText(
-            title: 'Service Charge',
+            title: strings['service_charge'] ?? 'Service Charge',
             titleStyle: TextStyle(
               fontWeight: FontWeight.normal,
             ),
@@ -124,7 +126,7 @@ class RevenueInvoice {
           ),
           Divider(),
           buildText(
-            title: 'Total ',
+            title: strings['total'] ?? 'Total ',
             titleStyle: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -141,13 +143,13 @@ class RevenueInvoice {
     );
   }
 
-  static Widget buildFooter(SummaryModel summaryModel) => Column(
+  static Widget buildFooter(SummaryModel summaryModel, Map<String, String> strings) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Divider(),
           SizedBox(height: 2 * PdfPageFormat.mm),
           buildSimpleText(
-              title: 'Address',
+              title: strings['address'] ?? 'Address',
               value:
                   'Jalan Melati No. 12, Mranggen, Demak, Central Java, 89568'),
           SizedBox(height: 1 * PdfPageFormat.mm),

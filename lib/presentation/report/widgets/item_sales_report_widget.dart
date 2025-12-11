@@ -11,6 +11,8 @@ import 'package:flutter_posresto_app/data/models/response/item_sales_response_mo
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
+
 class ItemSalesReportWidget extends StatelessWidget {
   final String title;
   final String searchDateFormatted;
@@ -55,15 +57,15 @@ class ItemSalesReportWidget extends StatelessWidget {
                     final status = await PermessionHelper().checkPermission();
                     if (status) {
                       final pdfFile = await ItemSalesInvoice.generate(
-                          itemSales, searchDateFormatted);
+                          itemSales, searchDateFormatted, AppLocalizations.of(context)!);
                       log("pdfFile: $pdfFile");
                       HelperPdfService.openFile(pdfFile);
                     }
                   },
-                  child: const Row(
+                  child: Row(
                     children: [
                       Text(
-                        "PDF",
+                        AppLocalizations.of(context)!.pdf_label,
                         style: TextStyle(
                           fontSize: 14.0,
                           fontWeight: FontWeight.bold,

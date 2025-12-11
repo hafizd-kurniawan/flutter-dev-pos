@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_posresto_app/core/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class NotificationsSettingsPage extends StatefulWidget {
   const NotificationsSettingsPage({Key? key}) : super(key: key);
@@ -84,10 +85,10 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Test Notification',
+                    AppLocalizations.of(context)!.test_notification,
                     style: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
                   ),
-                  Text('This is how notifications will appear', style: GoogleFonts.quicksand()),
+                  Text(AppLocalizations.of(context)!.notification_preview, style: GoogleFonts.quicksand()),
                 ],
               ),
             ),
@@ -96,7 +97,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
         backgroundColor: AppColors.primary,
         duration: const Duration(seconds: 4),
         action: SnackBarAction(
-          label: 'OK',
+          label: AppLocalizations.of(context)!.ok,
           textColor: Colors.white,
           onPressed: () {},
         ),
@@ -138,8 +139,8 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
           // FCM Enabled Card
           _buildSettingCard(
             icon: Icons.cloud,
-            title: 'Push Notifications',
-            subtitle: 'Enable or disable all push notifications',
+            title: AppLocalizations.of(context)!.push_notifications,
+            subtitle: AppLocalizations.of(context)!.push_notifications_desc,
             value: _fcmEnabled,
             onChanged: (value) {
               setState(() {
@@ -154,8 +155,8 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
           // Sound Enabled Card
           _buildSettingCard(
             icon: Icons.volume_up,
-            title: 'Notification Sound',
-            subtitle: 'Play sound when notifications arrive',
+            title: AppLocalizations.of(context)!.notification_sound,
+            subtitle: AppLocalizations.of(context)!.notification_sound_desc,
             value: _soundEnabled,
             onChanged: (value) {
               setState(() {
@@ -181,8 +182,8 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
           // New Order Alerts Card
           _buildSettingCard(
             icon: Icons.shopping_cart,
-            title: 'New Order Alerts',
-            subtitle: 'Get notified when new orders arrive',
+            title: AppLocalizations.of(context)!.new_order_alerts,
+            subtitle: AppLocalizations.of(context)!.new_order_alerts_desc,
             value: _newOrderAlerts,
             onChanged: (value) {
               setState(() {
@@ -197,8 +198,8 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
           // Low Stock Alerts Card
           _buildSettingCard(
             icon: Icons.inventory_2,
-            title: 'Low Stock Alerts',
-            subtitle: 'Get notified when products are running low',
+            title: AppLocalizations.of(context)!.low_stock_alerts,
+            subtitle: AppLocalizations.of(context)!.low_stock_alerts_desc,
             value: _lowStockAlerts,
             onChanged: (value) {
               setState(() {
@@ -215,7 +216,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
             child: ElevatedButton.icon(
               onPressed: _testNotification,
               icon: const Icon(Icons.notifications_active),
-              label: Text('Test Notification', style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
+              label: Text(AppLocalizations.of(context)!.test_notification, style: GoogleFonts.quicksand(fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,

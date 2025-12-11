@@ -21,6 +21,7 @@ import '../../../core/components/spaces.dart';
 import '../../table/blocs/get_table/get_table_bloc.dart';
 import '../bloc/checkout/checkout_bloc.dart';
 import '../bloc/order/order_bloc.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 
 class SaveOrderDialog extends StatefulWidget {
   const SaveOrderDialog({
@@ -65,9 +66,9 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
           children: [
             Center(child: Assets.icons.success.svg()),
             const SpaceHeight(16.0),
-            const Center(
+            Center(
               child: Text(
-                'Order Berhasil Disimpan',
+                AppLocalizations.of(context)!.order_saved_success,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -88,7 +89,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                           .add(const GetTableEvent.getTables());
                       context.popToRoot();
                     },
-                    label: 'Kembali',
+                    label: AppLocalizations.of(context)!.back,
                   ),
                 ),
                 const SpaceWidth(8.0),
@@ -133,6 +134,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                                 'HayoPOS',
                                 checkerPrinter.paper.toIntegerFromText,
                                 widget.orderNote ?? '', // NEW
+                                AppLocalizations.of(context)!, // NEW
                                 );
                         if (checkerPrinter.type == 'Bluetooth') {
                           await PrintBluetoothThermal.connect(
@@ -165,6 +167,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                           'Dine In', // Default for SaveOrder
                           widget.table.tableName,
                           widget.orderNote ?? '', // Pass Global Note
+                          AppLocalizations.of(context)!, // NEW
                         );
                         if (kitchenPrinter!.type == 'Bluetooth') {
                           await PrintBluetoothThermal.connect(
@@ -194,6 +197,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                           'HayoPOS',
                           barPrinter.paper.toIntegerFromText,
                           widget.orderNote ?? '', // NEW
+                          AppLocalizations.of(context)!, // NEW
                         );
                         if (barPrinter!.type == 'Bluetooth') {
                           await PrintBluetoothThermal.connect(
@@ -214,7 +218,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                         }
                       }
                     },
-                    label: 'Print Checker',
+                    label: AppLocalizations.of(context)!.print_checker,
                   ),
                 ),
               ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_posresto_app/core/constants/colors.dart'; // NEW
 import 'package:flutter_posresto_app/core/extensions/int_ext.dart';
+import 'package:flutter_posresto_app/l10n/app_localizations.dart';
 import 'package:flutter_posresto_app/data/models/response/order_response_model.dart';
 import 'package:intl/intl.dart';
 
@@ -46,14 +47,14 @@ class OrderCard extends StatelessWidget {
     }
   }
 
-  String _getButtonText() {
+  String _getButtonText(BuildContext context) {
     switch (order.status.toLowerCase()) {
       case 'paid':
-        return 'Start Cooking';
+        return AppLocalizations.of(context)!.start_cooking;
       case 'cooking':
-        return 'Mark Complete';
+        return AppLocalizations.of(context)!.mark_complete;
       default:
-        return 'Done';
+        return AppLocalizations.of(context)!.done;
     }
   }
 
@@ -83,12 +84,12 @@ class OrderCard extends StatelessWidget {
     return Icons.receipt;
   }
 
-  String _getOrderSourceText() {
+  String _getOrderSourceText(BuildContext context) {
     final type = order.orderType?.toLowerCase() ?? '';
-    if (type.contains('self')) return 'Self-Order';
-    if (type == 'takeaway') return 'Takeaway';
-    if (type == 'dine_in') return 'Dine In';
-    return 'Walk-in';
+    if (type.contains('self')) return AppLocalizations.of(context)!.self_order;
+    if (type == 'takeaway') return AppLocalizations.of(context)!.takeaway;
+    if (type == 'dine_in') return AppLocalizations.of(context)!.dine_in;
+    return AppLocalizations.of(context)!.walk_in;
   }
 
   @override
@@ -174,7 +175,7 @@ class OrderCard extends StatelessWidget {
                       size: 14, color: _getOrderSourceColor()),
                   const SizedBox(width: 6),
                   Text(
-                    _getOrderSourceText(),
+                    _getOrderSourceText(context),
                     style: GoogleFonts.quicksand(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -213,7 +214,7 @@ class OrderCard extends StatelessWidget {
                       size: 18, color: Colors.grey),
                   const SizedBox(width: 8),
                   Text(
-                    'Table: ${order.tableNumber}',
+                    '${AppLocalizations.of(context)!.table}: ${order.tableNumber}',
                     style: GoogleFonts.quicksand(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -232,7 +233,7 @@ class OrderCard extends StatelessWidget {
                   const Icon(Icons.badge_outlined, size: 18, color: Colors.grey),
                   const SizedBox(width: 8),
                   Text(
-                    'Cashier: ${order.cashierName}',
+                    '${AppLocalizations.of(context)!.cashier}: ${order.cashierName}',
                     style: GoogleFonts.quicksand(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -275,7 +276,7 @@ class OrderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Catatan Pesanan:',
+                      AppLocalizations.of(context)!.order_note,
                       style: GoogleFonts.quicksand(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -310,7 +311,7 @@ class OrderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Items:',
+                    AppLocalizations.of(context)!.items_label,
                     style: GoogleFonts.quicksand(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -340,7 +341,7 @@ class OrderCard extends StatelessWidget {
                                     Padding(
                                       padding: const EdgeInsets.only(top: 2),
                                       child: Text(
-                                        'Note: ${item.note}',
+                                        '${AppLocalizations.of(context)!.note}: ${item.note}',
                                         style: GoogleFonts.quicksand(
                                           fontSize: 12,
                                           color: Colors.grey[600],
@@ -380,7 +381,7 @@ class OrderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '💰 Rincian Pembayaran',
+                    AppLocalizations.of(context)!.payment_details,
                     style: GoogleFonts.quicksand(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -393,7 +394,7 @@ class OrderCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Subtotal:', style: GoogleFonts.quicksand(fontSize: 13, color: Colors.grey[700])),
+                      Text(AppLocalizations.of(context)!.sub_total_label, style: GoogleFonts.quicksand(fontSize: 13, color: Colors.grey[700])),
                       Text(
                         order.subtotal.currencyFormatRp,
                         style: GoogleFonts.quicksand(
@@ -409,7 +410,7 @@ class OrderCard extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          'Diskon:',
+                          AppLocalizations.of(context)!.discount_label,
                           style: GoogleFonts.quicksand(
                             fontSize: 13,
                             color: (order.discountAmount != null &&
@@ -444,7 +445,7 @@ class OrderCard extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          'Pajak${(order.taxPercentage != null && order.taxPercentage! > 0) ? " (${order.taxPercentage}%)" : ""}:',
+                          '${AppLocalizations.of(context)!.tax_label}${(order.taxPercentage != null && order.taxPercentage! > 0) ? " (${order.taxPercentage}%)" : ""}:',
                           style: GoogleFonts.quicksand(fontSize: 13, color: Colors.grey[700]),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -465,7 +466,7 @@ class OrderCard extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          'Layanan${(order.serviceChargePercentage != null && order.serviceChargePercentage! > 0) ? " (${order.serviceChargePercentage}%)" : ""}:',
+                          '${AppLocalizations.of(context)!.service_label}${(order.serviceChargePercentage != null && order.serviceChargePercentage! > 0) ? " (${order.serviceChargePercentage}%)" : ""}:',
                           style: GoogleFonts.quicksand(fontSize: 13, color: Colors.grey[700]),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -489,7 +490,7 @@ class OrderCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total:',
+                  AppLocalizations.of(context)!.total,
                   style: GoogleFonts.quicksand(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -552,7 +553,7 @@ class OrderCard extends StatelessWidget {
                         ),
                         child: IconButton(
                           icon: const Icon(Icons.print_outlined, size: 20, color: Colors.black87),
-                          tooltip: 'Print Receipt',
+                          tooltip: AppLocalizations.of(context)!.tooltip_print_receipt,
                           constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                           padding: EdgeInsets.zero,
                           onPressed: onPrint,
@@ -570,7 +571,7 @@ class OrderCard extends StatelessWidget {
                         ),
                         child: IconButton(
                           icon: const Icon(Icons.share_outlined, size: 20, color: Colors.blue),
-                          tooltip: 'Share Receipt',
+                          tooltip: AppLocalizations.of(context)!.tooltip_share_receipt,
                           constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                           padding: EdgeInsets.zero,
                           onPressed: onShare,
@@ -595,7 +596,7 @@ class OrderCard extends StatelessWidget {
                                     size: 20,
                                     color: Colors.white,
                                   ),
-                                  tooltip: _getButtonText(),
+                                  tooltip: _getButtonText(context),
                                   constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                                   padding: EdgeInsets.zero,
                                 ),
@@ -609,7 +610,7 @@ class OrderCard extends StatelessWidget {
                                   size: 18,
                                 ),
                                 label: Text(
-                                  _getButtonText(),
+                                  _getButtonText(context),
                                   style: GoogleFonts.quicksand(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
